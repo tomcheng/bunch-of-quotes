@@ -6,7 +6,7 @@ import flow from "lodash/flow";
 const convertDumbQuotes = str => str.replace(/(\S)'/g, "$1\u2019");
 const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
 const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
-const convertHyphens = str => str.replace(/ - /g, "\u2014");
+const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
 const removeWidows = str => str.replace(/ (\S*)$/g, "\u00A0$1");
 
 const StyledQuote = styled.div`

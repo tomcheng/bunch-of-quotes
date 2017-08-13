@@ -50,16 +50,23 @@ const Quote = props => {
       <StyledName>
         {name}
       </StyledName>
-      <StyledPosition>
-        {position}, {time}
-      </StyledPosition>
+      {!!position && (
+        <StyledPosition>
+          {position}{time && `, ${time}`}
+        </StyledPosition>
+      )}
     </div>
   );
 };
 
 Quote.propTypes = {
   quote: PropTypes.shape({
-    quote: PropTypes.string.isRequired
+    quote: PropTypes.string.isRequired,
+    author: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      position: PropTypes.string,
+      time: PropTypes.string
+    }).isRequired,
   }).isRequired
 };
 

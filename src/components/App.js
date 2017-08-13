@@ -24,8 +24,8 @@ class App extends Component {
       PropTypes.shape({
         author: PropTypes.shape({
           name: PropTypes.string.isRequired,
-          time: PropTypes.string.isRequired,
-          position: PropTypes.string.isRequired,
+          time: PropTypes.string,
+          position: PropTypes.string,
         }).isRequired,
         id: PropTypes.number.isRequired,
         quote: PropTypes.string.isRequired

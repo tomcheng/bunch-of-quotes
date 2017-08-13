@@ -1,0 +1,1 @@
+The wisdom of the ancients, in the palm of your hand.

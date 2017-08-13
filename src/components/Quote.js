@@ -8,6 +8,7 @@ const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
 const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
 const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
 const removeWidows = str => str.replace(/ (\S*)$/g, "\u00A0$1");
+const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const StyledQuote = styled.div`
   font-family: "EB Garamond", serif;
@@ -52,7 +53,7 @@ const Quote = props => {
       </StyledName>
       {!!position && (
         <StyledPosition>
-          {position}{time && `, ${time}`}
+          {position}{time && `, ${formatTime(time)}`}
         </StyledPosition>
       )}
     </div>

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
+import quotes from "./quotes";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App quotes={quotes} />, document.getElementById("root"));
 registerServiceWorker();

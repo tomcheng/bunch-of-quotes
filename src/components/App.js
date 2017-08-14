@@ -8,9 +8,12 @@ const Container = styled.div`
   position: relative;
   width: 100%;
   max-width: 600px;
-  margin: 24px auto 0;
+  margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 100%;
   
   @media (min-width: 400px) {
     width: 85%;
@@ -27,7 +30,6 @@ class App extends Component {
           time: PropTypes.string,
           position: PropTypes.string,
         }).isRequired,
-        id: PropTypes.number.isRequired,
         quote: PropTypes.string.isRequired
       })
     ).isRequired

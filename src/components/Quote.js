@@ -7,21 +7,39 @@ const convertDumbQuotes = str => str.replace(/(\S)'/g, "$1\u2019");
 const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
 const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
 const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
+const convertEllipses = str => str.replace(/\.\.\./g, "\u2026");
 const removeWidows = str => str.replace(/ (\S*)$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const StyledQuote = styled.div`
   font-family: "EB Garamond", serif;
-  font-size: 28px;
-  line-height: 36px;
-  margin-bottom: 24px;
+  font-size: 24px;
+  line-height: 30px;
+  margin-bottom: 15px;
+  
+  @media (min-width: 500px) {
+    font-size: 26px;
+    line-height: 36px;
+    margin-bottom: 18px;
+  }
+
+  @media (min-width: 600px) {
+    font-size: 28px;
+    line-height: 40px;
+    margin-bottom: 20px;
+  }
 `;
 
 const StyledName = styled.div`
   text-align: right;
   font-family: "Crimson Text", serif;
-  font-size: 17px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 24px;
+
+  @media (min-width: 500px) {
+    font-size: 17px;
+    line-height: 28px;
+  }
 `;
 
 const StyledPosition = styled.div`
@@ -29,7 +47,7 @@ const StyledPosition = styled.div`
   font-family: "Libre Baskerville", serif;
   font-style: italic;
   font-size: 12px;
-  line-height: 20px;
+  line-height: 18px;
 `;
 
 const Quote = props => {
@@ -40,6 +58,7 @@ const Quote = props => {
     convertRightDoubleQuotes,
     convertLeftDoubleQuotes,
     convertHyphens,
+    convertEllipses,
     removeWidows
   )(quote);
 

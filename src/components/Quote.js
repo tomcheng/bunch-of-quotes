@@ -8,6 +8,7 @@ const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
 const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
 const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
 const convertEllipses = str => str.replace(/\.\.\./g, "\u2026");
+const useNonBreakingHyphens = str => str.replace(/(\w)-(\w)/g, "$1\uFEFF-\uFEFF$2");
 const removeWidows = str => str.replace(/ (\S*)$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
@@ -31,8 +32,8 @@ const StyledQuote = styled.div`
 `;
 
 const StyledName = styled.div`
-  text-align: right;
   font-family: "Crimson Text", serif;
+  text-align: right;
   font-size: 16px;
   line-height: 24px;
 
@@ -43,15 +44,15 @@ const StyledName = styled.div`
 `;
 
 const StyledPosition = styled.div`
-  text-align: right;
   font-family: "Libre Baskerville", serif;
+  text-align: right;
   font-style: italic;
   font-size: 12px;
   line-height: 18px;
 `;
 
 const Quote = props => {
-  const { quote } = props.quote;
+  const { quote, context } = props.quote;
   const { position, time, name } = props.quote.author;
   const formattedQuote = flow(
     convertDumbQuotes,
@@ -59,6 +60,7 @@ const Quote = props => {
     convertLeftDoubleQuotes,
     convertHyphens,
     convertEllipses,
+    useNonBreakingHyphens,
     removeWidows
   )(quote);
 
@@ -68,11 +70,16 @@ const Quote = props => {
         {formattedQuote}
       </StyledQuote>
       <StyledName>
-        {name}
+        {name}{context && `, ${context}`}
       </StyledName>
       {!!position && (
         <StyledPosition>
           {position}{time && `, ${formatTime(time)}`}
+        </StyledPosition>
+      )}
+      {!position && time && (
+        <StyledPosition>
+          {formatTime(time)}
         </StyledPosition>
       )}
     </div>

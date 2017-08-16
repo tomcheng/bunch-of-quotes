@@ -52,7 +52,7 @@ class App extends Component {
     super();
 
     this.state = {
-      currentQuoteIndex: props.quotes.length - 1
+      currentQuoteIndex: random(0, props.quotes.length - 1)
     };
   }
 

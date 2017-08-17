@@ -4351,7 +4351,7 @@ const authors = {
   "Will Cuppy": ["journalist", "1884-1949"],
   "Will Durant": ["historian", "1885-1981"],
   "Will Rogers": ["humorist", "1879-1935"],
-  "William Arthur Ward": ["college administrator, writer", "1921-1994"],
+  "William Arthur Ward": ["college administrator and writer", "1921-1994"],
   "William Bell": ["singer and songwriter", "1939-"],
   "William Beveridge": ["economist and reformer", "1879-1963"],
   "William Blake": ["poet, engraver and painter", "1757-1827"],

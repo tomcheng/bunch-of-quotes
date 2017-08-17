@@ -9,7 +9,7 @@ const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
 const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
 const convertEllipses = str => str.replace(/\.\.\./g, "\u2026");
 const useNonBreakingHyphens = str => str.replace(/(\w)-(\w)/g, "$1\uFEFF-\uFEFF$2");
-const removeWidows = str => str.replace(/ (\S*)$/g, "\u00A0$1");
+const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const StyledQuote = styled.div`
@@ -51,6 +51,13 @@ const StyledPosition = styled.div`
   line-height: 18px;
 `;
 
+const StyledTime = styled.span`
+  font-family: "Crimson Text", serif;
+  text-align: right;
+  font-size: 13px;
+  font-style: normal;
+`;
+
 const Quote = props => {
   const { quote, context } = props.quote;
   const { position, time, name } = props.quote.author;
@@ -72,14 +79,9 @@ const Quote = props => {
       <StyledName>
         {name}{context && `, ${context}`}
       </StyledName>
-      {!!position && (
+      {(position || time) && (
         <StyledPosition>
-          {position}{time && `, ${formatTime(time)}`}
-        </StyledPosition>
-      )}
-      {!position && time && (
-        <StyledPosition>
-          {formatTime(time)}
+          {removeWidows(position)}{!!position && !!time && ", "}{time && <StyledTime>{formatTime(time)}</StyledTime>}
         </StyledPosition>
       )}
     </div>

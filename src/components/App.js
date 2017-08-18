@@ -70,7 +70,8 @@ class App extends Component {
     touchStartX: null,
     touchX: null,
     tapDistanceThresholdMet: false,
-    animationOffset: null
+    animationOffset: null,
+    quoteShown: true
   };
 
   componentDidMount() {
@@ -87,6 +88,11 @@ class App extends Component {
 
   handleClick = evt => {
     evt.preventDefault();
+
+    if (!this.state.quoteShown) {
+      return;
+    }
+
     this.animateToNext();
   };
 
@@ -141,7 +147,11 @@ class App extends Component {
     const { windowWidth, touchStartX, touchX } = this.state;
     const initialOffset = -windowWidth + touchX - touchStartX;
 
-    this.setState({ isAnimating: true, animationOffset: initialOffset });
+    this.setState({
+      isAnimating: true,
+      animationOffset: initialOffset,
+      quoteShown: false
+    });
 
     Animations.animate({
       name: "quote",
@@ -221,6 +231,10 @@ class App extends Component {
     this.setState({ isAnimating: true, animationOffset: initialOffset });
   };
 
+  handleCompleteAnimation = () => {
+    this.setState({ quoteShown: true });
+  };
+
   render() {
     const { quotes } = this.props;
     const {
@@ -260,6 +274,7 @@ class App extends Component {
                 key={currentIndex}
                 quote={quotes[currentIndex]}
                 seen={lastIndexSeen >= currentIndex}
+                onCompleteAnimation={this.handleCompleteAnimation}
               />
             </QuoteContainer>
           </QuotePage>

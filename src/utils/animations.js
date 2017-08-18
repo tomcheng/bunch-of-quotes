@@ -38,7 +38,15 @@ const Animations = {
     }
   },
 
-  animate({ name, start, end, duration, easing: customEasing, onUpdate, onComplete }) {
+  animate({
+    name,
+    start,
+    end,
+    duration,
+    easing: customEasing,
+    onUpdate,
+    onComplete
+  }) {
     const easing = customEasing || cubicOut;
     const { animations } = this.props;
     const startTime = this.getCurrentTime();

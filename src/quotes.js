@@ -3860,7 +3860,7 @@ const authors = {
   "Lana Turner": ["actress", "1921-1995"],
   "Langston Hughes": ["poet and novelist", "1902-1967"],
   "Lao Tzu": ["philosopher", "6th century BCE"],
-  "Larry Wall": ["programmer, creator of Perl programming language", "1954-"],
+  "Larry Wall": ["programmer and creator of Perl", "1954-"],
   "Laura Ingalls Wilder": ["author", "1867-1957"],
   "Laurence J Peter": ["educator and author", "1919-1990"],
   "Laurence J. Peter": ["educator and author", "1919-1990"],

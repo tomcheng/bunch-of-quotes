@@ -5,6 +5,7 @@ import flow from "lodash/flow";
 import Animations, { cubicInOut } from "../utils/animations.js";
 
 const convertDumbQuotes = str => str.replace(/(\S)'/g, "$1\u2019");
+const convertLeftSingleQuotes = str => str.replace(/'(\S)/g, "\u2018$1");
 const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
 const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
 const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
@@ -127,6 +128,7 @@ class Quote extends Component {
     const { quoteOpacity, nameOpacity } = this.state;
     const formattedQuote = flow(
       convertDumbQuotes,
+      convertLeftSingleQuotes,
       convertRightDoubleQuotes,
       convertLeftDoubleQuotes,
       convertHyphens,

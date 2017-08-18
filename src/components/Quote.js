@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import flow from "lodash/flow";
-import Animations from "../utils/animations.js";
+import Animations, { cubicInOut } from "../utils/animations.js";
 
 const convertDumbQuotes = str => str.replace(/(\S)'/g, "$1\u2019");
 const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
@@ -13,14 +13,6 @@ const useNonBreakingHyphens = str =>
   str.replace(/(\w)-(\w)/g, "$1\uFEFF-\uFEFF$2");
 const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
-
-const cubicInOut = x => {
-  // eslint-disable-next-line no-cond-assign
-  if ((x *= 2) < 1) {
-    return 1 / 2 * x * x * x;
-  }
-  return 1 / 2 * ((x -= 2) * x * x + 2);
-};
 
 const StyledQuote = styled.div`
   font-family: "EB Garamond", serif;

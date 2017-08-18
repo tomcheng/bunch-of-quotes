@@ -1,5 +1,13 @@
 export const cubicOut = x => --x * x * x + 1;
 
+export const cubicInOut = x => {
+  // eslint-disable-next-line no-cond-assign
+  if ((x *= 2) < 1) {
+    return 1 / 2 * x * x * x;
+  }
+  return 1 / 2 * ((x -= 2) * x * x + 2);
+};
+
 const Animations = {
   props: { animations: {} },
 

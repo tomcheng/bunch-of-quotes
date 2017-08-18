@@ -1,23 +1,33 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import flow from "lodash/flow";
+import Animations from "../utils/animations.js";
 
 const convertDumbQuotes = str => str.replace(/(\S)'/g, "$1\u2019");
 const convertRightDoubleQuotes = str => str.replace(/(\S)"/g, "$1\u201D");
 const convertLeftDoubleQuotes = str => str.replace(/"(\S)/g, "\u201C$1");
 const convertHyphens = str => str.replace(/( - )|(--)/g, "\u2014");
 const convertEllipses = str => str.replace(/\.\.\./g, "\u2026");
-const useNonBreakingHyphens = str => str.replace(/(\w)-(\w)/g, "$1\uFEFF-\uFEFF$2");
+const useNonBreakingHyphens = str =>
+  str.replace(/(\w)-(\w)/g, "$1\uFEFF-\uFEFF$2");
 const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
+
+const cubicInOut = x => {
+  // eslint-disable-next-line no-cond-assign
+  if ((x *= 2) < 1) {
+    return 1 / 2 * x * x * x;
+  }
+  return 1 / 2 * ((x -= 2) * x * x + 2);
+};
 
 const StyledQuote = styled.div`
   font-family: "EB Garamond", serif;
   font-size: 24px;
   line-height: 30px;
   margin-bottom: 15px;
-  
+
   @media (min-width: 500px) {
     font-size: 26px;
     line-height: 36px;
@@ -58,45 +68,104 @@ const StyledTime = styled.span`
   font-style: normal;
 `;
 
-const Quote = props => {
-  const { quote, context } = props.quote;
-  const { position, time, name } = props.quote.author;
-  const formattedQuote = flow(
-    convertDumbQuotes,
-    convertRightDoubleQuotes,
-    convertLeftDoubleQuotes,
-    convertHyphens,
-    convertEllipses,
-    useNonBreakingHyphens,
-    removeWidows
-  )(quote);
-
-  return (
-    <div>
-      <StyledQuote>
-        {formattedQuote}
-      </StyledQuote>
-      <StyledName>
-        {name}{context && `, ${context}`}
-      </StyledName>
-      {(position || time) && (
-        <StyledPosition>
-          {removeWidows(position)}{!!position && !!time && ", "}{time && <StyledTime>{formatTime(time)}</StyledTime>}
-        </StyledPosition>
-      )}
-    </div>
-  );
-};
-
-Quote.propTypes = {
-  quote: PropTypes.shape({
-    quote: PropTypes.string.isRequired,
-    author: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      position: PropTypes.string,
-      time: PropTypes.string
+class Quote extends Component {
+  static propTypes = {
+    quote: PropTypes.shape({
+      quote: PropTypes.string.isRequired,
+      author: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        position: PropTypes.string,
+        time: PropTypes.string
+      }).isRequired
     }).isRequired,
-  }).isRequired
-};
+    seen: PropTypes.bool.isRequired
+  };
+
+  constructor(props) {
+    super();
+
+    this.state = {
+      quoteOpacity: props.seen ? 1 : 0,
+      nameOpacity: props.seen ? 1 : 0
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.seen && nextProps.seen) {
+      this.animateIn();
+    } else if (this.props.seen && !nextProps.seen) {
+      clearTimeout(this.timer);
+      Animations.stop("quote-opacity");
+      Animations.stop("name-opacity");
+      this.setState({ quoteOpacity: 0, nameOpacity: 0 });
+    }
+  }
+
+  animateIn = () => {
+    this.setState({ quoteOpacity: 0, nameOpacity: 0 });
+
+    Animations.animate({
+      name: "quote-opacity",
+      start: 0,
+      end: 1,
+      duration: 600,
+      easing: cubicInOut,
+      onUpdate: quoteOpacity => {
+        this.setState(state => ({ ...state, quoteOpacity }));
+      }
+    });
+
+    this.timer = setTimeout(() => {
+      Animations.animate({
+        name: "name-opacity",
+        start: 0,
+        end: 1,
+        duration: 1200,
+        easing: cubicInOut,
+        onUpdate: nameOpacity => {
+          this.setState(state => ({ ...state, nameOpacity }));
+        }
+      });
+    }, 200);
+  };
+
+  render() {
+    const { quote, context } = this.props.quote;
+    const { position, time, name } = this.props.quote.author;
+    const { quoteOpacity, nameOpacity } = this.state;
+    const formattedQuote = flow(
+      convertDumbQuotes,
+      convertRightDoubleQuotes,
+      convertLeftDoubleQuotes,
+      convertHyphens,
+      convertEllipses,
+      useNonBreakingHyphens,
+      removeWidows
+    )(quote);
+
+    return (
+      <div>
+        <StyledQuote style={{ opacity: quoteOpacity }}>
+          {formattedQuote}
+        </StyledQuote>
+        <div style={{ opacity: nameOpacity }}>
+          <StyledName>
+            {name}
+            {context && `, ${context}`}
+          </StyledName>
+          {(position || time) &&
+            <StyledPosition>
+              {removeWidows(position)}
+              {!!position && !!time && ", "}
+              {time &&
+                <StyledTime>
+                  {formatTime(time)}
+                </StyledTime>}
+            </StyledPosition>}
+        </div>
+      </div>
+    );
+  }
+}
 
 export default Quote;

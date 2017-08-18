@@ -62,6 +62,7 @@ class App extends Component {
 
   state = {
     currentIndex: 0,
+    lastIndexSeen: 0,
     windowWidth: window.innerWidth,
     isTouching: false,
     isAnimating: false,
@@ -111,8 +112,14 @@ class App extends Component {
   };
 
   handleTouchEnd = () => {
-    const { touchX, touchStartX, touchStartTime, tapDistanceThresholdMet } = this.state;
-    const tapTimeThresholdMet = new Date().getTime() - touchStartTime > TAP_TIME_THRESHOLD;
+    const {
+      touchX,
+      touchStartX,
+      touchStartTime,
+      tapDistanceThresholdMet
+    } = this.state;
+    const tapTimeThresholdMet =
+      new Date().getTime() - touchStartTime > TAP_TIME_THRESHOLD;
     const isTap = !tapDistanceThresholdMet && !tapTimeThresholdMet;
 
     this.setState({ isTouching: false });
@@ -145,15 +152,23 @@ class App extends Component {
         this.setState({ animationOffset: x });
       },
       onComplete: () => {
-        this.setState(state => ({
-          ...state,
-          isAnimating: false,
-          animationOffset: null,
-          currentIndex:
-            state.currentIndex === this.props.quotes.length - 1
-              ? 0
-              : state.currentIndex + 1
-        }));
+        this.setState(
+          state => ({
+            ...state,
+            isAnimating: false,
+            animationOffset: null,
+            currentIndex:
+              state.currentIndex === this.props.quotes.length - 1
+                ? 0
+                : state.currentIndex + 1
+          }),
+          () => {
+            this.setState(state => ({
+              ...state,
+              lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
+            }));
+          }
+        );
       }
     });
   };
@@ -215,13 +230,12 @@ class App extends Component {
       touchStartX,
       touchX,
       isAnimating,
-      animationOffset
+      animationOffset,
+      lastIndexSeen
     } = this.state;
-    const previousQuote =
-      quotes[currentIndex === 0 ? quotes.length - 1 : currentIndex - 1];
-    const currentQuote = quotes[currentIndex];
-    const nextQuote =
-      quotes[currentIndex === quotes.length - 1 ? 0 : currentIndex + 1];
+    const previousIndex =
+      currentIndex === 0 ? quotes.length - 1 : currentIndex - 1;
+    const nextIndex = currentIndex === quotes.length - 1 ? 0 : currentIndex + 1;
 
     const offset = isAnimating
       ? animationOffset
@@ -237,17 +251,25 @@ class App extends Component {
         <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)` }}>
           <QuotePage>
             <QuoteContainer>
-              <Quote quote={previousQuote} />
+              <Quote key={previousIndex} quote={quotes[previousIndex]} seen />
             </QuoteContainer>
           </QuotePage>
           <QuotePage>
             <QuoteContainer>
-              <Quote quote={currentQuote} />
+              <Quote
+                key={currentIndex}
+                quote={quotes[currentIndex]}
+                seen={lastIndexSeen >= currentIndex}
+              />
             </QuoteContainer>
           </QuotePage>
           <QuotePage>
             <QuoteContainer>
-              <Quote quote={nextQuote} />
+              <Quote
+                key={nextIndex}
+                quote={quotes[nextIndex]}
+                seen={lastIndexSeen >= nextIndex}
+              />
             </QuoteContainer>
           </QuotePage>
         </QuotePages>

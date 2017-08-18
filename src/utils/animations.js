@@ -45,7 +45,9 @@ const Animations = {
         if (timePassed >= duration) {
           this.stop(name);
           onUpdate(end);
-          onComplete();
+          if (onComplete) {
+            onComplete();
+          }
           return;
         }
 

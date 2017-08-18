@@ -94,6 +94,12 @@ class Quote extends Component {
     }
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+    Animations.stop("quote-opacity");
+    Animations.stop("name-opacity");
+  };
+
   animateIn = () => {
     this.setState({ quoteOpacity: 0, nameOpacity: 0 });
 

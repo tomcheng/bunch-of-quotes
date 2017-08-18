@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import styled from "styled-components";
+import Animations from "../utils/animations.js";
 import Quote from "./Quote";
 import random from "lodash/random";
 
 const Container = styled.div`
-  display: flex;
   align-items: center;
   flex-direction: column;
   position: fixed;
@@ -13,25 +13,34 @@ const Container = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100%;
-  max-width: 600px;
   margin: 0 auto;
-  padding: 0 20px;
   box-sizing: border-box;
-
-  @media (min-width: 400px) {
-    width: 85%;
-    padding: 0;
-  }
 `;
 
-const QuoteContainer = styled.div`
-  padding: 15px 0;
+const QuotePages = styled.div`
+  width: 300%;
+  height: 100%;
+  display: flex;
+`;
+
+const QuotePage = styled.div`
+  padding: 15px 20px;
+  width: 33.333333333%;
+  height: 100%;
   flex-grow: 1;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  position: relative;
+`;
+
+const QuoteContainer = styled.div`
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  @media (min-width: 400px) {
+    width: 85%;
+    padding: 0;
+  }
 `;
 
 class App extends Component {
@@ -48,32 +57,158 @@ class App extends Component {
     ).isRequired
   };
 
-  constructor(props) {
-    super();
+  state = {
+    currentIndex: 0,
+    windowWidth: window.innerWidth,
+    isTouching: false,
+    isAnimating: false,
+    touchStartX: null,
+    touchX: null,
+    animationOffset: null
+  };
 
-    this.state = {
-      currentQuoteIndex: random(0, props.quotes.length - 1)
-    };
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({ windowWidth: window.innerWidth });
+  };
 
   handleClick = evt => {
     evt.preventDefault();
 
     this.setState({
-      currentQuoteIndex: random(0, this.props.quotes.length - 1)
+      currentIndex: random(0, this.props.quotes.length - 1)
     });
+  };
+
+  handleTouchStart = evt => {
+    this.setState({
+      isTouching: true,
+      touchStartX: evt.touches[0].clientX,
+      touchX: evt.touches[0].clientX
+    });
+  };
+
+  handleTouchMove = evt => {
+    this.setState({
+      touchX: evt.touches[0].clientX
+    });
+  };
+
+  handleTouchEnd = () => {
+    const { touchX, touchStartX } = this.state;
+
+    if (touchX < touchStartX) {
+      this.animateToNext();
+    } else {
+      this.animateToPrevious();
+    }
+
+    this.setState({ isTouching: false });
+  };
+
+  animateToNext = () => {
+    const { windowWidth, touchStartX, touchX } = this.state;
+    const initialOffset = -windowWidth + touchX - touchStartX;
+
+    Animations.animate({
+      name: "quote",
+      start: initialOffset,
+      end: -2 * windowWidth,
+      duration: 300,
+      onUpdate: x => {
+        this.setState({ animationOffset: x });
+      },
+      onComplete: () => {
+        this.setState(state => ({
+          ...state,
+          isAnimating: false,
+          animationOffset: null,
+          currentIndex:
+            state.currentIndex === this.props.quotes.length - 1
+              ? 0
+              : state.currentIndex + 1
+        }));
+      }
+    });
+    this.setState({ isAnimating: true, animationOffset: initialOffset });
+  };
+
+  animateToPrevious = () => {
+    const { windowWidth, touchStartX, touchX } = this.state;
+    const initialOffset = -windowWidth + touchX - touchStartX;
+
+    Animations.animate({
+      name: "quote",
+      start: initialOffset,
+      end: 0,
+      duration: 300,
+      onUpdate: x => {
+        this.setState({ animationOffset: x });
+      },
+      onComplete: () => {
+        this.setState(state => ({
+          isAnimating: false,
+          animationOffset: null,
+          currentIndex:
+            state.currentIndex === 0
+              ? this.props.quotes.length - 1
+              : state.currentIndex - 1
+        }));
+      }
+    });
+    this.setState({ isAnimating: true, animationOffset: initialOffset });
   };
 
   render() {
     const { quotes } = this.props;
-    const { currentQuoteIndex } = this.state;
-    const currentQuote = quotes[currentQuoteIndex];
+    const {
+      currentIndex,
+      windowWidth,
+      isTouching,
+      touchStartX,
+      touchX,
+      isAnimating,
+      animationOffset
+    } = this.state;
+    const previousQuote = quotes[currentIndex === 0 ? quotes.length - 1 : currentIndex - 1];
+    const currentQuote = quotes[currentIndex];
+    const nextQuote = quotes[currentIndex === quotes.length - 1 ? 0 : currentIndex + 1];
+
+    const offset = isAnimating
+      ? animationOffset
+      : isTouching ? -windowWidth + touchX - touchStartX : -windowWidth;
 
     return (
-      <Container>
-        <QuoteContainer onClick={this.handleClick}>
-          <Quote quote={currentQuote} />
-        </QuoteContainer>
+      <Container
+        onClick={this.handleClick}
+        onTouchStart={this.handleTouchStart}
+        onTouchMove={this.handleTouchMove}
+        onTouchEnd={this.handleTouchEnd}
+      >
+        <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)` }}>
+          <QuotePage>
+            <QuoteContainer>
+              <Quote quote={previousQuote} />
+            </QuoteContainer>
+          </QuotePage>
+          <QuotePage>
+            <QuoteContainer>
+              <Quote quote={currentQuote} />
+            </QuoteContainer>
+          </QuotePage>
+          <QuotePage>
+            <QuoteContainer>
+              <Quote quote={nextQuote} />
+            </QuoteContainer>
+          </QuotePage>
+        </QuotePages>
       </Container>
     );
   }

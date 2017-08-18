@@ -3,10 +3,10 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Animations from "../utils/animations.js";
 import Quote from "./Quote";
-import random from "lodash/random";
 
 const TAP_TIME_THRESHOLD = 300;
 const TAP_DISTANCE_THRESHOLD = 3;
+const SWIPE_THRESHOLD = 30;
 
 const Container = styled.div`
   align-items: center;
@@ -121,10 +121,12 @@ class App extends Component {
       return;
     }
 
-    if (touchX < touchStartX) {
+    if (touchStartX - touchX > SWIPE_THRESHOLD) {
       this.animateToNext();
-    } else {
+    } else if (touchX - touchStartX > SWIPE_THRESHOLD) {
       this.animateToPrevious();
+    } else {
+      this.animateToCurrent();
     }
   };
 
@@ -176,6 +178,28 @@ class App extends Component {
             state.currentIndex === 0
               ? this.props.quotes.length - 1
               : state.currentIndex - 1
+        }));
+      }
+    });
+    this.setState({ isAnimating: true, animationOffset: initialOffset });
+  };
+
+  animateToCurrent = () => {
+    const { windowWidth, touchStartX, touchX } = this.state;
+    const initialOffset = -windowWidth + touchX - touchStartX;
+
+    Animations.animate({
+      name: "quote",
+      start: initialOffset,
+      end: -windowWidth,
+      duration: 200,
+      onUpdate: x => {
+        this.setState({ animationOffset: x });
+      },
+      onComplete: () => {
+        this.setState(state => ({
+          isAnimating: false,
+          animationOffset: null
         }));
       }
     });

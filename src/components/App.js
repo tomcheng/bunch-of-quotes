@@ -5,6 +5,9 @@ import Animations from "../utils/animations.js";
 import Quote from "./Quote";
 import random from "lodash/random";
 
+const TAP_TIME_THRESHOLD = 300;
+const TAP_DISTANCE_THRESHOLD = 3;
+
 const Container = styled.div`
   align-items: center;
   flex-direction: column;
@@ -62,8 +65,10 @@ class App extends Component {
     windowWidth: window.innerWidth,
     isTouching: false,
     isAnimating: false,
+    touchStartTime: null,
     touchStartX: null,
     touchX: null,
+    tapDistanceThresholdMet: false,
     animationOffset: null
   };
 
@@ -81,41 +86,53 @@ class App extends Component {
 
   handleClick = evt => {
     evt.preventDefault();
-
-    this.setState({
-      currentIndex: random(0, this.props.quotes.length - 1)
-    });
+    this.animateToNext();
   };
 
   handleTouchStart = evt => {
     this.setState({
       isTouching: true,
       touchStartX: evt.touches[0].clientX,
-      touchX: evt.touches[0].clientX
+      touchX: evt.touches[0].clientX,
+      touchStartTime: new Date().getTime(),
+      tapDistanceThresholdMet: false
     });
   };
 
   handleTouchMove = evt => {
-    this.setState({
-      touchX: evt.touches[0].clientX
-    });
+    const newTouchX = evt.touches[0].clientX;
+    this.setState(state => ({
+      ...state,
+      touchX: newTouchX,
+      tapDistanceThresholdMet:
+        state.tapDistanceThresholdMet ||
+        Math.abs(newTouchX - state.touchStartX) > TAP_DISTANCE_THRESHOLD
+    }));
   };
 
   handleTouchEnd = () => {
-    const { touchX, touchStartX } = this.state;
+    const { touchX, touchStartX, touchStartTime, tapDistanceThresholdMet } = this.state;
+    const tapTimeThresholdMet = new Date().getTime() - touchStartTime > TAP_TIME_THRESHOLD;
+    const isTap = !tapDistanceThresholdMet && !tapTimeThresholdMet;
+
+    this.setState({ isTouching: false });
+
+    if (isTap) {
+      return;
+    }
 
     if (touchX < touchStartX) {
       this.animateToNext();
     } else {
       this.animateToPrevious();
     }
-
-    this.setState({ isTouching: false });
   };
 
   animateToNext = () => {
     const { windowWidth, touchStartX, touchX } = this.state;
     const initialOffset = -windowWidth + touchX - touchStartX;
+
+    this.setState({ isAnimating: true, animationOffset: initialOffset });
 
     Animations.animate({
       name: "quote",
@@ -137,7 +154,6 @@ class App extends Component {
         }));
       }
     });
-    this.setState({ isAnimating: true, animationOffset: initialOffset });
   };
 
   animateToPrevious = () => {
@@ -177,9 +193,11 @@ class App extends Component {
       isAnimating,
       animationOffset
     } = this.state;
-    const previousQuote = quotes[currentIndex === 0 ? quotes.length - 1 : currentIndex - 1];
+    const previousQuote =
+      quotes[currentIndex === 0 ? quotes.length - 1 : currentIndex - 1];
     const currentQuote = quotes[currentIndex];
-    const nextQuote = quotes[currentIndex === quotes.length - 1 ? 0 : currentIndex + 1];
+    const nextQuote =
+      quotes[currentIndex === quotes.length - 1 ? 0 : currentIndex + 1];
 
     const offset = isAnimating
       ? animationOffset

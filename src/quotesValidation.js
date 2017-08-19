@@ -9,6 +9,8 @@ const isValidTime = (time, author) => {
   return true;
 };
 
+const isSimilar = (q1, q2) => q1.toLowerCase().trim().slice(0, 30) === q2.toLowerCase().trim().slice(0, 30);
+
 export const isValid = ({ authors, quotes }) => {
   let valid = true;
 
@@ -20,9 +22,14 @@ export const isValid = ({ authors, quotes }) => {
     }
   });
 
-  quotes.forEach(([quote, author, context]) => {
+  quotes.forEach(([quote, author, context], index) => {
     if (!authors[author] && author.indexOf(" proverb") === -1) {
       console.log("No entry for " + author);
+      valid = false;
+    }
+
+    if (quotes.slice(index + 1).some(([q]) => isSimilar(q, quote))) {
+      console.log("Duplicate found", quote, author);
       valid = false;
     }
   });

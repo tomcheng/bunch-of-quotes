@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import styled from "styled-components";
-import Animations from "../utils/animations.js";
+import Animations, { cubicOut, cubicInOut } from "../utils/animations.js";
 import Quote from "./Quote";
 
 const TAP_TIME_THRESHOLD = 300;
@@ -93,7 +93,7 @@ class App extends Component {
       return;
     }
 
-    this.animateToNext();
+    this.animateTo("next", { easing: cubicInOut });
   };
 
   handleTouchStart = evt => {
@@ -126,112 +126,91 @@ class App extends Component {
     } = this.state;
     const tapTimeThresholdMet =
       new Date().getTime() - touchStartTime > TAP_TIME_THRESHOLD;
-    const isTap = !tapDistanceThresholdMet && !tapTimeThresholdMet;
 
     this.setState({ isTouching: false });
 
-    if (isTap) {
+    if (!tapDistanceThresholdMet && !tapTimeThresholdMet) {
       return;
     }
 
     if (touchStartX - touchX > SWIPE_THRESHOLD) {
-      this.animateToNext();
+      this.animateTo("next");
     } else if (touchX - touchStartX > SWIPE_THRESHOLD) {
-      this.animateToPrevious();
+      this.animateTo("previous");
     } else {
-      this.animateToCurrent();
+      this.animateTo("current");
     }
   };
 
-  animateToNext = () => {
+  animateTo = (destination, opts) => {
+    const { easing } = {
+      easing: cubicOut,
+      ...opts
+    };
     const { windowWidth, touchStartX, touchX } = this.state;
-    const initialOffset = -windowWidth + touchX - touchStartX;
+    const start = -windowWidth + touchX - touchStartX;
+    const end =
+      destination === "next"
+        ? -2 * windowWidth
+        : destination === "previous" ? 0 : -windowWidth;
 
     this.setState({
       isAnimating: true,
-      animationOffset: initialOffset,
+      animationOffset: start,
       quoteShown: false
     });
 
     Animations.animate({
       name: "quote",
-      start: initialOffset,
-      end: -2 * windowWidth,
+      start,
+      end,
       duration: 300,
-      onUpdate: x => {
-        this.setState({ animationOffset: x });
-      },
-      onComplete: () => {
-        this.setState(
-          state => ({
-            ...state,
-            isAnimating: false,
-            animationOffset: null,
-            currentIndex:
-              state.currentIndex === this.props.quotes.length - 1
-                ? 0
-                : state.currentIndex + 1
-          }),
-          () => {
-            this.setState(state => ({
-              ...state,
-              lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
-            }));
-          }
-        );
-      }
-    });
-  };
-
-  animateToPrevious = () => {
-    const { windowWidth, touchStartX, touchX } = this.state;
-    const initialOffset = -windowWidth + touchX - touchStartX;
-
-    Animations.animate({
-      name: "quote",
-      start: initialOffset,
-      end: 0,
-      duration: 300,
+      easing,
       onUpdate: x => {
         this.setState({ animationOffset: x });
       },
       onComplete: () => {
         this.setState(state => ({
-          isAnimating: false,
-          animationOffset: null,
-          currentIndex:
-            state.currentIndex === 0
-              ? this.props.quotes.length - 1
-              : state.currentIndex - 1
-        }));
-      }
-    });
-    this.setState({ isAnimating: true, animationOffset: initialOffset });
-  };
-
-  animateToCurrent = () => {
-    const { windowWidth, touchStartX, touchX } = this.state;
-    const initialOffset = -windowWidth + touchX - touchStartX;
-
-    Animations.animate({
-      name: "quote",
-      start: initialOffset,
-      end: -windowWidth,
-      duration: 200,
-      onUpdate: x => {
-        this.setState({ animationOffset: x });
-      },
-      onComplete: () => {
-        this.setState(state => ({
+          ...state,
           isAnimating: false,
           animationOffset: null
         }));
+        this.updateIndices(destination);
       }
     });
-    this.setState({ isAnimating: true, animationOffset: initialOffset });
   };
 
-  handleCompleteAnimation = () => {
+  updateIndices = destination => {
+    if (destination === "next") {
+      this.setState(
+        state => ({
+          ...state,
+          currentIndex:
+            state.currentIndex === this.props.quotes.length - 1
+              ? 0
+              : state.currentIndex + 1
+        }),
+        () => {
+          this.setState(state => ({
+            ...state,
+            lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
+          }));
+        }
+      );
+    }
+
+    if (destination === "previous") {
+      this.setState(state => ({
+        ...state,
+        currentIndex:
+          state.currentIndex === 0
+            ? this.props.quotes.length - 1
+            : state.currentIndex - 1
+      }));
+    }
+  };
+
+  handleCompleteQuoteAnimation = () => {
     this.setState({ quoteShown: true });
   };
 
@@ -274,7 +253,7 @@ class App extends Component {
                 key={currentIndex}
                 quote={quotes[currentIndex]}
                 seen={lastIndexSeen >= currentIndex}
-                onCompleteAnimation={this.handleCompleteAnimation}
+                onCompleteAnimation={this.handleCompleteQuoteAnimation}
               />
             </QuoteContainer>
           </QuotePage>

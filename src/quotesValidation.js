@@ -46,7 +46,7 @@ const normalize = text => text.toLowerCase().replace(/[^a-z]/g,"").slice(0, 25);
 const isSimilar = (q1, q2) => normalize(q1) === normalize(q2);
 
 export const isValid = ({ authors, quotes: unsortedQuotes }) => {
-  const quotes = sortBy(unsortedQuotes, q => q.quote);
+  const quotes = sortBy(unsortedQuotes, q => q[0]);
   let valid = true;
 
   forOwn(authors, (bio, author) => {

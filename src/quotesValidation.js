@@ -34,7 +34,7 @@ const isValidOccupation = occ => {
     return true;
   }
 
-  if (occ.match(/^[\w-]+( [\w-]+){0,3}(,( (?!and)\w+){1,11}){2,10}$/)) {
+  if (occ.match(/^[\w-]+( [\w-]+){0,3}(,( (?!and)\w+){1,11}){3,10}$/)) {
     return true;
   }
 

@@ -7,6 +7,7 @@ import Quote from "./Quote";
 const TAP_TIME_THRESHOLD = 300;
 const TAP_DISTANCE_THRESHOLD = 3;
 const SWIPE_THRESHOLD = 30;
+const DRAG_PAST_CONSTANT = 0.2;
 
 const Container = styled.div`
   align-items: center;
@@ -118,14 +119,18 @@ class App extends Component {
   };
 
   handleTouchEnd = () => {
+    const { quotes } = this.props;
     const {
       touchX,
       touchStartX,
       touchStartTime,
-      tapDistanceThresholdMet
+      tapDistanceThresholdMet,
+      currentIndex
     } = this.state;
     const tapTimeThresholdMet =
       new Date().getTime() - touchStartTime > TAP_TIME_THRESHOLD;
+    const atStart = currentIndex === 0;
+    const atEnd = currentIndex === quotes.length - 1;
 
     this.setState({ isTouching: false });
 
@@ -133,12 +138,12 @@ class App extends Component {
       return;
     }
 
-    if (touchStartX - touchX > SWIPE_THRESHOLD) {
+    if (touchStartX - touchX > SWIPE_THRESHOLD && !atEnd) {
       this.animateTo("next");
-    } else if (touchX - touchStartX > SWIPE_THRESHOLD) {
+    } else if (touchX - touchStartX > SWIPE_THRESHOLD && !atStart) {
       this.animateTo("previous");
     } else {
-      this.animateTo("current");
+      this.animateTo("current", { easing: cubicInOut });
     }
   };
 
@@ -147,8 +152,11 @@ class App extends Component {
       easing: cubicOut,
       ...opts
     };
-    const { windowWidth, touchStartX, touchX } = this.state;
-    const start = -windowWidth + touchX - touchStartX;
+    const { windowWidth, touchStartX, touchX, currentIndex } = this.state;
+    const atStart = currentIndex === 0;
+    const start = atStart && touchX > touchStartX
+      ? -windowWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
+      : -windowWidth + touchX - touchStartX;
     const end =
       destination === "next"
         ? -2 * windowWidth
@@ -157,7 +165,7 @@ class App extends Component {
     this.setState({
       isAnimating: true,
       animationOffset: start,
-      quoteShown: false
+      quoteShown: destination !== "next"
     });
 
     Animations.animate({
@@ -226,13 +234,19 @@ class App extends Component {
       animationOffset,
       lastIndexSeen
     } = this.state;
-    const previousIndex =
-      currentIndex === 0 ? quotes.length - 1 : currentIndex - 1;
-    const nextIndex = currentIndex === quotes.length - 1 ? 0 : currentIndex + 1;
+    const atStart = currentIndex === 0;
+    const previousIndex = currentIndex - 1;
+    const previousQuote = quotes[previousIndex];
+    const nextIndex = currentIndex + 1;
+    const nextQuote = quotes[nextIndex];
 
     const offset = isAnimating
       ? animationOffset
-      : isTouching ? -windowWidth + touchX - touchStartX : -windowWidth;
+      : isTouching
+        ? atStart && touchX > touchStartX
+          ? -windowWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
+          : -windowWidth + touchX - touchStartX
+        : -windowWidth;
 
     return (
       <Container
@@ -244,7 +258,8 @@ class App extends Component {
         <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)` }}>
           <QuotePage>
             <QuoteContainer>
-              <Quote key={previousIndex} quote={quotes[previousIndex]} seen />
+              {previousQuote &&
+                <Quote key={previousIndex} quote={previousQuote} seen />}
             </QuoteContainer>
           </QuotePage>
           <QuotePage>
@@ -259,11 +274,12 @@ class App extends Component {
           </QuotePage>
           <QuotePage>
             <QuoteContainer>
-              <Quote
-                key={nextIndex}
-                quote={quotes[nextIndex]}
-                seen={lastIndexSeen >= nextIndex}
-              />
+              {nextQuote &&
+                <Quote
+                  key={nextIndex}
+                  quote={nextQuote}
+                  seen={lastIndexSeen >= nextIndex}
+                />}
             </QuoteContainer>
           </QuotePage>
         </QuotePages>

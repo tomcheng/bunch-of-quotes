@@ -1,35 +1,81 @@
 import forOwn from "lodash/forOwn"
+import sortBy from "lodash/sortBy";
 
-const isValidTime = (time, author) => {
+const isValidTime = time => {
   if (time.toLowerCase().indexOf("circa") > -1) {
-    console.log("Should use c. instead of circa for " + author);
     return false;
   }
 
-  return true;
+  if (time.match(/^(c\. )?\d\d\d\d\??-\d\d\d\d$/)) {
+    return true;
+  }
+
+  if (time.match(/^\d\d\d\d-$/)) {
+    return true;
+  }
+
+  if (time.match(/^(c\. )?\d{1,3}( BCE)?\??(-\d{1,3}\??)?( B?CE)?$/)) {
+    return true;
+  }
+
+  if (time.match(/^(c\. |\d\w\w\/|late )?\d{1,2}\w\w century( BCE)?$/)) {
+    return true;
+  }
+
+  return false;
 };
 
-const isSimilar = (q1, q2) => q1.toLowerCase().trim().slice(0, 30) === q2.toLowerCase().trim().slice(0, 30);
+const normalize = text => text.toLowerCase().replace(/[^a-z]/g,"").slice(0, 25);
 
-export const isValid = ({ authors, quotes }) => {
+const isSimilar = (q1, q2) => normalize(q1) === normalize(q2);
+
+export const isValid = ({ authors, quotes: unsortedQuotes }) => {
+  const quotes = sortBy(unsortedQuotes, q => q.quote);
   let valid = true;
 
   forOwn(authors, (bio, author) => {
     const [ occupation, time ] = bio;
 
-    if (time) {
-      valid = valid && isValidTime(time, author);
+    if (time && !isValidTime(time)) {
+      console.log("Not valid time format:", time, author);
+      valid = false;
+    }
+
+    if (author !== author.trim()) {
+      console.log("Not trimmed:", author);
+      valid = false;
+    }
+
+    if (occupation !== occupation.trim()) {
+      console.log("Not trimmed:", occupation);
+      valid = false;
     }
   });
 
   quotes.forEach(([quote, author, context], index) => {
     if (!authors[author] && author.indexOf(" proverb") === -1) {
-      console.log("No entry for " + author);
+      console.log("Missing author:" + author);
       valid = false;
     }
 
-    if (quotes.slice(index + 1).some(([q]) => isSimilar(q, quote))) {
-      console.log("Duplicate found", quote, author);
+    const nextQuote = quotes[index + 1];
+    if (nextQuote && isSimilar(quote, nextQuote[0])) {
+      console.log("Duplicate:", quote, nextQuote[0]);
+      valid = false;
+    }
+
+    if (quote !== quote.trim()) {
+      console.log("Not trimmed:", quote);
+      valid = false;
+    }
+
+    if (author !== author.trim()) {
+      console.log("Not trimmed:", author);
+      valid = false;
+    }
+
+    if (context && context !== context.trim()) {
+      console.log("Not trimmed:", context);
       valid = false;
     }
   });

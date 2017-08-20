@@ -2,10 +2,6 @@ import forOwn from "lodash/forOwn"
 import sortBy from "lodash/sortBy";
 
 const isValidTime = time => {
-  if (time.toLowerCase().indexOf("circa") > -1) {
-    return false;
-  }
-
   if (time.match(/^(c\. )?\d\d\d\d\??-\d\d\d\d$/)) {
     return true;
   }
@@ -25,6 +21,26 @@ const isValidTime = time => {
   return false;
 };
 
+const isValidOccupation = occ => {
+  if (occ.match(/^[\w-]*( \w*)*$/)) {
+    return true;
+  }
+
+  if (occ.match(/^\w+( \w+){0,5} and( [\w-"]+){1,6}$/)) {
+    return true;
+  }
+
+  if (occ.match(/^\w+( \w+){0,5}, [\w-]+( [\w-]+){0,3} and( [\w-']+){1,7}$/)) {
+    return true;
+  }
+
+  if (occ.match(/^[\w-]+( [\w-]+){0,3}(,( (?!and)\w+){1,11}){2,10}$/)) {
+    return true;
+  }
+
+  return false;
+};
+
 const normalize = text => text.toLowerCase().replace(/[^a-z]/g,"").slice(0, 25);
 
 const isSimilar = (q1, q2) => normalize(q1) === normalize(q2);
@@ -36,8 +52,13 @@ export const isValid = ({ authors, quotes: unsortedQuotes }) => {
   forOwn(authors, (bio, author) => {
     const [ occupation, time ] = bio;
 
-    if (time && !isValidTime(time)) {
+    if (!isValidTime(time)) {
       console.log("Not valid time format:", time, author);
+      valid = false;
+    }
+
+    if (!isValidOccupation(occupation)) {
+      console.log("Not valid occupation format:", occupation, author);
       valid = false;
     }
 

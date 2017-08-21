@@ -59,6 +59,7 @@ const StyledTime = styled.span`
   text-align: right;
   font-size: 13px;
   font-style: normal;
+  white-space: nowrap;
 `;
 
 class Quote extends Component {

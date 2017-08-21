@@ -77,14 +77,33 @@ class App extends Component {
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
+    window.addEventListener("keydown", this.handleKeyDown);
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("keydown", this.handleKeyDown);
   }
 
   handleResize = () => {
     this.setState({ windowWidth: window.innerWidth });
+  };
+
+  handleKeyDown = evt => {
+    const { currentIndex } = this.state;
+    switch (evt.code) {
+      case "ArrowRight":
+      case "Space":
+        this.animateTo("next", { easing: cubicInOut });
+        break;
+      case "ArrowLeft":
+        if (currentIndex !== 0) {
+          this.animateTo("previous", { easing: cubicInOut });
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   handleClick = evt => {

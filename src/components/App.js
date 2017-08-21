@@ -8,21 +8,17 @@ const TAP_TIME_THRESHOLD = 300;
 const TAP_DISTANCE_THRESHOLD = 3;
 const SWIPE_THRESHOLD = 30;
 const DRAG_PAST_CONSTANT = 0.2;
+const MAX_PANE_WIDTH = 720;
 
 const Container = styled.div`
   align-items: center;
   flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   margin: 0 auto;
+  height: 100vh;
   box-sizing: border-box;
 `;
 
 const QuotePages = styled.div`
-  width: 300%;
   height: 100%;
   display: flex;
 `;
@@ -64,7 +60,7 @@ class App extends Component {
   state = {
     currentIndex: 0,
     lastIndexSeen: 0,
-    windowWidth: window.innerWidth,
+    paneWidth: Math.min(window.innerWidth, MAX_PANE_WIDTH),
     isTouching: false,
     isAnimating: false,
     touchStartTime: null,
@@ -86,7 +82,7 @@ class App extends Component {
   }
 
   handleResize = () => {
-    this.setState({ windowWidth: window.innerWidth });
+    this.setState({ paneWidth: Math.min(window.innerWidth, MAX_PANE_WIDTH) });
   };
 
   handleKeyDown = evt => {
@@ -94,9 +90,11 @@ class App extends Component {
     switch (evt.code) {
       case "ArrowRight":
       case "Space":
+        evt.preventDefault();
         this.animateTo("next", { easing: cubicInOut });
         break;
       case "ArrowLeft":
+        evt.preventDefault();
         if (currentIndex !== 0) {
           this.animateTo("previous", { easing: cubicInOut });
         }
@@ -171,15 +169,15 @@ class App extends Component {
       easing: cubicOut,
       ...opts
     };
-    const { windowWidth, touchStartX, touchX, currentIndex } = this.state;
+    const { paneWidth, touchStartX, touchX, currentIndex } = this.state;
     const atStart = currentIndex === 0;
     const start = atStart && touchX > touchStartX
-      ? -windowWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
-      : -windowWidth + touchX - touchStartX;
+      ? -paneWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
+      : -paneWidth + touchX - touchStartX;
     const end =
       destination === "next"
-        ? -2 * windowWidth
-        : destination === "previous" ? 0 : -windowWidth;
+        ? -2 * paneWidth
+        : destination === "previous" ? 0 : -paneWidth;
 
     this.setState({
       isAnimating: true,
@@ -245,7 +243,7 @@ class App extends Component {
     const { quotes } = this.props;
     const {
       currentIndex,
-      windowWidth,
+      paneWidth,
       isTouching,
       touchStartX,
       touchX,
@@ -263,12 +261,14 @@ class App extends Component {
       ? animationOffset
       : isTouching
         ? atStart && touchX > touchStartX
-          ? -windowWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
-          : -windowWidth + touchX - touchStartX
-        : -windowWidth;
-    const displacement = Math.abs(offset + windowWidth) / windowWidth;
+          ? -paneWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
+          : -paneWidth + touchX - touchStartX
+        : -paneWidth;
+    const displacement = Math.abs(offset + paneWidth) / paneWidth;
     const currentOpacity = Math.min(1 - 1.5 * displacement, 1);
-    const otherOpacity = 1.5 * Math.max(0, displacement - 0.33334);
+    const direction = offset + paneWidth > 0 ? "previous" : "next";
+    const previousOpacity = direction === "previous" ? 1.5 * Math.max(0, displacement - 0.33334) : 0;
+    const nextOpacity = direction === "next" ? 1.5 * Math.max(0, displacement - 0.33334) : 0;
 
     return (
       <Container
@@ -276,10 +276,11 @@ class App extends Component {
         onTouchStart={this.handleTouchStart}
         onTouchMove={this.handleTouchMove}
         onTouchEnd={this.handleTouchEnd}
+        style={{ width: paneWidth }}
       >
-        <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)` }}>
+        <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)`, width: 3 * paneWidth }}>
           <QuotePage>
-            <QuoteContainer style={{ opacity: otherOpacity }}>
+            <QuoteContainer style={{ opacity: previousOpacity }}>
               {previousQuote &&
                 <Quote key={previousIndex} quote={previousQuote} seen />}
             </QuoteContainer>
@@ -295,7 +296,7 @@ class App extends Component {
             </QuoteContainer>
           </QuotePage>
           <QuotePage>
-            <QuoteContainer style={{ opacity: otherOpacity }}>
+            <QuoteContainer style={{ opacity: nextOpacity }}>
               {nextQuote &&
                 <Quote
                   key={nextIndex}

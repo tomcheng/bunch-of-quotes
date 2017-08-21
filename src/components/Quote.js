@@ -19,18 +19,18 @@ const StyledQuote = styled.div`
   font-family: "EB Garamond", serif;
   font-size: 24px;
   line-height: 30px;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 
   @media (min-width: 500px) {
     font-size: 26px;
     line-height: 36px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
   }
 
   @media (min-width: 600px) {
     font-size: 28px;
     line-height: 40px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
   }
 `;
 
@@ -38,11 +38,12 @@ const StyledName = styled.div`
   font-family: "Crimson Text", serif;
   text-align: right;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 20px;
+  margin-bottom: 3px;
 
   @media (min-width: 500px) {
     font-size: 17px;
-    line-height: 28px;
+    line-height: 24px;
   }
 `;
 
@@ -51,7 +52,7 @@ const StyledPosition = styled.div`
   text-align: right;
   font-style: italic;
   font-size: 12px;
-  line-height: 18px;
+  line-height: 16px;
 `;
 
 const StyledTime = styled.span`

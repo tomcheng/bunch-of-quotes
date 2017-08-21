@@ -247,6 +247,9 @@ class App extends Component {
           ? -windowWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
           : -windowWidth + touchX - touchStartX
         : -windowWidth;
+    const displacement = Math.abs(offset + windowWidth) / windowWidth;
+    const currentOpacity = Math.min(1 - 1.5 * displacement, 1);
+    const otherOpacity = 1.5 * Math.max(0, displacement - 0.33334);
 
     return (
       <Container
@@ -257,13 +260,13 @@ class App extends Component {
       >
         <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)` }}>
           <QuotePage>
-            <QuoteContainer>
+            <QuoteContainer style={{ opacity: otherOpacity }}>
               {previousQuote &&
                 <Quote key={previousIndex} quote={previousQuote} seen />}
             </QuoteContainer>
           </QuotePage>
           <QuotePage>
-            <QuoteContainer>
+            <QuoteContainer style={{ opacity: currentOpacity }}>
               <Quote
                 key={currentIndex}
                 quote={quotes[currentIndex]}
@@ -273,7 +276,7 @@ class App extends Component {
             </QuoteContainer>
           </QuotePage>
           <QuotePage>
-            <QuoteContainer>
+            <QuoteContainer style={{ opacity: otherOpacity }}>
               {nextQuote &&
                 <Quote
                   key={nextIndex}

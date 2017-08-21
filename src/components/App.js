@@ -14,8 +14,10 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   margin: 0 auto;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
+  overflow: hidden;
+  touch-action: none;
 `;
 
 const QuotePages = styled.div`
@@ -61,6 +63,7 @@ class App extends Component {
     currentIndex: 0,
     lastIndexSeen: 0,
     paneWidth: Math.min(window.innerWidth, MAX_PANE_WIDTH),
+    paneOffset: Math.round(0.5 * (window.innerWidth - Math.min(window.innerWidth, MAX_PANE_WIDTH))),
     isTouching: false,
     isAnimating: false,
     touchStartTime: null,
@@ -82,7 +85,10 @@ class App extends Component {
   }
 
   handleResize = () => {
-    this.setState({ paneWidth: Math.min(window.innerWidth, MAX_PANE_WIDTH) });
+    this.setState({
+      paneWidth: Math.min(window.innerWidth, MAX_PANE_WIDTH),
+      paneOffset: Math.round(0.5 * (window.innerWidth - Math.min(window.innerWidth, MAX_PANE_WIDTH))),
+    });
   };
 
   handleKeyDown = evt => {
@@ -115,6 +121,7 @@ class App extends Component {
   };
 
   handleTouchStart = evt => {
+    evt.preventDefault();
     this.setState({
       isTouching: true,
       touchStartX: evt.touches[0].clientX,
@@ -125,6 +132,7 @@ class App extends Component {
   };
 
   handleTouchMove = evt => {
+    evt.preventDefault();
     const newTouchX = evt.touches[0].clientX;
     this.setState(state => ({
       ...state,
@@ -249,7 +257,8 @@ class App extends Component {
       touchX,
       isAnimating,
       animationOffset,
-      lastIndexSeen
+      lastIndexSeen,
+      paneOffset
     } = this.state;
     const atStart = currentIndex === 0;
     const previousIndex = currentIndex - 1;
@@ -276,9 +285,8 @@ class App extends Component {
         onTouchStart={this.handleTouchStart}
         onTouchMove={this.handleTouchMove}
         onTouchEnd={this.handleTouchEnd}
-        style={{ width: paneWidth }}
       >
-        <QuotePages style={{ transform: `translate3d(${offset}px, 0, 0)`, width: 3 * paneWidth }}>
+        <QuotePages style={{ transform: `translate3d(${offset + paneOffset}px, 0, 0)`, width: 3 * paneWidth }}>
           <QuotePage>
             <QuoteContainer style={{ opacity: previousOpacity }}>
               {previousQuote &&

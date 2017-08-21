@@ -23,13 +23,13 @@ const StyledQuote = styled.div`
 
   @media (min-width: 500px) {
     font-size: 26px;
-    line-height: 36px;
+    line-height: 34px;
     margin-bottom: 20px;
   }
 
   @media (min-width: 600px) {
     font-size: 28px;
-    line-height: 40px;
+    line-height: 38px;
     margin-bottom: 22px;
   }
 `;

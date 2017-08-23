@@ -4570,9 +4570,7 @@ export const authors = {
 export default quotes.map(([quote, name, context]) => ({
   quote,
   context,
-  author: {
-    name,
-    position: authors[name] ? authors[name][0] : null,
-    time: authors[name] ? authors[name][1] : null
-  }
+  name,
+  occupation: authors[name] ? authors[name][0] : null,
+  time: authors[name] ? authors[name][1] : null
 }));

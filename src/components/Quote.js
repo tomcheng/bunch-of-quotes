@@ -47,7 +47,7 @@ const StyledName = styled.div`
   }
 `;
 
-const StyledPosition = styled.div`
+const StyledOccupation = styled.div`
   font-family: "Libre Baskerville", serif;
   text-align: right;
   font-style: italic;
@@ -67,11 +67,9 @@ class Quote extends Component {
   static propTypes = {
     quote: PropTypes.shape({
       quote: PropTypes.string.isRequired,
-      author: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        position: PropTypes.string,
-        time: PropTypes.string
-      }).isRequired
+      name: PropTypes.string.isRequired,
+      occupation: PropTypes.string,
+      time: PropTypes.string
     }).isRequired,
     seen: PropTypes.bool.isRequired,
     onCompleteAnimation: PropTypes.func
@@ -143,8 +141,7 @@ class Quote extends Component {
   };
 
   render() {
-    const { quote, context } = this.props.quote;
-    const { position, time, name } = this.props.quote.author;
+    const { quote, context, name, position, occupation, time } = this.props.quote;
     const { quoteOpacity, nameOpacity } = this.state;
     const formattedQuote = flow(
       convertDumbQuotes,
@@ -168,14 +165,14 @@ class Quote extends Component {
             {context && `, ${context}`}
           </StyledName>
           {(position || time) &&
-            <StyledPosition>
-              {removeWidows(position)}
-              {!!position && !!time && ", "}
+            <StyledOccupation>
+              {removeWidows(occupation)}
+              {!!occupation && !!time && ", "}
               {time &&
                 <StyledTime>
                   {formatTime(time)}
                 </StyledTime>}
-            </StyledPosition>}
+            </StyledOccupation>}
         </div>
       </div>
     );

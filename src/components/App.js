@@ -20,12 +20,12 @@ const Container = styled.div`
   touch-action: none;
 `;
 
-const QuotePages = styled.div`
+const Panes = styled.div`
   height: 100%;
   display: flex;
 `;
 
-const QuotePage = styled.div`
+const Pane = styled.div`
   padding: 15px 20px;
   width: 33.333333333%;
   height: 100%;
@@ -286,14 +286,14 @@ class App extends Component {
         onTouchMove={this.handleTouchMove}
         onTouchEnd={this.handleTouchEnd}
       >
-        <QuotePages style={{ transform: `translate3d(${offset + paneOffset}px, 0, 0)`, width: 3 * paneWidth }}>
-          <QuotePage>
+        <Panes style={{ transform: `translate3d(${offset + paneOffset}px, 0, 0)`, width: 3 * paneWidth }}>
+          <Pane>
             <QuoteContainer style={{ opacity: previousOpacity }}>
               {previousQuote &&
                 <Quote key={previousIndex} quote={previousQuote} seen />}
             </QuoteContainer>
-          </QuotePage>
-          <QuotePage>
+          </Pane>
+          <Pane>
             <QuoteContainer style={{ opacity: currentOpacity }}>
               <Quote
                 key={currentIndex}
@@ -302,8 +302,8 @@ class App extends Component {
                 onCompleteAnimation={this.handleCompleteQuoteAnimation}
               />
             </QuoteContainer>
-          </QuotePage>
-          <QuotePage>
+          </Pane>
+          <Pane>
             <QuoteContainer style={{ opacity: nextOpacity }}>
               {nextQuote &&
                 <Quote
@@ -312,8 +312,8 @@ class App extends Component {
                   seen={lastIndexSeen >= nextIndex}
                 />}
             </QuoteContainer>
-          </QuotePage>
-        </QuotePages>
+          </Pane>
+        </Panes>
       </Container>
     );
   }

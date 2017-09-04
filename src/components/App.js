@@ -28,43 +28,29 @@ class App extends Component {
 
   state = {
     currentIndex: 0,
-    lastIndexSeen: 0,
+    lastIndexSeen: 0
   };
 
   handleDraggedNext = () => {
     this.setState(
-      state => ({
-        ...state,
-        currentIndex:
-          state.currentIndex === this.props.quotes.length - 1
-            ? 0
-            : state.currentIndex + 1
-      }),
-      () => {
-        this.setState(state => ({
-          ...state,
-          lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
-        }));
-      }
+      state => ({ currentIndex: state.currentIndex + 1 }),
+      this.updateLastIndexSeen
     );
   };
 
   handleDraggedPrevious = () => {
+    this.setState(state => ({ currentIndex: state.currentIndex - 1 }));
+  };
+
+  updateLastIndexSeen = () => {
     this.setState(state => ({
-      ...state,
-      currentIndex:
-        state.currentIndex === 0
-          ? this.props.quotes.length - 1
-          : state.currentIndex - 1
+      lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
     }));
   };
 
   render() {
     const { quotes } = this.props;
-    const {
-      currentIndex,
-      lastIndexSeen,
-    } = this.state;
+    const { currentIndex, lastIndexSeen } = this.state;
 
     const previousIndex = currentIndex - 1;
     const previousQuote = quotes[previousIndex];

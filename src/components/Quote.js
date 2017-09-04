@@ -72,7 +72,6 @@ class Quote extends Component {
       time: PropTypes.string
     }).isRequired,
     seen: PropTypes.bool.isRequired,
-    onCompleteAnimation: PropTypes.func
   };
 
   constructor(props) {
@@ -82,12 +81,6 @@ class Quote extends Component {
       quoteOpacity: props.seen ? 1 : 0,
       nameOpacity: props.seen ? 1 : 0
     };
-  }
-
-  componentDidMount() {
-    if (this.props.seen && this.props.onCompleteAnimation) {
-      this.props.onCompleteAnimation();
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -118,11 +111,6 @@ class Quote extends Component {
       easing: cubicInOut,
       onUpdate: quoteOpacity => {
         this.setState(state => ({ ...state, quoteOpacity }));
-      },
-      onComplete: () => {
-        if (this.props.onCompleteAnimation) {
-          this.props.onCompleteAnimation();
-        }
       }
     });
 

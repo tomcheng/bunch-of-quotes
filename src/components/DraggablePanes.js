@@ -99,6 +99,10 @@ class DraggablePanes extends Component {
   handleClick = evt => {
     evt.preventDefault();
 
+    if (this.state.isAnimating) {
+      return;
+    }
+
     this.animateTo("next", { easing: cubicInOut });
   };
 

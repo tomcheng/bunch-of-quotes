@@ -41,7 +41,8 @@ class DraggablePanes extends Component {
     leftPane: PropTypes.node.isRequired,
     middlePane: PropTypes.node.isRequired,
     rightPane: PropTypes.node.isRequired,
-    onUpdateIndices: PropTypes.func.isRequired
+    onDraggedNext: PropTypes.func.isRequired,
+    onDraggedPrevious: PropTypes.func.isRequired
   };
 
   state = {
@@ -161,7 +162,7 @@ class DraggablePanes extends Component {
       ...opts
     };
     const { paneWidth, touchStartX, touchX } = this.state;
-    const { atStart, onUpdateIndices } = this.props;
+    const { atStart, onDraggedPrevious, onDraggedNext } = this.props;
     const start =
       atStart && touchX > touchStartX
         ? -paneWidth + DRAG_PAST_CONSTANT * (touchX - touchStartX)
@@ -190,7 +191,11 @@ class DraggablePanes extends Component {
           isAnimating: false,
           animationOffset: null
         });
-        onUpdateIndices(destination);
+        if (destination === "next") {
+          onDraggedNext();
+        } else if (destination === "previous") {
+          onDraggedPrevious();
+        }
       }
     });
   };

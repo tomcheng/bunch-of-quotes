@@ -31,34 +31,32 @@ class App extends Component {
     lastIndexSeen: 0,
   };
 
-  handleUpdateIndices = destination => {
-    if (destination === "next") {
-      this.setState(
-        state => ({
-          ...state,
-          currentIndex:
-            state.currentIndex === this.props.quotes.length - 1
-              ? 0
-              : state.currentIndex + 1
-        }),
-        () => {
-          this.setState(state => ({
-            ...state,
-            lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
-          }));
-        }
-      );
-    }
-
-    if (destination === "previous") {
-      this.setState(state => ({
+  handleDraggedNext = () => {
+    this.setState(
+      state => ({
         ...state,
         currentIndex:
-          state.currentIndex === 0
-            ? this.props.quotes.length - 1
-            : state.currentIndex - 1
-      }));
-    }
+          state.currentIndex === this.props.quotes.length - 1
+            ? 0
+            : state.currentIndex + 1
+      }),
+      () => {
+        this.setState(state => ({
+          ...state,
+          lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
+        }));
+      }
+    );
+  };
+
+  handleDraggedPrevious = () => {
+    this.setState(state => ({
+      ...state,
+      currentIndex:
+        state.currentIndex === 0
+          ? this.props.quotes.length - 1
+          : state.currentIndex - 1
+    }));
   };
 
   render() {
@@ -78,7 +76,8 @@ class App extends Component {
         atStart={currentIndex === 0}
         atEnd={currentIndex === quotes.length - 1}
         quotes={quotes}
-        onUpdateIndices={this.handleUpdateIndices}
+        onDraggedNext={this.handleDraggedNext}
+        onDraggedPrevious={this.handleDraggedPrevious}
         leftPane={
           <QuoteContainer>
             {previousQuote &&

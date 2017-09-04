@@ -110,7 +110,7 @@ class Quote extends Component {
       duration: 600,
       easing: cubicInOut,
       onUpdate: quoteOpacity => {
-        this.setState(state => ({ ...state, quoteOpacity }));
+        this.setState({ quoteOpacity });
       }
     });
 
@@ -122,7 +122,7 @@ class Quote extends Component {
         duration: 1200,
         easing: cubicInOut,
         onUpdate: nameOpacity => {
-          this.setState(state => ({ ...state, nameOpacity }));
+          this.setState({ nameOpacity });
         }
       });
     }, 200);

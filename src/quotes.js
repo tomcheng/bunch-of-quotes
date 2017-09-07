@@ -862,7 +862,7 @@ export const quotes = [
   ["I find bowing to people who occasionally wear crowns rather odd. I'll reserve my deference for achievement rather than bloodline.", "Robin Ince"],
   ["I find it difficult to feel responsible for the suffering of others. That's why I find war so hard to bear. It's the same with animals: I feel the less harm I do, the lighter my heart. I love a light heart. And when I know I'm causing suffering, I feel the heaviness of it. It's a physical pain. So it's self-interest that I don't want to cause harm.", "Alice Walker"],
   ["I find that principles have no real force except when one is well fed.", "Mark Twain"],
-  ["I found one day in school a boy of medium size ill-treating a smaller boy. I expostulated, but he replied: 'The bigs hit me, so I hit the babies; that's fair.' In these words he epitomized the history of the human race.", "Bertrand Russell"],
+  ["I found one day in school a boy of medium size ill-treating a smaller boy. I expostulated, but he replied: \"The bigs hit me, so I hit the babies; that's fair.\" In these words he epitomized the history of the human race.", "Bertrand Russell"],
   ["I frequently tramped eight or ten miles through the deepest snow to keep an appointment with a beech-tree, or a yellow birch, or an old acquaintance among the pines.", "Henry David Thoreau"],
   ["I had a lover's quarrel with the world.", "Robert Frost"],
   ["I had rather take my chance that some traitors will escape detection than spread abroad a spirit of general suspicion and distrust, which accepts rumor and gossip in place of undismayed and unintimidated inquiry.", "Learned Hand"],

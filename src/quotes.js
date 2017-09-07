@@ -2137,7 +2137,6 @@ export const quotes = [
   ["The fundamental delusion of humanity is to suppose that I am here and you are out there.", "Yasutani Roshi"],
   ["The further one grows spiritually, the more and more people one loves and the fewer and fewer people one likes.", "Gale D. Webbe"],
   ["The game of life is a game of boomerangs. Our thoughts, deeds and words return to us sooner or later with astounding accuracy.", "Florence Scovel Shinn"],
-  ["The game of life is the game of boomerangs. Our thoughts, deeds and words return to us sooner or later with astounding accuracy.", "Florence Scovel Shinn"],
   ["The gods of the valley are not the gods of the hills.", "Ethan Allen"],
   ["The government ought not to be invested with power to control the affections, any more than the consciences of citizens.", "Lydia Maria Child"],
   ["The great enemy of clear language is insincerity.", "George Orwell"],

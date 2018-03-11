@@ -11,17 +11,23 @@ const Container = styled.div`
 `;
 
 const StyledInput = styled.input`
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   display: block;
   width: 16px;
   height: 20px;
   padding: 0;
-  margin-right: 1px;
+  margin: 0 1px 2px;
   text-align: center;
+  font-size: 16px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
 const EncryptedLetter = styled.div`
-  opacity: 0.4;
+  opacity: 0.6;
+  font-size: 14px;
+  font-family: Courier, mono-space;
 `;
 
 const Letter = ({ encrypted, guess, onGuess }) => {

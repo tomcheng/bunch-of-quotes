@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import shuffle from "lodash/shuffle";
 import { alphabet } from "../utils/constants";
 import Word from "./Word";
@@ -23,6 +24,10 @@ const applyCipher = (text, cipher) =>
     .split("")
     .map(letter => cipher[letter] || letter)
     .join("");
+
+const Container = styled.div`
+  padding: 20px;
+`;
 
 class Cryptogram extends Component {
   static propTypes = {
@@ -59,7 +64,7 @@ class Cryptogram extends Component {
     const encryptedWords = encrypted.split(" ");
 
     return (
-      <div>
+      <Container>
         {encryptedWords.map((word, index) => (
           <Word
             key={index}
@@ -68,7 +73,7 @@ class Cryptogram extends Component {
             onGuess={this.handleGuess}
           />
         ))}
-      </div>
+      </Container>
     );
   }
 }

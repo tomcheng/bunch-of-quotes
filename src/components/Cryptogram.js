@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import shuffle from "lodash/shuffle";
+import { alphabet } from "../utils/constants";
 import Word from "./Word";
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const letters = alphabet.split("");
 
 const generateCipher = () => {
   const shuffledLetters = shuffle(letters);

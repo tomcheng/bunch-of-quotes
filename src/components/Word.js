@@ -3,7 +3,10 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import Letter from "./Letter";
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: inline-block;
+  margin-right: 16px;
+`;
 
 const Word = ({ encrypted, onGuess, guesses }) => (
   <Container>

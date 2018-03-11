@@ -39,7 +39,9 @@ class App extends Component {
   };
 
   handleDraggedPrevious = () => {
-    this.setState(state => ({ currentIndex: state.currentIndex - 1 }));
+    this.setState(state => ({
+      currentIndex: Math.max(state.currentIndex - 1, 0)
+    }));
   };
 
   updateLastIndexSeen = () => {
@@ -66,8 +68,9 @@ class App extends Component {
         onDraggedPrevious={this.handleDraggedPrevious}
         leftPane={
           <QuoteContainer>
-            {previousQuote &&
-              <Quote key={previousIndex} quote={previousQuote} seen />}
+            {previousQuote && (
+              <Quote key={previousIndex} quote={previousQuote} seen />
+            )}
           </QuoteContainer>
         }
         middlePane={
@@ -81,12 +84,13 @@ class App extends Component {
         }
         rightPane={
           <QuoteContainer>
-            {nextQuote &&
+            {nextQuote && (
               <Quote
                 key={nextIndex}
                 quote={nextQuote}
                 seen={lastIndexSeen >= nextIndex}
-              />}
+              />
+            )}
           </QuoteContainer>
         }
       />

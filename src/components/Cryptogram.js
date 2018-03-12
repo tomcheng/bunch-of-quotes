@@ -42,12 +42,17 @@ class Cryptogram extends Component {
 
   handleKeyDown = evt => {
     evt.preventDefault();
-    const { key } = evt;
+    const { key, shiftKey } = evt;
 
     const nextOpenId = this.getNextOpenId();
+    const getPreviousOpenId = this.getPreviousOpenId();
 
     if (key === "Tab") {
-      this.setState({ selectedLetterId: nextOpenId });
+      if (shiftKey) {
+        this.setState({ selectedLetterId: getPreviousOpenId });
+      } else {
+        this.setState({ selectedLetterId: nextOpenId });
+      }
       return;
     }
 
@@ -78,6 +83,19 @@ class Cryptogram extends Component {
     const nextOpenLetter = rearrangedLetters.find(letter => !guesses[letter.letter]);
 
     return nextOpenLetter ? nextOpenLetter.id : null;
+  };
+
+  getPreviousOpenId = () => {
+    const { text } = this.props;
+    const { selectedLetterId, cipher, guesses } = this.state;
+
+    const words = this.getWords(text, cipher);
+    const reversedLetters = flatMap(words, word => word.letters).reverse();
+    const selectedIndex = findIndex(reversedLetters, letter => letter.id === selectedLetterId);
+    const rearrangedLetters = reversedLetters.slice(selectedIndex + 1).concat(reversedLetters.slice(0, selectedIndex + 1));
+    const previousOpenLetter = rearrangedLetters.find(letter => !guesses[letter.letter]);
+
+    return previousOpenLetter ? previousOpenLetter.id : null;
   };
 
   getSelectedLetter = () => {

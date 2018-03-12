@@ -10,8 +10,8 @@ const Container = styled.div`
   padding-bottom: 10px;
 `;
 
-const StyledInput = styled.input`
-  background-color: transparent;
+const GuessedLetter = styled.div`
+  background-color: ${props => props.focused ? "rgba(255,0,0,0.1)" : "transparent"};
   border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   display: block;
@@ -20,17 +20,19 @@ const StyledInput = styled.input`
   padding: 0;
   margin: 0 1px 2px;
   text-align: center;
+  line-height: 20px;
   font-size: 16px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
 const EncryptedLetter = styled.div`
-  opacity: 0.6;
+  opacity: ${props => (props.letterSelected ? 1 : 0.6)};
+  color: ${props => (props.letterSelected ? "red" : "inherit")};
   font-size: 14px;
   font-family: Courier, mono-space;
 `;
 
-const Letter = ({ encrypted, guess, onGuess }) => {
+const Letter = ({ encrypted, guess, letterSelected, focused, onGuess, onSelect }) => {
   const isLetter = alphabet.indexOf(encrypted) > -1;
 
   if (!isLetter) {
@@ -38,26 +40,23 @@ const Letter = ({ encrypted, guess, onGuess }) => {
   }
 
   return (
-    <Container>
-      <StyledInput
-        type="text"
-        value={guess}
-        onChange={evt => {
-          const { value } = evt.target;
-          const guess =
-            value.length === 0 ? "" : value.split("")[value.length - 1];
-
-          onGuess({ encrypted, guess });
-        }}
-      />
-      <EncryptedLetter>{encrypted}</EncryptedLetter>
+    <Container
+      onClick={() => {
+        onSelect({ letter: encrypted });
+      }}
+    >
+      <GuessedLetter focused={focused}>{guess || " "}</GuessedLetter>
+      <EncryptedLetter letterSelected={letterSelected}>{encrypted}</EncryptedLetter>
     </Container>
   );
 };
 
 Letter.propTypes = {
   encrypted: PropTypes.string.isRequired,
+  focused: PropTypes.bool.isRequired,
+  letterSelected: PropTypes.bool.isRequired,
   onGuess: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
   guess: PropTypes.string
 };
 

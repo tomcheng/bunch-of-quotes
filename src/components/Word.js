@@ -4,11 +4,11 @@ import styled from "styled-components";
 import Letter from "./Letter";
 
 const Container = styled.div`
-  display: inline-block;
+  display: inline-flex;
   margin-right: 16px;
 `;
 
-const Word = ({ encrypted, onGuess, guesses }) => (
+const Word = ({ encrypted, guesses, selectedLetter, letterIndex, onGuess, onSelect }) => (
   <Container>
     {encrypted
       .split("")
@@ -18,6 +18,9 @@ const Word = ({ encrypted, onGuess, guesses }) => (
           encrypted={letter}
           guess={guesses[letter] || ""}
           onGuess={onGuess}
+          onSelect={arg => onSelect({ ...arg, letterIndex: index })}
+          focused={letterIndex === index}
+          letterSelected={selectedLetter === letter}
         />
       ))}
   </Container>
@@ -26,7 +29,10 @@ const Word = ({ encrypted, onGuess, guesses }) => (
 Word.propTypes = {
   encrypted: PropTypes.string.isRequired,
   guesses: PropTypes.objectOf(PropTypes.string).isRequired,
-  onGuess: PropTypes.func.isRequired
+  onGuess: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  letterIndex: PropTypes.number,
+  selectedLetter: PropTypes.string
 };
 
 export default Word;

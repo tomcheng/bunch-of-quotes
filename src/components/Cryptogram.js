@@ -27,6 +27,14 @@ const applyCipher = (text, cipher) =>
 
 const Container = styled.div`
   padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const HiddenInput = styled.input`
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
 `;
 
 class Cryptogram extends Component {
@@ -45,9 +53,14 @@ class Cryptogram extends Component {
     this.state = {
       cipher,
       encrypted,
-      guesses: {}
+      guesses: {},
+      selectedLetter: null,
+      letterIndex: null,
+      wordIndex: null
     };
   }
+
+  inputEl = null;
 
   handleGuess = ({ encrypted, guess }) => {
     this.setState(state => ({
@@ -59,8 +72,28 @@ class Cryptogram extends Component {
     }));
   };
 
+  handleSelectLetter = arg => {
+    const { letter, letterIndex, wordIndex } = arg;
+
+    this.setState({ selectedLetter: letter, letterIndex, wordIndex }, () => {
+      this.inputEl.focus();
+    });
+  };
+
+  handleChange = evt => {
+    const { value } = evt.target;
+
+    this.setState(state => ({
+      ...state,
+      guesses: {
+        ...state.guesses,
+        [state.selectedLetter]: value.toUpperCase()
+      }
+    }));
+  };
+
   render() {
-    const { encrypted, guesses } = this.state;
+    const { encrypted, guesses, selectedLetter, wordIndex, letterIndex } = this.state;
     const encryptedWords = encrypted.split(" ");
 
     return (
@@ -70,9 +103,22 @@ class Cryptogram extends Component {
             key={index}
             encrypted={word}
             guesses={guesses}
+            selectedLetter={selectedLetter}
+            letterIndex={wordIndex === index ? letterIndex : null}
             onGuess={this.handleGuess}
+            onSelect={arg => {
+              this.handleSelectLetter({ ...arg, wordIndex: index });
+            }}
           />
         ))}
+        <HiddenInput
+          innerRef={el => {
+            this.inputEl = el;
+          }}
+          type="text"
+          value=""
+          onChange={this.handleChange}
+        />
       </Container>
     );
   }

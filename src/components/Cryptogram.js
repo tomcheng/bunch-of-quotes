@@ -1,29 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import shuffle from "lodash/shuffle";
-import { alphabet } from "../utils/constants";
+import { generateCipher, applyCipher } from "../utils/cipher";
 import Word from "./Word";
-
-const letters = alphabet.split("");
-
-const generateCipher = () => {
-  const shuffledLetters = shuffle(letters);
-  return letters.reduce(
-    (cipher, letter, index) => ({
-      ...cipher,
-      [letter]: shuffledLetters[index]
-    }),
-    {}
-  );
-};
-
-const applyCipher = (text, cipher) =>
-  text
-    .toUpperCase()
-    .split("")
-    .map(letter => cipher[letter] || letter)
-    .join("");
 
 const Container = styled.div`
   padding: 20px;
@@ -35,42 +14,23 @@ const HiddenInput = styled.input`
   position: fixed;
   top: -1000px;
   left: -1000px;
+  opacity: 0;
 `;
 
 class Cryptogram extends Component {
   static propTypes = {
-    quote: PropTypes.shape({
-      quote: PropTypes.string.isRequired
-    }).isRequired
+    text: PropTypes.string.isRequired
   };
 
-  constructor(props) {
-    super();
-
-    const cipher = generateCipher();
-    const encrypted = applyCipher(props.quote.quote, cipher);
-
-    this.state = {
-      cipher,
-      encrypted,
-      guesses: {},
-      selectedLetter: null,
-      letterIndex: null,
-      wordIndex: null
-    };
-  }
+  state = {
+    cipher: generateCipher(),
+    guesses: {},
+    selectedLetter: null,
+    letterIndex: null,
+    wordIndex: null
+  };
 
   inputEl = null;
-
-  handleGuess = ({ encrypted, guess }) => {
-    this.setState(state => ({
-      ...state,
-      guesses: {
-        ...state.guesses,
-        [encrypted]: guess.toUpperCase()
-      }
-    }));
-  };
 
   handleSelectLetter = arg => {
     const { letter, letterIndex, wordIndex } = arg;
@@ -81,19 +41,27 @@ class Cryptogram extends Component {
   };
 
   handleChange = evt => {
-    const { value } = evt.target;
+    const guess = evt.target.value.toUpperCase();
 
     this.setState(state => ({
       ...state,
       guesses: {
         ...state.guesses,
-        [state.selectedLetter]: value.toUpperCase()
+        [state.selectedLetter]: guess
       }
     }));
   };
 
   render() {
-    const { encrypted, guesses, selectedLetter, wordIndex, letterIndex } = this.state;
+    const { text } = this.props;
+    const {
+      cipher,
+      guesses,
+      selectedLetter,
+      wordIndex,
+      letterIndex
+    } = this.state;
+    const encrypted = applyCipher(text, cipher);
     const encryptedWords = encrypted.split(" ");
 
     return (
@@ -105,7 +73,6 @@ class Cryptogram extends Component {
             guesses={guesses}
             selectedLetter={selectedLetter}
             letterIndex={wordIndex === index ? letterIndex : null}
-            onGuess={this.handleGuess}
             onSelect={arg => {
               this.handleSelectLetter({ ...arg, wordIndex: index });
             }}

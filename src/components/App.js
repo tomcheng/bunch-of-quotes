@@ -43,7 +43,7 @@ class App extends Component {
     const { currentIndex } = this.state;
 
     return (
-      <Cryptogram quote={quotes[currentIndex]} />
+      <Cryptogram text={quotes[currentIndex].quote} />
     );
   }
 }

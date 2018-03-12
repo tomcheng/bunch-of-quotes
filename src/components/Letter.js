@@ -55,7 +55,6 @@ Letter.propTypes = {
   encrypted: PropTypes.string.isRequired,
   focused: PropTypes.bool.isRequired,
   letterSelected: PropTypes.bool.isRequired,
-  onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   guess: PropTypes.string
 };

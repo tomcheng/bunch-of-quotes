@@ -8,7 +8,7 @@ const Container = styled.div`
   margin-right: 16px;
 `;
 
-const Word = ({ encrypted, guesses, selectedLetter, letterIndex, onGuess, onSelect }) => (
+const Word = ({ encrypted, guesses, selectedLetter, letterIndex, onSelect }) => (
   <Container>
     {encrypted
       .split("")
@@ -17,7 +17,6 @@ const Word = ({ encrypted, guesses, selectedLetter, letterIndex, onGuess, onSele
           key={index}
           encrypted={letter}
           guess={guesses[letter] || ""}
-          onGuess={onGuess}
           onSelect={arg => onSelect({ ...arg, letterIndex: index })}
           focused={letterIndex === index}
           letterSelected={selectedLetter === letter}
@@ -29,7 +28,6 @@ const Word = ({ encrypted, guesses, selectedLetter, letterIndex, onGuess, onSele
 Word.propTypes = {
   encrypted: PropTypes.string.isRequired,
   guesses: PropTypes.objectOf(PropTypes.string).isRequired,
-  onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   letterIndex: PropTypes.number,
   selectedLetter: PropTypes.string

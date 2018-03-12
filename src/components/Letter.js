@@ -32,7 +32,7 @@ const EncryptedLetter = styled.div`
   font-family: Courier, mono-space;
 `;
 
-const Letter = ({ encrypted, guess, letterSelected, focused, onGuess, onSelect }) => {
+const Letter = ({ encrypted, guess, letterSelected, focused, onSelect }) => {
   const isLetter = alphabet.indexOf(encrypted) > -1;
 
   if (!isLetter) {
@@ -40,11 +40,7 @@ const Letter = ({ encrypted, guess, letterSelected, focused, onGuess, onSelect }
   }
 
   return (
-    <Container
-      onClick={() => {
-        onSelect({ letter: encrypted });
-      }}
-    >
+    <Container onClick={onSelect}>
       <GuessedLetter focused={focused}>{guess || " "}</GuessedLetter>
       <EncryptedLetter letterSelected={letterSelected}>{encrypted}</EncryptedLetter>
     </Container>

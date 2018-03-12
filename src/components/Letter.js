@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { alphabet } from "../utils/constants";
 
 const Container = styled.div`
   display: inline-flex;
@@ -32,9 +31,7 @@ const EncryptedLetter = styled.div`
   font-family: Courier, mono-space;
 `;
 
-const Letter = ({ encrypted, guess, letterSelected, focused, onSelect }) => {
-  const isLetter = alphabet.indexOf(encrypted) > -1;
-
+const Letter = ({ encrypted, guess, letterSelected, isLetter, focused, onSelect }) => {
   if (!isLetter) {
     return <span>{encrypted}</span>;
   }
@@ -50,6 +47,7 @@ const Letter = ({ encrypted, guess, letterSelected, focused, onSelect }) => {
 Letter.propTypes = {
   encrypted: PropTypes.string.isRequired,
   focused: PropTypes.bool.isRequired,
+  isLetter: PropTypes.bool.isRequired,
   letterSelected: PropTypes.bool.isRequired,
   onSelect: PropTypes.func.isRequired,
   guess: PropTypes.string

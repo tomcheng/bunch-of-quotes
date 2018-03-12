@@ -10,9 +10,10 @@ const Container = styled.div`
 
 const Word = ({ letters, onSelect }) => (
   <Container>
-    {letters.map(({ id, letter, guess, letterSelected, focused }) => (
+    {letters.map(({ id, letter, guess, letterSelected, focused, isLetter }) => (
       <Letter
         key={id}
+        isLetter={isLetter}
         encrypted={letter}
         guess={guess}
         onSelect={() => onSelect({ id })}
@@ -26,11 +27,12 @@ const Word = ({ letters, onSelect }) => (
 Word.propTypes = {
   letters: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      isLetter: PropTypes.bool.isRequired,
       letter: PropTypes.string.isRequired,
       guess: PropTypes.string.isRequired,
       letterSelected: PropTypes.bool.isRequired,
-      focused: PropTypes.bool.isRequired
+      focused: PropTypes.bool.isRequired,
+      id: PropTypes.number
     })
   ).isRequired,
   onSelect: PropTypes.func.isRequired

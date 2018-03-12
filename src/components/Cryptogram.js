@@ -34,10 +34,15 @@ class Cryptogram extends Component {
     this.words = applyCipher(props.text, this.cipher)
       .split(" ")
       .map(word => ({
-        letters: word.split("").map(letter => ({
-          id: letterId++,
-          letter
-        }))
+        letters: word.split("").map(letter => {
+          const isLetter = alphabet.indexOf(letter) > -1;
+
+          return {
+            id: isLetter ? letterId++ : null,
+            letter,
+            isLetter
+          };
+        })
       }));
 
     this.inputEl = null;
@@ -90,7 +95,7 @@ class Cryptogram extends Component {
   getNextOpenId = () => {
     const { selectedLetterId, guesses } = this.state;
 
-    const letters = flatMap(this.words, word => word.letters);
+    const letters = flatMap(this.words, word => word.letters).filter(letter => letter.isLetter);
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedLetterId
@@ -108,7 +113,7 @@ class Cryptogram extends Component {
   getPreviousOpenId = () => {
     const { selectedLetterId, guesses } = this.state;
 
-    const reversedLetters = flatMap(this.words, word => word.letters).reverse();
+    const reversedLetters = flatMap(this.words, word => word.letters).filter(letter => letter.isLetter).reverse();
     const selectedIndex = findIndex(
       reversedLetters,
       letter => letter.id === selectedLetterId

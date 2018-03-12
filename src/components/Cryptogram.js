@@ -33,46 +33,59 @@ class Cryptogram extends Component {
   inputEl = null;
 
   handleSelectLetter = arg => {
-    const { letter, letterIndex, wordIndex } = arg;
+    const { letterIndex, wordIndex } = arg;
 
-    this.setState({ selectedLetter: letter, letterIndex, wordIndex }, () => {
+    this.setState({ letterIndex, wordIndex }, () => {
       this.inputEl.focus();
     });
   };
 
   handleChange = evt => {
     const guess = evt.target.value.toUpperCase();
+    const selectedLetter = this.getSelectedLetter();
 
     this.setState(state => ({
       ...state,
       guesses: {
         ...state.guesses,
-        [state.selectedLetter]: guess
+        [selectedLetter]: guess
       }
     }));
   };
 
-  render() {
+  getSelectedLetter = () => {
     const { text } = this.props;
-    const {
-      cipher,
-      guesses,
-      selectedLetter,
-      wordIndex,
-      letterIndex
-    } = this.state;
-    const encrypted = applyCipher(text, cipher);
-    const encryptedWords = encrypted.split(" ");
+    const { cipher, wordIndex, letterIndex } = this.state;
+
+    const words = applyCipher(text, cipher).split(" ");
+
+    return wordIndex !== null && letterIndex !== null ? words[wordIndex].charAt(letterIndex) : null;
+  };
+
+  getWords = () => {
+    const { text } = this.props;
+    const { cipher, guesses, wordIndex, letterIndex } = this.state;
+    const selectedLetter = this.getSelectedLetter();
+
+    return applyCipher(text, cipher).split(" ").map((word, wIndex) => ({
+      letters: word.split("").map((letter, lIndex) => ({
+        letter,
+        guess: guesses[letter] || "",
+        letterSelected: letter === selectedLetter,
+        focused: wIndex === wordIndex && lIndex === letterIndex
+      }))
+    }));
+  };
+
+  render() {
+    const words = this.getWords();
 
     return (
       <Container>
-        {encryptedWords.map((word, index) => (
+        {words.map(({ letters }, index) => (
           <Word
             key={index}
-            encrypted={word}
-            guesses={guesses}
-            selectedLetter={selectedLetter}
-            letterIndex={wordIndex === index ? letterIndex : null}
+            letters={letters}
             onSelect={arg => {
               this.handleSelectLetter({ ...arg, wordIndex: index });
             }}

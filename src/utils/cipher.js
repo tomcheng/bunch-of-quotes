@@ -1,5 +1,6 @@
 import shuffle from "lodash/shuffle";
-import { alphabet } from "../utils/constants";
+import { alphabet } from "./constants";
+import { simpleMemoize } from "./functionUtils";
 
 const letters = alphabet.split("");
 
@@ -14,9 +15,10 @@ export const generateCipher = () => {
   );
 };
 
-export const applyCipher = (text, cipher) =>
+export const applyCipher = simpleMemoize((text, cipher) =>
   text
     .toUpperCase()
     .split("")
     .map(letter => cipher[letter] || letter)
-    .join("");
+    .join("")
+);

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import flatMap from "lodash/flatMap";
 import findIndex from "lodash/findIndex";
 import { generateCipher, applyCipher } from "../utils/cipher";
-import { simpleMemoize } from "../utils/functionUtils";
 import { alphabet } from "../utils/constants";
 import Word from "./Word";
 
@@ -26,13 +25,28 @@ class Cryptogram extends Component {
     text: PropTypes.string.isRequired
   };
 
-  state = {
-    cipher: generateCipher(),
-    guesses: {},
-    selectedLetterId: null
-  };
+  constructor(props) {
+    super();
 
-  inputEl = null;
+    let letterId = 1;
+
+    this.cipher = generateCipher();
+    this.words = applyCipher(props.text, this.cipher)
+      .split(" ")
+      .map(word => ({
+        letters: word.split("").map(letter => ({
+          id: letterId++,
+          letter
+        }))
+      }));
+
+    this.inputEl = null;
+
+    this.state = {
+      guesses: {},
+      selectedLetterId: null
+    };
+  }
 
   handleSelectLetter = ({ id }) => {
     this.setState({ selectedLetterId: id }, () => {
@@ -68,42 +82,51 @@ class Cryptogram extends Component {
       guesses: {
         ...state.guesses,
         [selectedLetter]: guess
-      }
+      },
+      selectedLetterId: nextOpenId
     }));
   };
 
   getNextOpenId = () => {
-    const { text } = this.props;
-    const { selectedLetterId, cipher, guesses } = this.state;
+    const { selectedLetterId, guesses } = this.state;
 
-    const words = this.getWords(text, cipher);
-    const letters = flatMap(words, word => word.letters);
-    const selectedIndex = findIndex(letters, letter => letter.id === selectedLetterId);
-    const rearrangedLetters = letters.slice(selectedIndex + 1).concat(letters.slice(0, selectedIndex + 1));
-    const nextOpenLetter = rearrangedLetters.find(letter => !guesses[letter.letter]);
+    const letters = flatMap(this.words, word => word.letters);
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedLetterId
+    );
+    const rearrangedLetters = letters
+      .slice(selectedIndex + 1)
+      .concat(letters.slice(0, selectedIndex + 1));
+    const nextOpenLetter = rearrangedLetters.find(
+      letter => !guesses[letter.letter]
+    );
 
     return nextOpenLetter ? nextOpenLetter.id : null;
   };
 
   getPreviousOpenId = () => {
-    const { text } = this.props;
-    const { selectedLetterId, cipher, guesses } = this.state;
+    const { selectedLetterId, guesses } = this.state;
 
-    const words = this.getWords(text, cipher);
-    const reversedLetters = flatMap(words, word => word.letters).reverse();
-    const selectedIndex = findIndex(reversedLetters, letter => letter.id === selectedLetterId);
-    const rearrangedLetters = reversedLetters.slice(selectedIndex + 1).concat(reversedLetters.slice(0, selectedIndex + 1));
-    const previousOpenLetter = rearrangedLetters.find(letter => !guesses[letter.letter]);
+    const reversedLetters = flatMap(this.words, word => word.letters).reverse();
+    const selectedIndex = findIndex(
+      reversedLetters,
+      letter => letter.id === selectedLetterId
+    );
+    const rearrangedLetters = reversedLetters
+      .slice(selectedIndex + 1)
+      .concat(reversedLetters.slice(0, selectedIndex + 1));
+    const previousOpenLetter = rearrangedLetters.find(
+      letter => !guesses[letter.letter]
+    );
 
     return previousOpenLetter ? previousOpenLetter.id : null;
   };
 
   getSelectedLetter = () => {
-    const { text } = this.props;
-    const { selectedLetterId, cipher } = this.state;
+    const { selectedLetterId } = this.state;
 
-    const words = this.getWords(text, cipher);
-    const letters = flatMap(words, word => word.letters);
+    const letters = flatMap(this.words, word => word.letters);
     const selectedLetter = letters.find(
       letter => letter.id === selectedLetterId
     );
@@ -111,25 +134,11 @@ class Cryptogram extends Component {
     return selectedLetter ? selectedLetter.letter : null;
   };
 
-  getWords = simpleMemoize((text, cipher) => {
-    let letterId = 1;
-
-    return applyCipher(text, cipher)
-      .split(" ")
-      .map(word => ({
-        letters: word.split("").map(letter => ({
-          id: letterId++,
-          letter
-        }))
-      }));
-  });
-
   render() {
-    const { text } = this.props;
-    const { cipher, selectedLetterId, guesses } = this.state;
-    const words = this.getWords(text, cipher);
+    const { selectedLetterId, guesses } = this.state;
+
     const selectedLetter = this.getSelectedLetter();
-    const wordsWithState = words.map(word => ({
+    const wordsWithState = this.words.map(word => ({
       ...word,
       letters: word.letters.map(letter => ({
         ...letter,

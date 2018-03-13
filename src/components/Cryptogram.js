@@ -53,14 +53,11 @@ class Cryptogram extends Component {
     evt.preventDefault();
     const { key, shiftKey } = evt;
 
-    const nextOpenId = this.getNextOpenId();
-    const getPreviousOpenId = this.getPreviousOpenId();
-
     if (key === "Tab") {
       if (shiftKey) {
-        this.setState({ selectedLetterId: getPreviousOpenId });
+        this.selectPreviousOpenId();
       } else {
-        this.setState({ selectedLetterId: nextOpenId });
+        this.selectNextOpenId();
       }
       return;
     }
@@ -72,21 +69,23 @@ class Cryptogram extends Component {
     const guess = evt.key.toUpperCase();
     const selectedLetter = this.getSelectedLetter();
 
-    this.setState(state => ({
-      ...state,
-      guesses: {
-        ...state.guesses,
-        [selectedLetter]: guess
-      },
-      selectedLetterId: nextOpenId
-    }));
+    this.setState(
+      state => ({
+        ...state,
+        guesses: {
+          ...state.guesses,
+          [selectedLetter]: guess
+        }
+      }),
+      this.selectNextOpenId
+    );
   };
 
   handleBlur = () => {
     this.setState({ selectedLetterId: null });
   };
 
-  getNextOpenId = () => {
+  selectNextOpenId = () => {
     const { selectedLetterId, guesses } = this.state;
 
     const letters = this.characters.filter(c => c.id !== null);
@@ -94,34 +93,34 @@ class Cryptogram extends Component {
       letters,
       letter => letter.id === selectedLetterId
     );
-    const rearrangedLetters = letters
+    const nextLetter = letters
       .slice(selectedIndex + 1)
-      .concat(letters.slice(0, selectedIndex + 1));
-    const nextOpenLetter = rearrangedLetters.find(
-      letter => !guesses[letter.letter]
-    );
+      .concat(letters.slice(0, selectedIndex + 1))
+      .find(letter => !guesses[letter.letter]);
 
-    return nextOpenLetter ? nextOpenLetter.id : null;
+    this.setState({
+      selectedLetterId: nextLetter ? nextLetter.id : null
+    });
   };
 
-  getPreviousOpenId = () => {
+  selectPreviousOpenId = () => {
     const { selectedLetterId, guesses } = this.state;
 
-    const reversedLetters = this.characters
+    const letters = this.characters
       .filter(c => c.id !== null)
       .reverse();
     const selectedIndex = findIndex(
-      reversedLetters,
+      letters,
       letter => letter.id === selectedLetterId
     );
-    const rearrangedLetters = reversedLetters
+    const previousLetter = letters
       .slice(selectedIndex + 1)
-      .concat(reversedLetters.slice(0, selectedIndex + 1));
-    const previousOpenLetter = rearrangedLetters.find(
-      letter => !guesses[letter.letter]
-    );
+      .concat(letters.slice(0, selectedIndex + 1))
+      .find(letter => !guesses[letter.letter]);
 
-    return previousOpenLetter ? previousOpenLetter.id : null;
+    this.setState({
+      selectedLetterId: previousLetter ? previousLetter.id : null
+    });
   };
 
   getSelectedLetter = () => {

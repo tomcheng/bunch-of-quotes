@@ -22,6 +22,30 @@ const HiddenInput = styled.input`
   opacity: 0;
 `;
 
+const Arrows = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  height: 30px;
+  align-items: stretch;
+`;
+
+const Arrow = styled.div`
+  flex: 1 1 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  &:not(:first-child) {
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 16px;
+`;
+
 class Cryptogram extends Component {
   static propTypes = {
     text: PropTypes.string.isRequired
@@ -47,21 +71,21 @@ class Cryptogram extends Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     window.addEventListener("resize", () => {
       this.handleResize();
     });
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     window.removeEventListener("resize", () => {
-      this.handleResize()
+      this.handleResize();
     });
   }
 
-  handleResize () {
+  handleResize() {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
-  };
+  }
 
   handleSelectLetter = ({ id }) => {
     this.setState({ selectedLetterId: id }, () => {
@@ -70,6 +94,12 @@ class Cryptogram extends Component {
   };
 
   handleKeyDown = evt => {
+    const { guesses, isMobile } = this.state;
+
+    if (isMobile) {
+      return;
+    }
+
     evt.preventDefault();
 
     const { key, shiftKey } = evt;
@@ -108,7 +138,7 @@ class Cryptogram extends Component {
     }
 
     const guess = evt.key.toUpperCase();
-    const prevLetter = findKey(this.state.guesses, l => l === guess);
+    const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
 
     this.setState(
@@ -124,8 +154,29 @@ class Cryptogram extends Component {
     );
   };
 
-  handleBlur = () => {
-    this.setState({ selectedLetterId: null });
+  handleChange = evt => {
+    const { guesses, isMobile } = this.state;
+
+    if (!isMobile) {
+      return;
+    }
+
+    const guess = evt.target.value.toUpperCase();
+    const selectedLetter = this.getSelectedLetter();
+    const prevLetter = findKey(guesses, l => l === guess);
+    const removals = prevLetter ? { [prevLetter]: null } : {};
+
+    this.setState(
+      state => ({
+        ...state,
+        guesses: {
+          ...state.guesses,
+          ...removals,
+          [selectedLetter]: guess
+        }
+      }),
+      this.selectNextLetter
+    );
   };
 
   selectNextLetter = () => {
@@ -137,12 +188,17 @@ class Cryptogram extends Component {
       letter => letter.id === selectedLetterId
     );
 
-    this.setState({
-      selectedLetterId: (selectedIndex === letters.length - 1
-        ? letters[0]
-        : letters[selectedIndex + 1]
-      ).id
-    });
+    this.setState(
+      {
+        selectedLetterId: (selectedIndex === letters.length - 1
+          ? letters[0]
+          : letters[selectedIndex + 1]
+        ).id
+      },
+      () => {
+        this.inputEl.focus();
+      }
+    );
   };
 
   selectPreviousLetter = () => {
@@ -154,12 +210,17 @@ class Cryptogram extends Component {
       letter => letter.id === selectedLetterId
     );
 
-    this.setState({
-      selectedLetterId: (selectedIndex === letters.length - 1
-        ? letters[0]
-        : letters[selectedIndex + 1]
-      ).id
-    });
+    this.setState(
+      {
+        selectedLetterId: (selectedIndex === letters.length - 1
+          ? letters[0]
+          : letters[selectedIndex + 1]
+        ).id
+      },
+      () => {
+        this.inputEl.focus();
+      }
+    );
   };
 
   selectNextOpenLetter = () => {
@@ -222,22 +283,29 @@ class Cryptogram extends Component {
     );
 
     return (
-      <Container>
-        <Letters
-          letters={lettersWithState}
-          onSelect={this.handleSelectLetter}
-        />
+      <div>
+        <Container>
+          <Letters
+            letters={lettersWithState}
+            onSelect={this.handleSelectLetter}
+          />
+        </Container>
         <HiddenInput
           innerRef={el => {
             this.inputEl = el;
           }}
           type="text"
           value=""
-          onKeyUp={isMobile ? this.handleKeyDown : null}
-          onKeyDown={isMobile ? null : this.handleKeyDown}
-          onBlur={this.handleBlur}
+          onChange={this.handleChange}
+          onKeyDown={this.handleKeyDown}
         />
-      </Container>
+        {isMobile && (
+          <Arrows>
+            <Arrow onClick={this.selectPreviousLetter}>←</Arrow>
+            <Arrow onClick={this.selectNextLetter}>→</Arrow>
+          </Arrows>
+        )}
+      </div>
     );
   }
 }

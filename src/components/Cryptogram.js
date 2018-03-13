@@ -74,12 +74,21 @@ class Cryptogram extends Component {
       return;
     }
 
+    const selectedLetter = this.getSelectedLetter();
+
+    if (key === "Backspace") {
+      this.setState(state => ({
+        ...state,
+        guesses: { ...state.guesses, [selectedLetter]: null }
+      }));
+      return;
+    }
+
     if (!alphabet.split("").includes(key.toUpperCase())) {
       return;
     }
 
     const guess = evt.key.toUpperCase();
-    const selectedLetter = this.getSelectedLetter();
     const prevLetter = findKey(this.state.guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
 

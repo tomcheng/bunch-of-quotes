@@ -300,7 +300,7 @@ class Cryptogram extends Component {
           onChange={this.handleChange}
           onKeyDown={this.handleKeyDown}
         />
-        {isMobile && (
+        {isMobile && !!selectedLetterId && (
           <Arrows>
             <Arrow onClick={this.selectPreviousLetter}>←</Arrow>
             <Arrow onClick={this.selectNextLetter}>→</Arrow>

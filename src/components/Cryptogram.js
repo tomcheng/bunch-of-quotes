@@ -7,6 +7,8 @@ import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Letters from "./Letters";
 
+const MOBILE_SIZE = 420;
+
 const Container = styled.div`
   padding: 20px;
   display: flex;
@@ -39,10 +41,27 @@ class Cryptogram extends Component {
     this.inputEl = null;
 
     this.state = {
+      isMobile: window.innerWidth < MOBILE_SIZE,
       guesses: {},
       selectedLetterId: null
     };
   }
+
+  componentDidMount () {
+    window.addEventListener("resize", () => {
+      this.handleResize();
+    });
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener("resize", () => {
+      this.handleResize()
+    });
+  }
+
+  handleResize () {
+    this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
+  };
 
   handleSelectLetter = ({ id }) => {
     this.setState({ selectedLetterId: id }, () => {
@@ -188,7 +207,7 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { selectedLetterId, guesses } = this.state;
+    const { selectedLetterId, guesses, isMobile } = this.state;
 
     const selectedLetter = this.getSelectedLetter();
     const lettersWithState = this.characters.map(
@@ -214,7 +233,8 @@ class Cryptogram extends Component {
           }}
           type="text"
           value=""
-          onKeyDown={this.handleKeyDown}
+          onKeyUp={isMobile ? this.handleKeyDown : null}
+          onKeyDown={isMobile ? null : this.handleKeyDown}
           onBlur={this.handleBlur}
         />
       </Container>

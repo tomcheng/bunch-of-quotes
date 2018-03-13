@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import flatMap from "lodash/flatMap";
 import findIndex from "lodash/findIndex";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
-import Word from "./Word";
+import Letters from "./Letters";
 
 const Container = styled.div`
   padding: 20px;
@@ -28,21 +27,12 @@ class Cryptogram extends Component {
   constructor(props) {
     super();
 
-    let letterId = 1;
-
     this.cipher = generateCipher();
-    this.words = applyCipher(props.text, this.cipher)
-      .split(" ")
-      .map(word => ({
-        letters: word.split("").map(letter => {
-          const isLetter = alphabet.indexOf(letter) > -1;
-
-          return {
-            id: isLetter ? letterId++ : null,
-            letter,
-            isLetter
-          };
-        })
+    this.characters = applyCipher(props.text, this.cipher)
+      .split("")
+      .map((letter, index) => ({
+        id: alphabet.indexOf(letter) > -1 ? index + 1 : null,
+        letter
       }));
 
     this.inputEl = null;
@@ -92,10 +82,14 @@ class Cryptogram extends Component {
     }));
   };
 
+  handleBlur = () => {
+    this.setState({ selectedLetterId: null });
+  };
+
   getNextOpenId = () => {
     const { selectedLetterId, guesses } = this.state;
 
-    const letters = flatMap(this.words, word => word.letters).filter(letter => letter.isLetter);
+    const letters = this.characters.filter(c => c.id !== null);
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedLetterId
@@ -113,7 +107,9 @@ class Cryptogram extends Component {
   getPreviousOpenId = () => {
     const { selectedLetterId, guesses } = this.state;
 
-    const reversedLetters = flatMap(this.words, word => word.letters).filter(letter => letter.isLetter).reverse();
+    const reversedLetters = this.characters
+      .filter(c => c.id !== null)
+      .reverse();
     const selectedIndex = findIndex(
       reversedLetters,
       letter => letter.id === selectedLetterId
@@ -131,10 +127,7 @@ class Cryptogram extends Component {
   getSelectedLetter = () => {
     const { selectedLetterId } = this.state;
 
-    const letters = flatMap(this.words, word => word.letters);
-    const selectedLetter = letters.find(
-      letter => letter.id === selectedLetterId
-    );
+    const selectedLetter = this.characters.find(c => c.id === selectedLetterId);
 
     return selectedLetter ? selectedLetter.letter : null;
   };
@@ -143,25 +136,23 @@ class Cryptogram extends Component {
     const { selectedLetterId, guesses } = this.state;
 
     const selectedLetter = this.getSelectedLetter();
-    const wordsWithState = this.words.map(word => ({
-      ...word,
-      letters: word.letters.map(letter => ({
-        ...letter,
-        letterSelected: letter.letter === selectedLetter,
-        focused: letter.id === selectedLetterId,
-        guess: guesses[letter.letter] || ""
-      }))
-    }));
+    const lettersWithState = this.characters.map(
+      ({ letter, id, ...other }) => ({
+        ...other,
+        letter,
+        id,
+        letterSelected: letter === selectedLetter,
+        focused: id === selectedLetterId,
+        guess: guesses[letter] || ""
+      })
+    );
 
     return (
       <Container>
-        {wordsWithState.map(({ letters }, index) => (
-          <Word
-            key={index}
-            letters={letters}
-            onSelect={this.handleSelectLetter}
-          />
-        ))}
+        <Letters
+          letters={lettersWithState}
+          onSelect={this.handleSelectLetter}
+        />
         <HiddenInput
           innerRef={el => {
             this.inputEl = el;
@@ -169,6 +160,7 @@ class Cryptogram extends Component {
           type="text"
           value=""
           onKeyDown={this.handleKeyDown}
+          onBlur={this.handleBlur}
         />
       </Container>
     );

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import findIndex from "lodash/findIndex";
+import findKey from "lodash/findKey";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Letters from "./Letters";
@@ -70,7 +71,7 @@ class Cryptogram extends Component {
 
     if (key === "ArrowLeft") {
       this.selectPreviousLetter();
-      return
+      return;
     }
 
     if (!alphabet.split("").includes(key.toUpperCase())) {
@@ -79,12 +80,15 @@ class Cryptogram extends Component {
 
     const guess = evt.key.toUpperCase();
     const selectedLetter = this.getSelectedLetter();
+    const prevLetter = findKey(this.state.guesses, l => l === guess);
+    const removals = prevLetter ? { [prevLetter]: null } : {};
 
     this.setState(
       state => ({
         ...state,
         guesses: {
           ...state.guesses,
+          ...removals,
           [selectedLetter]: guess
         }
       }),
@@ -124,8 +128,8 @@ class Cryptogram extends Component {
 
     this.setState({
       selectedLetterId: (selectedIndex === letters.length - 1
-          ? letters[0]
-          : letters[selectedIndex + 1]
+        ? letters[0]
+        : letters[selectedIndex + 1]
       ).id
     });
   };

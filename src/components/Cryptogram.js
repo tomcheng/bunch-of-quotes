@@ -162,7 +162,7 @@ class Cryptogram extends Component {
       return;
     }
 
-    const guess = evt.target.value.toUpperCase();
+    const guess = (evt.target.value[0] || "").toUpperCase();
     const selectedLetter = this.getSelectedLetter();
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};

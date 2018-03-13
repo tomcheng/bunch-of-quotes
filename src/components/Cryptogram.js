@@ -51,15 +51,26 @@ class Cryptogram extends Component {
 
   handleKeyDown = evt => {
     evt.preventDefault();
+
     const { key, shiftKey } = evt;
 
     if (key === "Tab") {
       if (shiftKey) {
-        this.selectPreviousOpenId();
+        this.selectPreviousOpenLetter();
       } else {
-        this.selectNextOpenId();
+        this.selectNextOpenLetter();
       }
       return;
+    }
+
+    if (key === "ArrowRight") {
+      this.selectNextLetter();
+      return;
+    }
+
+    if (key === "ArrowLeft") {
+      this.selectPreviousLetter();
+      return
     }
 
     if (!alphabet.split("").includes(key.toUpperCase())) {
@@ -77,7 +88,7 @@ class Cryptogram extends Component {
           [selectedLetter]: guess
         }
       }),
-      this.selectNextOpenId
+      this.selectNextOpenLetter
     );
   };
 
@@ -85,7 +96,41 @@ class Cryptogram extends Component {
     this.setState({ selectedLetterId: null });
   };
 
-  selectNextOpenId = () => {
+  selectNextLetter = () => {
+    const { selectedLetterId } = this.state;
+
+    const letters = this.characters.filter(c => c.id !== null);
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedLetterId
+    );
+
+    this.setState({
+      selectedLetterId: (selectedIndex === letters.length - 1
+        ? letters[0]
+        : letters[selectedIndex + 1]
+      ).id
+    });
+  };
+
+  selectPreviousLetter = () => {
+    const { selectedLetterId } = this.state;
+
+    const letters = this.characters.filter(c => c.id !== null).reverse();
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedLetterId
+    );
+
+    this.setState({
+      selectedLetterId: (selectedIndex === letters.length - 1
+          ? letters[0]
+          : letters[selectedIndex + 1]
+      ).id
+    });
+  };
+
+  selectNextOpenLetter = () => {
     const { selectedLetterId, guesses } = this.state;
 
     const letters = this.characters.filter(c => c.id !== null);
@@ -103,12 +148,10 @@ class Cryptogram extends Component {
     });
   };
 
-  selectPreviousOpenId = () => {
+  selectPreviousOpenLetter = () => {
     const { selectedLetterId, guesses } = this.state;
 
-    const letters = this.characters
-      .filter(c => c.id !== null)
-      .reverse();
+    const letters = this.characters.filter(c => c.id !== null).reverse();
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedLetterId

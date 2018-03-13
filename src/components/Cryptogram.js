@@ -28,7 +28,7 @@ const Arrows = styled.div`
   left: 0;
   right: 0;
   display: flex;
-  height: 30px;
+  height: 48px;
   align-items: stretch;
 `;
 
@@ -38,12 +38,14 @@ const Arrow = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   &:not(:first-child) {
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 0;
   }
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
+  padding-bottom: 8px;
+  user-select: none;
 `;
 
 class Cryptogram extends Component {
@@ -96,13 +98,22 @@ class Cryptogram extends Component {
   handleKeyDown = evt => {
     const { guesses, isMobile } = this.state;
 
+    const { key, shiftKey } = evt;
+    const selectedLetter = this.getSelectedLetter();
+
+    if (key === "Backspace") {
+      this.setState(state => ({
+        ...state,
+        guesses: { ...state.guesses, [selectedLetter]: null }
+      }));
+      return;
+    }
+
     if (isMobile) {
       return;
     }
 
     evt.preventDefault();
-
-    const { key, shiftKey } = evt;
 
     if (key === "Tab") {
       if (shiftKey) {
@@ -120,16 +131,6 @@ class Cryptogram extends Component {
 
     if (key === "ArrowLeft") {
       this.selectPreviousLetter();
-      return;
-    }
-
-    const selectedLetter = this.getSelectedLetter();
-
-    if (key === "Backspace") {
-      this.setState(state => ({
-        ...state,
-        guesses: { ...state.guesses, [selectedLetter]: null }
-      }));
       return;
     }
 

@@ -105,7 +105,7 @@ class Cryptogram extends Component {
       if (id === null) {
         return;
       }
-      this.inputEl.style.top = this.selectedEl.offsetTop + "px";
+      this.inputEl.style.top = (this.selectedEl.offsetTop + 20) + "px";
       this.inputEl.focus();
     });
   };

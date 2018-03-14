@@ -119,7 +119,9 @@ class Cryptogram extends Component {
       this.setState(state => ({
         ...state,
         guesses: { ...state.guesses, [selectedLetter]: null }
-      }));
+      }), () => {
+        this.selectPreviousLetter();
+      });
       return;
     }
 

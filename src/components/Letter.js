@@ -10,7 +10,7 @@ const Container = styled.div`
 `;
 
 const GuessedLetter = styled.input`
-  background-color: ${props => props.letterSelected ? "#eee" : "transparent"};
+  background-color: ${props => (props.letterSelected ? "#eee" : "transparent")};
   border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   display: block;
@@ -57,10 +57,11 @@ const Letter = ({
           letterRef({ el, id });
         }}
         letterSelected={letterSelected}
+        onFocus={evt => {
+          evt.target.select();
+        }}
       />
-      <EncryptedLetter>
-        {letter}
-      </EncryptedLetter>
+      <EncryptedLetter>{letter}</EncryptedLetter>
     </Container>
   );
 };

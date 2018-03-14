@@ -59,6 +59,9 @@ const Letter = ({
             onGuess({ letter, id, guess: "" });
           }
         }}
+        onSelect={evt => {
+          evt.preventDefault();
+        }}
         onChange={evt => {
           const guess = evt.target.value.slice(-1).toUpperCase();
           onGuess({ letter, id, guess });

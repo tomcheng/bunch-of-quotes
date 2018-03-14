@@ -14,36 +14,11 @@ class App extends Component {
     ).isRequired
   };
 
-  state = {
-    currentIndex: 0,
-    lastIndexSeen: 0
-  };
-
-  handleDraggedNext = () => {
-    this.setState(
-      state => ({ currentIndex: state.currentIndex + 1 }),
-      this.updateLastIndexSeen
-    );
-  };
-
-  handleDraggedPrevious = () => {
-    this.setState(state => ({
-      currentIndex: Math.max(state.currentIndex - 1, 0)
-    }));
-  };
-
-  updateLastIndexSeen = () => {
-    this.setState(state => ({
-      lastIndexSeen: Math.max(state.lastIndexSeen, state.currentIndex)
-    }));
-  };
-
   render() {
     const { quotes } = this.props;
-    const { currentIndex } = this.state;
 
     return (
-      <Cryptogram text={quotes[currentIndex].quote} />
+      <Cryptogram text={quotes[0].quote} />
     );
   }
 }

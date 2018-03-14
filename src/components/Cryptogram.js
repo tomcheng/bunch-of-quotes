@@ -10,10 +10,20 @@ import Letters from "./Letters";
 const MOBILE_SIZE = 420;
 
 const Container = styled.div`
-  padding: 20px;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const LettersContainer = styled.div`
+  position: relative;
+  flex-shrink: 1;
   display: flex;
   flex-wrap: wrap;
-  position: relative;
+  overflow: auto;
+  padding: 20px;
 `;
 
 const HiddenInput = styled.input`
@@ -26,10 +36,7 @@ const HiddenInput = styled.input`
 `;
 
 const Arrows = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   display: flex;
   height: 48px;
   align-items: stretch;
@@ -47,7 +54,6 @@ const Arrow = styled.div`
   }
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
-  padding-bottom: 8px;
   user-select: none;
 `;
 
@@ -279,15 +285,8 @@ class Cryptogram extends Component {
     );
 
     return (
-      <div>
-        <Container>
-          <Letters
-            letters={lettersWithState}
-            onSelect={this.selectLetter}
-            selectedRef={el => {
-              this.selectedEl = el;
-            }}
-          />
+      <Container>
+        <LettersContainer>
           <HiddenInput
             innerRef={el => {
               this.inputEl = el;
@@ -297,7 +296,14 @@ class Cryptogram extends Component {
             onChange={this.handleChange}
             onKeyDown={this.handleKeyDown}
           />
-        </Container>
+          <Letters
+            letters={lettersWithState}
+            onSelect={this.selectLetter}
+            selectedRef={el => {
+              this.selectedEl = el;
+            }}
+          />
+        </LettersContainer>
         {isMobile &&
           !!selectedLetterId && (
             <Arrows>
@@ -305,7 +311,7 @@ class Cryptogram extends Component {
               <Arrow onClick={this.selectNextLetter}>→</Arrow>
             </Arrows>
           )}
-      </div>
+      </Container>
     );
   }
 }

@@ -31,13 +31,13 @@ const EncryptedLetter = styled.div`
   font-family: Courier, mono-space;
 `;
 
-const Letter = ({ encrypted, guess, letterSelected, isLetter, focused, onSelect }) => {
+const Letter = ({ encrypted, guess, letterSelected, isLetter, focused, onSelect, innerRef }) => {
   if (!isLetter) {
     return <span>{encrypted}</span>;
   }
 
   return (
-    <Container onClick={onSelect}>
+    <Container onClick={onSelect} innerRef={innerRef}>
       <GuessedLetter focused={focused}>{guess || " "}</GuessedLetter>
       <EncryptedLetter letterSelected={letterSelected}>{encrypted}</EncryptedLetter>
     </Container>
@@ -50,7 +50,8 @@ Letter.propTypes = {
   isLetter: PropTypes.bool.isRequired,
   letterSelected: PropTypes.bool.isRequired,
   onSelect: PropTypes.func.isRequired,
-  guess: PropTypes.string
+  guess: PropTypes.string,
+  innerRef: PropTypes.func
 };
 
 export default Letter;

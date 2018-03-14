@@ -13,13 +13,16 @@ const Container = styled.div`
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
+  position: relative;
 `;
 
 const HiddenInput = styled.input`
-  position: fixed;
-  top: -1000px;
-  left: -1000px;
+  position: absolute;
+  top: 0;
+  left: 10px;
   opacity: 0;
+  width: 0;
+  pointer-events: none;
 `;
 
 const Arrows = styled.div`
@@ -64,7 +67,9 @@ class Cryptogram extends Component {
         letter
       }));
 
+    this.rootEl = document.getElementById("root");
     this.inputEl = null;
+    this.selectedEl = null;
 
     this.state = {
       isMobile: window.innerWidth < MOBILE_SIZE,
@@ -89,8 +94,12 @@ class Cryptogram extends Component {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   }
 
-  handleSelectLetter = ({ id }) => {
+  selectLetter = id => {
     this.setState({ selectedLetterId: id }, () => {
+      if (id === null) {
+        return;
+      }
+      this.inputEl.style.top = this.selectedEl.offsetTop + "px";
       this.inputEl.focus();
     });
   };
@@ -189,16 +198,11 @@ class Cryptogram extends Component {
       letter => letter.id === selectedLetterId
     );
 
-    this.setState(
-      {
-        selectedLetterId: (selectedIndex === letters.length - 1
-          ? letters[0]
-          : letters[selectedIndex + 1]
-        ).id
-      },
-      () => {
-        this.inputEl.focus();
-      }
+    this.selectLetter(
+      (selectedIndex === letters.length - 1
+        ? letters[0]
+        : letters[selectedIndex + 1]
+      ).id
     );
   };
 
@@ -211,16 +215,11 @@ class Cryptogram extends Component {
       letter => letter.id === selectedLetterId
     );
 
-    this.setState(
-      {
-        selectedLetterId: (selectedIndex === letters.length - 1
-          ? letters[0]
-          : letters[selectedIndex + 1]
-        ).id
-      },
-      () => {
-        this.inputEl.focus();
-      }
+    this.selectLetter(
+      (selectedIndex === letters.length - 1
+        ? letters[0]
+        : letters[selectedIndex + 1]
+      ).id
     );
   };
 
@@ -237,9 +236,7 @@ class Cryptogram extends Component {
       .concat(letters.slice(0, selectedIndex + 1))
       .find(letter => !guesses[letter.letter]);
 
-    this.setState({
-      selectedLetterId: nextLetter ? nextLetter.id : null
-    });
+    this.selectLetter(nextLetter ? nextLetter.id : null);
   };
 
   selectPreviousOpenLetter = () => {
@@ -255,9 +252,7 @@ class Cryptogram extends Component {
       .concat(letters.slice(0, selectedIndex + 1))
       .find(letter => !guesses[letter.letter]);
 
-    this.setState({
-      selectedLetterId: previousLetter ? previousLetter.id : null
-    });
+    this.selectLetter(previousLetter ? previousLetter.id : null);
   };
 
   getSelectedLetter = () => {
@@ -288,24 +283,28 @@ class Cryptogram extends Component {
         <Container>
           <Letters
             letters={lettersWithState}
-            onSelect={this.handleSelectLetter}
+            onSelect={this.selectLetter}
+            selectedRef={el => {
+              this.selectedEl = el;
+            }}
+          />
+          <HiddenInput
+            innerRef={el => {
+              this.inputEl = el;
+            }}
+            type="text"
+            value=""
+            onChange={this.handleChange}
+            onKeyDown={this.handleKeyDown}
           />
         </Container>
-        <HiddenInput
-          innerRef={el => {
-            this.inputEl = el;
-          }}
-          type="text"
-          value=""
-          onChange={this.handleChange}
-          onKeyDown={this.handleKeyDown}
-        />
-        {isMobile && !!selectedLetterId && (
-          <Arrows>
-            <Arrow onClick={this.selectPreviousLetter}>←</Arrow>
-            <Arrow onClick={this.selectNextLetter}>→</Arrow>
-          </Arrows>
-        )}
+        {isMobile &&
+          !!selectedLetterId && (
+            <Arrows>
+              <Arrow onClick={this.selectPreviousLetter}>←</Arrow>
+              <Arrow onClick={this.selectNextLetter}>→</Arrow>
+            </Arrows>
+          )}
       </div>
     );
   }

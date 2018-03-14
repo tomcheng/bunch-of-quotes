@@ -73,7 +73,6 @@ class Cryptogram extends Component {
         letter
       }));
 
-    this.rootEl = document.getElementById("root");
     this.inputEl = null;
     this.selectedEl = null;
 
@@ -105,7 +104,7 @@ class Cryptogram extends Component {
       if (id === null) {
         return;
       }
-      this.inputEl.style.top = (this.selectedEl.offsetTop + 20) + "px";
+      this.inputEl.style.top = this.selectedEl.offsetTop + 20 + "px";
       this.inputEl.focus();
     });
   };
@@ -307,8 +306,22 @@ class Cryptogram extends Component {
         {isMobile &&
           !!selectedLetterId && (
             <Arrows>
-              <Arrow onClick={this.selectPreviousLetter}>←</Arrow>
-              <Arrow onClick={this.selectNextLetter}>→</Arrow>
+              <Arrow
+                onClick={evt => {
+                  evt.preventDefault();
+                  this.selectPreviousLetter();
+                }}
+              >
+                ←
+              </Arrow>
+              <Arrow
+                onClick={evt => {
+                  evt.preventDefault();
+                  this.selectNextLetter();
+                }}
+              >
+                →
+              </Arrow>
             </Arrows>
           )}
       </Container>

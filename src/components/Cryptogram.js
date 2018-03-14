@@ -26,15 +26,6 @@ const LettersContainer = styled.div`
   padding: 20px;
 `;
 
-const HiddenInput = styled.input`
-  position: absolute;
-  top: 0;
-  left: 10px;
-  opacity: 0;
-  width: 0;
-  pointer-events: none;
-`;
-
 const Arrows = styled.div`
   flex-shrink: 0;
   display: flex;
@@ -73,8 +64,7 @@ class Cryptogram extends Component {
         letter
       }));
 
-    this.inputEl = null;
-    this.selectedEl = null;
+    this.letterEls = {};
 
     this.state = {
       isMobile: window.innerWidth < MOBILE_SIZE,
@@ -101,99 +91,33 @@ class Cryptogram extends Component {
 
   selectLetter = id => {
     this.setState({ selectedLetterId: id }, () => {
-      if (id === null) {
-        return;
-      }
-      this.inputEl.style.top = this.selectedEl.offsetTop + 20 + "px";
-      this.inputEl.focus();
+      this.letterEls[id].focus();
     });
   };
 
-  handleKeyDown = evt => {
-    const { guesses, isMobile } = this.state;
+  handleGuess = ({ id, letter, guess }) => {
+    const { guesses } = this.state;
 
-    const { key, shiftKey } = evt;
-    const selectedLetter = this.getSelectedLetter();
+    const prevLetter = findKey(guesses, l => l === guess);
+    const removals = prevLetter ? { [prevLetter]: null } : {};
 
-    if (key === "Backspace") {
-      this.setState(state => ({
+    this.setState(state => ({
         ...state,
-        guesses: { ...state.guesses, [selectedLetter]: null }
-      }), () => {
-        this.selectPreviousLetter();
-      });
-      return;
-    }
-
-    if (isMobile) {
-      return;
-    }
-
-    evt.preventDefault();
-
-    if (key === "Tab") {
-      if (shiftKey) {
-        this.selectPreviousOpenLetter();
-      } else {
-        this.selectNextOpenLetter();
+        selectedLetterId: id,
+        guesses: {
+          ...state.guesses,
+          ...removals,
+          [letter]: guess
+        }
+      }),
+      () => {
+        if (guess === "") {
+          this.selectPreviousLetter();
+        } else {
+          this.selectNextLetter();
+        }
       }
-      return;
-    }
-
-    if (key === "ArrowRight") {
-      this.selectNextLetter();
-      return;
-    }
-
-    if (key === "ArrowLeft") {
-      this.selectPreviousLetter();
-      return;
-    }
-
-    if (!alphabet.split("").includes(key.toUpperCase())) {
-      return;
-    }
-
-    const guess = evt.key.toUpperCase();
-    const prevLetter = findKey(guesses, l => l === guess);
-    const removals = prevLetter ? { [prevLetter]: null } : {};
-
-    this.setState(
-      state => ({
-        ...state,
-        guesses: {
-          ...state.guesses,
-          ...removals,
-          [selectedLetter]: guess
-        }
-      }),
-      this.selectNextOpenLetter
-    );
-  };
-
-  handleChange = evt => {
-    const { guesses, isMobile } = this.state;
-
-    if (!isMobile) {
-      return;
-    }
-
-    const guess = (evt.target.value[0] || "").toUpperCase();
-    const selectedLetter = this.getSelectedLetter();
-    const prevLetter = findKey(guesses, l => l === guess);
-    const removals = prevLetter ? { [prevLetter]: null } : {};
-
-    this.setState(
-      state => ({
-        ...state,
-        guesses: {
-          ...state.guesses,
-          ...removals,
-          [selectedLetter]: guess
-        }
-      }),
-      this.selectNextLetter
-    );
+    )
   };
 
   selectNextLetter = () => {
@@ -230,38 +154,6 @@ class Cryptogram extends Component {
     );
   };
 
-  selectNextOpenLetter = () => {
-    const { selectedLetterId, guesses } = this.state;
-
-    const letters = this.characters.filter(c => c.id !== null);
-    const selectedIndex = findIndex(
-      letters,
-      letter => letter.id === selectedLetterId
-    );
-    const nextLetter = letters
-      .slice(selectedIndex + 1)
-      .concat(letters.slice(0, selectedIndex + 1))
-      .find(letter => !guesses[letter.letter]);
-
-    this.selectLetter(nextLetter ? nextLetter.id : null);
-  };
-
-  selectPreviousOpenLetter = () => {
-    const { selectedLetterId, guesses } = this.state;
-
-    const letters = this.characters.filter(c => c.id !== null).reverse();
-    const selectedIndex = findIndex(
-      letters,
-      letter => letter.id === selectedLetterId
-    );
-    const previousLetter = letters
-      .slice(selectedIndex + 1)
-      .concat(letters.slice(0, selectedIndex + 1))
-      .find(letter => !guesses[letter.letter]);
-
-    this.selectLetter(previousLetter ? previousLetter.id : null);
-  };
-
   getSelectedLetter = () => {
     const { selectedLetterId } = this.state;
 
@@ -280,7 +172,6 @@ class Cryptogram extends Component {
         letter,
         id,
         letterSelected: letter === selectedLetter,
-        focused: id === selectedLetterId,
         guess: guesses[letter] || ""
       })
     );
@@ -288,20 +179,12 @@ class Cryptogram extends Component {
     return (
       <Container>
         <LettersContainer>
-          <HiddenInput
-            innerRef={el => {
-              this.inputEl = el;
-            }}
-            type="text"
-            value=""
-            onChange={this.handleChange}
-            onKeyDown={this.handleKeyDown}
-          />
-          <Letters
+        <Letters
             letters={lettersWithState}
             onSelect={this.selectLetter}
-            selectedRef={el => {
-              this.selectedEl = el;
+            onGuess={this.handleGuess}
+            letterRef={({ el, id }) => {
+              this.letterEls[id] = el;
             }}
           />
         </LettersContainer>

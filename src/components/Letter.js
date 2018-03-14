@@ -9,8 +9,8 @@ const Container = styled.div`
   padding-bottom: 10px;
 `;
 
-const GuessedLetter = styled.div`
-  background-color: ${props => props.focused ? "rgba(255,0,0,0.1)" : "transparent"};
+const GuessedLetter = styled.input`
+  background-color: ${props => props.letterSelected ? "#eee" : "transparent"};
   border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   display: block;
@@ -25,33 +25,55 @@ const GuessedLetter = styled.div`
 `;
 
 const EncryptedLetter = styled.div`
-  opacity: ${props => (props.letterSelected ? 1 : 0.6)};
-  color: ${props => (props.letterSelected ? "red" : "inherit")};
+  opacity: 0.6;
   font-size: 14px;
   font-family: Courier, mono-space;
 `;
 
-const Letter = ({ encrypted, guess, letterSelected, isLetter, focused, onSelect, innerRef }) => {
+const Letter = ({
+  id,
+  letter,
+  guess,
+  letterSelected,
+  isLetter,
+  focused,
+  onSelect,
+  onGuess,
+  letterRef
+}) => {
   if (!isLetter) {
-    return <span>{encrypted}</span>;
+    return <span>{letter}</span>;
   }
 
   return (
-    <Container onClick={onSelect} innerRef={innerRef}>
-      <GuessedLetter focused={focused}>{guess || " "}</GuessedLetter>
-      <EncryptedLetter letterSelected={letterSelected}>{encrypted}</EncryptedLetter>
+    <Container onClick={onSelect}>
+      <GuessedLetter
+        value={guess || ""}
+        onChange={evt => {
+          const guess = evt.target.value.slice(-1).toUpperCase();
+          onGuess({ letter, id, guess });
+        }}
+        innerRef={el => {
+          letterRef({ el, id });
+        }}
+        letterSelected={letterSelected}
+      />
+      <EncryptedLetter>
+        {letter}
+      </EncryptedLetter>
     </Container>
   );
 };
 
 Letter.propTypes = {
-  encrypted: PropTypes.string.isRequired,
-  focused: PropTypes.bool.isRequired,
+  letter: PropTypes.string.isRequired,
   isLetter: PropTypes.bool.isRequired,
+  letterRef: PropTypes.func.isRequired,
   letterSelected: PropTypes.bool.isRequired,
+  onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
-  guess: PropTypes.string,
-  innerRef: PropTypes.func
+  id: PropTypes.number,
+  guess: PropTypes.string
 };
 
 export default Letter;

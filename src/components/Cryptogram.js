@@ -156,27 +156,19 @@ class Cryptogram extends Component {
   render() {
     const { guesses, isMobile, selectedLetter } = this.state;
 
-    const lettersWithState = this.characters.map(
-      ({ letter, id, ...other }) => ({
-        ...other,
-        letter,
-        id,
-        letterSelected: letter === selectedLetter,
-        guess: guesses[letter] || ""
-      })
-    );
-
     return (
       <Container>
         <LettersContainer>
           <Letters
-            letters={lettersWithState}
-            onSelect={this.selectLetter}
-            onGuess={this.handleGuess}
-            onFocus={this.handleFocus}
+            letters={this.characters}
+            selectedLetter={selectedLetter}
+            guesses={guesses}
             letterRef={({ el, id }) => {
               this.letterEls[id] = el;
             }}
+            onFocus={this.handleFocus}
+            onGuess={this.handleGuess}
+            onSelect={this.selectLetter}
           />
         </LettersContainer>
         {isMobile && (

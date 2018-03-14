@@ -55,7 +55,7 @@ const Letter = ({
       <GuessedLetter
         value={guess || ""}
         onKeyDown={evt => {
-          if (evt.key === "Backspace") {
+          if (evt.key === "Backspace" && guess === "") {
             onGuess({ letter, id, guess: "" });
           }
         }}

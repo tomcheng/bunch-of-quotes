@@ -8,19 +8,19 @@ const Container = styled.div`
   margin-right: 16px;
 `;
 
-const Word = ({ letters, onSelect, onFocus, onGuess, letterRef }) => (
+const Word = ({ letters, selectedLetter, letterRef, guesses, onFocus, onGuess, onSelect }) => (
   <Container>
-    {letters.map(({ id, letter, guess, letterSelected }, index) => (
+    {letters.map(({ id, letter }, index) => (
       <Letter
         key={index}
         id={id}
         isLetter={id !== null}
         letter={letter}
-        guess={guess}
+        guess={guesses[letter] || ""}
         onSelect={onSelect}
         onGuess={onGuess}
         onFocus={onFocus}
-        letterSelected={letterSelected}
+        letterSelected={letter === selectedLetter}
         letterRef={letterRef}
       />
     ))}
@@ -28,18 +28,18 @@ const Word = ({ letters, onSelect, onFocus, onGuess, letterRef }) => (
 );
 
 Word.propTypes = {
+  guesses: PropTypes.objectOf(PropTypes.string).isRequired,
   letters: PropTypes.arrayOf(
     PropTypes.shape({
       letter: PropTypes.string.isRequired,
-      guess: PropTypes.string.isRequired,
-      letterSelected: PropTypes.bool.isRequired,
       id: PropTypes.number
     })
   ).isRequired,
   letterRef: PropTypes.func.isRequired,
   onFocus: PropTypes.func.isRequired,
   onGuess: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired
+  onSelect: PropTypes.func.isRequired,
+  selectedLetter: PropTypes.string
 };
 
 export default Word;

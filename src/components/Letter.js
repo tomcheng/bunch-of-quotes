@@ -38,6 +38,7 @@ const Letter = ({
   isLetter,
   focused,
   onSelect,
+  onFocus,
   onGuess,
   letterRef
 }) => {
@@ -46,9 +47,18 @@ const Letter = ({
   }
 
   return (
-    <Container onClick={onSelect}>
+    <Container
+      onClick={() => {
+        onSelect(id);
+      }}
+    >
       <GuessedLetter
         value={guess || ""}
+        onKeyDown={evt => {
+          if (evt.key === "Backspace") {
+            onGuess({ letter, id, guess: "" });
+          }
+        }}
         onChange={evt => {
           const guess = evt.target.value.slice(-1).toUpperCase();
           onGuess({ letter, id, guess });
@@ -59,6 +69,7 @@ const Letter = ({
         letterSelected={letterSelected}
         onFocus={evt => {
           evt.target.select();
+          onFocus(id);
         }}
       />
       <EncryptedLetter>{letter}</EncryptedLetter>
@@ -71,6 +82,7 @@ Letter.propTypes = {
   isLetter: PropTypes.bool.isRequired,
   letterRef: PropTypes.func.isRequired,
   letterSelected: PropTypes.bool.isRequired,
+  onFocus: PropTypes.func.isRequired,
   onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   id: PropTypes.number,

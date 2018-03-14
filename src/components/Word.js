@@ -8,7 +8,7 @@ const Container = styled.div`
   margin-right: 16px;
 `;
 
-const Word = ({ letters, onSelect, onGuess, letterRef }) => (
+const Word = ({ letters, onSelect, onFocus, onGuess, letterRef }) => (
   <Container>
     {letters.map(({ id, letter, guess, letterSelected }, index) => (
       <Letter
@@ -17,8 +17,9 @@ const Word = ({ letters, onSelect, onGuess, letterRef }) => (
         isLetter={id !== null}
         letter={letter}
         guess={guess}
-        onSelect={() => onSelect(id)}
+        onSelect={onSelect}
         onGuess={onGuess}
+        onFocus={onFocus}
         letterSelected={letterSelected}
         letterRef={letterRef}
       />
@@ -36,6 +37,7 @@ Word.propTypes = {
     })
   ).isRequired,
   letterRef: PropTypes.func.isRequired,
+  onFocus: PropTypes.func.isRequired,
   onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired
 };

@@ -16,7 +16,7 @@ const split = (arr, predicate) => {
   return newArr;
 };
 
-const Letters = ({ letters, onSelect, letterRef, onGuess }) => {
+const Letters = ({ letters, onSelect, letterRef, onFocus, onGuess }) => {
   const words = split(letters, l => l.letter === " ");
 
   return words.map((letters, index) => (
@@ -24,6 +24,7 @@ const Letters = ({ letters, onSelect, letterRef, onGuess }) => {
       key={index}
       letters={letters}
       onSelect={onSelect}
+      onFocus={onFocus}
       onGuess={onGuess}
       letterRef={letterRef}
     />
@@ -38,6 +39,7 @@ Letters.propTypes = {
     })
   ).isRequired,
   letterRef: PropTypes.func.isRequired,
+  onFocus: PropTypes.func.isRequired,
   onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired
 };

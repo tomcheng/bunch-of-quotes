@@ -69,7 +69,7 @@ class Cryptogram extends Component {
     this.state = {
       isMobile: window.innerWidth < MOBILE_SIZE,
       guesses: {},
-      selectedLetterId: null
+      selectedLetter: null
     };
   }
 
@@ -90,9 +90,12 @@ class Cryptogram extends Component {
   }
 
   selectLetter = id => {
-    this.setState({ selectedLetterId: id }, () => {
-      this.letterEls[id].focus();
-    });
+    this.letterEls[id].focus();
+  };
+
+  handleFocus = id => {
+    const selectedLetter = this.characters.find(c => c.id === id);
+    this.setState({ selectedLetter: selectedLetter && selectedLetter.letter });
   };
 
   handleGuess = ({ id, letter, guess }) => {
@@ -101,9 +104,9 @@ class Cryptogram extends Component {
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
 
-    this.setState(state => ({
+    this.setState(
+      state => ({
         ...state,
-        selectedLetterId: id,
         guesses: {
           ...state.guesses,
           ...removals,
@@ -112,21 +115,19 @@ class Cryptogram extends Component {
       }),
       () => {
         if (guess === "") {
-          this.selectPreviousLetter();
+          this.selectPreviousLetter({ id });
         } else {
-          this.selectNextLetter();
+          this.selectNextLetter({ id });
         }
       }
-    )
+    );
   };
 
-  selectNextLetter = () => {
-    const { selectedLetterId } = this.state;
-
+  selectNextLetter = ({ id }) => {
     const letters = this.characters.filter(c => c.id !== null);
     const selectedIndex = findIndex(
       letters,
-      letter => letter.id === selectedLetterId
+      letter => letter.id === id
     );
 
     this.selectLetter(
@@ -137,13 +138,11 @@ class Cryptogram extends Component {
     );
   };
 
-  selectPreviousLetter = () => {
-    const { selectedLetterId } = this.state;
-
+  selectPreviousLetter = ({ id }) => {
     const letters = this.characters.filter(c => c.id !== null).reverse();
     const selectedIndex = findIndex(
       letters,
-      letter => letter.id === selectedLetterId
+      letter => letter.id === id
     );
 
     this.selectLetter(
@@ -154,18 +153,9 @@ class Cryptogram extends Component {
     );
   };
 
-  getSelectedLetter = () => {
-    const { selectedLetterId } = this.state;
-
-    const selectedLetter = this.characters.find(c => c.id === selectedLetterId);
-
-    return selectedLetter ? selectedLetter.letter : null;
-  };
-
   render() {
-    const { selectedLetterId, guesses, isMobile } = this.state;
+    const { guesses, isMobile, selectedLetter } = this.state;
 
-    const selectedLetter = this.getSelectedLetter();
     const lettersWithState = this.characters.map(
       ({ letter, id, ...other }) => ({
         ...other,
@@ -179,36 +169,36 @@ class Cryptogram extends Component {
     return (
       <Container>
         <LettersContainer>
-        <Letters
+          <Letters
             letters={lettersWithState}
             onSelect={this.selectLetter}
             onGuess={this.handleGuess}
+            onFocus={this.handleFocus}
             letterRef={({ el, id }) => {
               this.letterEls[id] = el;
             }}
           />
         </LettersContainer>
-        {isMobile &&
-          !!selectedLetterId && (
-            <Arrows>
-              <Arrow
-                onClick={evt => {
-                  evt.preventDefault();
-                  this.selectPreviousLetter();
-                }}
-              >
-                ←
-              </Arrow>
-              <Arrow
-                onClick={evt => {
-                  evt.preventDefault();
-                  this.selectNextLetter();
-                }}
-              >
-                →
-              </Arrow>
-            </Arrows>
-          )}
+        {isMobile && (
+          <Arrows>
+            <Arrow
+              onClick={evt => {
+                evt.preventDefault();
+                this.selectPreviousLetter();
+              }}
+            >
+              ←
+            </Arrow>
+            <Arrow
+              onClick={evt => {
+                evt.preventDefault();
+                this.selectNextLetter();
+              }}
+            >
+              →
+            </Arrow>
+          </Arrows>
+        )}
       </Container>
     );
   }

@@ -22,6 +22,9 @@ const GuessedLetter = styled.input`
   line-height: 20px;
   font-size: 16px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  ::selection {
+    background-color: transparent;
+  }
 `;
 
 const EncryptedLetter = styled.div`
@@ -53,18 +56,29 @@ const Letter = ({
       }}
     >
       <GuessedLetter
-        value={guess || ""}
-        onKeyDown={evt => {
-          if (evt.key === "Backspace" && guess === "") {
-            onGuess({ letter, id, guess: "" });
-          }
-        }}
+        value={guess || " "}
+        autoCorrect="off"
+        autoCapitalize="off"
+        autoComplete="off"
+        spellcheck="false"
         onSelect={evt => {
           evt.preventDefault();
         }}
         onChange={evt => {
-          const guess = evt.target.value.slice(-1).toUpperCase();
-          onGuess({ letter, id, guess });
+          const firstLetters = evt.target.value.slice(0, 2).toUpperCase();
+          let newGuess;
+
+          if (firstLetters === "") {
+            newGuess = "";
+          } else if (firstLetters.length === 1) {
+            newGuess = firstLetters;
+          } else if (firstLetters.slice(0, 1) === guess) {
+            newGuess = firstLetters.slice(1);
+          } else {
+            newGuess = firstLetters.slice(0, 1);
+          }
+
+          onGuess({ letter, id, guess: newGuess });
         }}
         innerRef={el => {
           letterRef({ el, id });

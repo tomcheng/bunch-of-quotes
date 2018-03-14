@@ -16,7 +16,7 @@ const Word = ({ letters, selectedLetter, letterRef, guesses, onFocus, onGuess, o
         id={id}
         isLetter={id !== null}
         letter={letter}
-        guess={guesses[letter] || ""}
+        guess={guesses[letter] || " "}
         onSelect={onSelect}
         onGuess={onGuess}
         onFocus={onFocus}

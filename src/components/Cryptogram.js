@@ -69,7 +69,7 @@ class Cryptogram extends Component {
     this.state = {
       isMobile: window.innerWidth < MOBILE_SIZE,
       guesses: {},
-      selectedLetter: null
+      selectedId: null
     };
   }
 
@@ -94,8 +94,7 @@ class Cryptogram extends Component {
   };
 
   handleFocus = id => {
-    const selectedLetter = this.characters.find(c => c.id === id);
-    this.setState({ selectedLetter: selectedLetter && selectedLetter.letter });
+    this.setState({ selectedId: id });
   };
 
   handleGuess = ({ id, letter, guess }) => {
@@ -115,20 +114,18 @@ class Cryptogram extends Component {
       }),
       () => {
         if (guess === "") {
-          this.selectPreviousLetter({ id });
+          this.selectPreviousLetter();
         } else {
-          this.selectNextLetter({ id });
+          this.selectNextLetter();
         }
       }
     );
   };
 
-  selectNextLetter = ({ id }) => {
+  selectNextLetter = () => {
+    const { selectedId } = this.state;
     const letters = this.characters.filter(c => c.id !== null);
-    const selectedIndex = findIndex(
-      letters,
-      letter => letter.id === id
-    );
+    const selectedIndex = findIndex(letters, letter => letter.id === selectedId);
 
     this.selectLetter(
       (selectedIndex === letters.length - 1
@@ -138,12 +135,10 @@ class Cryptogram extends Component {
     );
   };
 
-  selectPreviousLetter = ({ id }) => {
+  selectPreviousLetter = () => {
+    const { selectedId } = this.state;
     const letters = this.characters.filter(c => c.id !== null).reverse();
-    const selectedIndex = findIndex(
-      letters,
-      letter => letter.id === id
-    );
+    const selectedIndex = findIndex(letters, letter => letter.id === selectedId);
 
     this.selectLetter(
       (selectedIndex === letters.length - 1
@@ -154,14 +149,15 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { guesses, isMobile, selectedLetter } = this.state;
+    const { guesses, isMobile, selectedId } = this.state;
+    const selectedLetter = this.characters.find(c => c.id === selectedId);
 
     return (
       <Container>
         <LettersContainer>
           <Letters
             letters={this.characters}
-            selectedLetter={selectedLetter}
+            selectedLetter={selectedLetter ? selectedLetter.letter : null}
             guesses={guesses}
             letterRef={({ el, id }) => {
               this.letterEls[id] = el;

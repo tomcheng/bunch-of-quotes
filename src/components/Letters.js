@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Word from "./Word";
+import styled from "styled-components";
+import Letter from "./Letter";
 
 const split = (arr, predicate) => {
   const newArr = [[]];
@@ -16,19 +17,30 @@ const split = (arr, predicate) => {
   return newArr;
 };
 
+const Word = styled.div`
+  display: inline-flex;
+  margin-right: 16px;
+`;
+
 const Letters = ({ letters, selectedId, selectedLetter, guesses, letterRef, onSelect }) => {
   const words = split(letters, l => l.letter === " ");
 
-  return words.map((letters, index) => (
-    <Word
-      key={index}
-      letters={letters}
-      selectedId={selectedId}
-      selectedLetter={selectedLetter}
-      guesses={guesses}
-      letterRef={letterRef}
-      onSelect={onSelect}
-    />
+  return words.map((letters, wordIndex) => (
+    <Word key={wordIndex}>
+      {letters.map(({ id, letter }, index) => (
+        <Letter
+          key={index}
+          id={id}
+          isSelected={id === selectedId}
+          isLetter={id !== null}
+          letter={letter}
+          guess={guesses[letter] || " "}
+          onSelect={onSelect}
+          letterSelected={letter === selectedLetter}
+          letterRef={letterRef}
+        />
+      ))}
+    </Word>
   ));
 };
 

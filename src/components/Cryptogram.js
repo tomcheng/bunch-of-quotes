@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
+import keys from "lodash/keys";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Letters from "./Letters";
@@ -48,7 +49,8 @@ class Cryptogram extends Component {
     this.state = {
       isMobile: window.innerWidth < MOBILE_SIZE,
       guesses: {},
-      selectedId: this.characters.filter(c => !!c.id)[0].id
+      selectedId: this.characters.filter(c => !!c.id)[0].id,
+      isWinner: false
     };
   }
 
@@ -68,6 +70,13 @@ class Cryptogram extends Component {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   }
 
+  checkWin = guesses =>
+    this.characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
+    keys(guesses).every(key => {
+      const guess = guesses[key];
+      return this.cipher[guess] === key;
+    });
+
   selectLetter = id => {
     this.setState({ selectedId: id });
   };
@@ -78,18 +87,14 @@ class Cryptogram extends Component {
     const letter = this.characters.find(c => c.id === selectedId).letter;
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
+    const newGuesses = { ...guesses, ...removals, [letter]: guess };
 
-    this.setState(
-      state => ({
-        ...state,
-        guesses: {
-          ...state.guesses,
-          ...removals,
-          [letter]: guess
-        }
-      }),
-      this.selectNextLetter
-    );
+    if (this.checkWin(newGuesses)) {
+      this.setState({ guesses: newGuesses, selectedId: null, isWinner: true });
+      return;
+    }
+
+    this.setState({ guesses: newGuesses }, this.selectNextLetter);
   };
 
   handleTapDelete = () => {
@@ -142,7 +147,7 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { guesses, isMobile, selectedId } = this.state;
+    const { guesses, isMobile, selectedId, isWinner } = this.state;
     const selectedLetter = this.characters.find(c => c.id === selectedId);
 
     return (
@@ -159,14 +164,15 @@ class Cryptogram extends Component {
             onSelect={this.selectLetter}
           />
         </LettersContainer>
-        {isMobile && (
-          <Keyboard
-            onTapPrevious={this.selectPreviousLetter}
-            onTapNext={this.selectNextLetter}
-            onTapLetter={this.handleTapLetter}
-            onTapDelete={this.handleTapDelete}
-          />
-        )}
+        {isMobile &&
+          !isWinner && (
+            <Keyboard
+              onTapPrevious={this.selectPreviousLetter}
+              onTapNext={this.selectNextLetter}
+              onTapLetter={this.handleTapLetter}
+              onTapDelete={this.handleTapDelete}
+            />
+          )}
       </Container>
     );
   }

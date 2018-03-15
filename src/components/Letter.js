@@ -1,34 +1,51 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const blink = keyframes`
+  0%, 100% {
+    background-color: #444;
+    color: #fff;
+  }
+  50% {
+    background-color: transparent;
+    color: #444;
+  }
+`;
 
 const Container = styled.div`
+  width: 16px;
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   padding-bottom: 10px;
+  margin: 0 1px;
+  color: #444;
+  user-select: none;
+  cursor: pointer;
 `;
 
 const GuessedLetter = styled.div`
-  background-color: ${props =>
-    props.isSelected ? "red" : props.letterSelected ? "#eee" : "transparent"};
+  background-color: ${props => (props.letterSelected ? "#eee" : "transparent")};
   border: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   display: block;
-  width: 16px;
   height: 20px;
   padding: 0;
-  margin: 0 1px 2px;
   text-align: center;
-  line-height: 20px;
+  line-height: 22px;
+  margin-bottom: 1px;
   font-size: 16px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  ${props =>
+    props.isSelected ? `animation: 1.1s ${blink} step-end infinite` : ""};
 `;
 
 const EncryptedLetter = styled.div`
-  opacity: 0.6;
+  border-top: 1px solid rgba(0, 0, 0, 0.8);
+  opacity: 0.8;
   font-size: 14px;
   font-family: Courier, mono-space;
+  text-align: center;
 `;
 
 const Letter = ({

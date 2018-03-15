@@ -41,7 +41,8 @@ const Attribution = styled.div`
   line-height: 20px;
   color: #444;
   opacity: ${props => (props.isWinner ? 1 : 0)};
-  transition: opacity 0.3s ease-in-out 1.0s;
+  transition: opacity 0.3s ease-in-out 1s;
+  user-select: ${props => (props.isWinner ? "auto" : "none")};
 `;
 
 const StyledOccupation = styled.div`

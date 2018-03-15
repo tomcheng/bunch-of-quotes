@@ -41,7 +41,7 @@ const GuessedLetter = styled.div`
 
 const EncryptedLetter = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.8);
-  opacity: ${props => props.isWinner ? 0.15 : 0.8};
+  opacity: ${props => props.isWinner ? 0.3 : 0.8};
   transition: opacity 0.8s ease-out;
   font-size: 14px;
   font-family: Courier, mono-space;

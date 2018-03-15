@@ -18,7 +18,7 @@ class App extends Component {
     const { quotes } = this.props;
 
     return (
-      <Cryptogram text={quotes[0].quote} />
+      <Cryptogram {...quotes[0]} />
     );
   }
 }

@@ -22,7 +22,7 @@ const Word = styled.div`
   margin-right: 16px;
 `;
 
-const Letters = ({ letters, selectedId, selectedLetter, guesses, letterRef, onSelect }) => {
+const Letters = ({ letters, selectedId, selectedLetter, guesses, letterRef, onSelect, isWinner }) => {
   const words = split(letters, l => l.letter === " ");
 
   return words.map((letters, wordIndex) => (
@@ -38,6 +38,7 @@ const Letters = ({ letters, selectedId, selectedLetter, guesses, letterRef, onSe
           onSelect={onSelect}
           letterSelected={letter === selectedLetter}
           letterRef={letterRef}
+          isWinner={isWinner}
         />
       ))}
     </Word>
@@ -46,6 +47,7 @@ const Letters = ({ letters, selectedId, selectedLetter, guesses, letterRef, onSe
 
 Letters.propTypes = {
   guesses: PropTypes.object.isRequired,
+  isWinner: PropTypes.bool.isRequired,
   letters: PropTypes.arrayOf(
     PropTypes.shape({
       letter: PropTypes.string.isRequired,

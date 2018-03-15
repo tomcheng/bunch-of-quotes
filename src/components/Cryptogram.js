@@ -4,12 +4,16 @@ import styled from "styled-components";
 import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
+import AnimateHeight from "react-animate-height-auto";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Letters from "./Letters";
 import Keyboard from "./Keyboard";
 
 const MOBILE_SIZE = 420;
+
+const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
+const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const Container = styled.div`
   height: 100%;
@@ -28,16 +32,41 @@ const LettersContainer = styled.div`
   padding: 20px;
 `;
 
+const Attribution = styled.div`
+  flex-basis: 100%;
+  margin-top: 15px;
+  text-align: right;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #444;
+  opacity: ${props => (props.isWinner ? 1 : 0)};
+  transition: opacity 0.3s ease-in-out 1.0s;
+`;
+
+const StyledOccupation = styled.div`
+  opacity: 0.6;
+  font-size: 13px;
+`;
+
+const StyledTime = styled.span`
+  white-space: nowrap;
+`;
+
 class Cryptogram extends Component {
   static propTypes = {
-    text: PropTypes.string.isRequired
+    quote: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    context: PropTypes.string,
+    occupation: PropTypes.string,
+    time: PropTypes.string
   };
 
   constructor(props) {
     super();
 
     this.cipher = generateCipher();
-    this.characters = applyCipher(props.text, this.cipher)
+    this.characters = applyCipher(props.quote, this.cipher)
       .split("")
       .map((letter, index) => ({
         id: alphabet.indexOf(letter) > -1 ? index + 1 : null,
@@ -147,6 +176,7 @@ class Cryptogram extends Component {
   };
 
   render() {
+    const { name, context, occupation, time } = this.props;
     const { guesses, isMobile, selectedId, isWinner } = this.state;
     const selectedLetter = this.characters.find(c => c.id === selectedId);
 
@@ -162,17 +192,33 @@ class Cryptogram extends Component {
               this.letterEls[id] = el;
             }}
             onSelect={this.selectLetter}
+            isWinner={isWinner}
           />
+          <Attribution isWinner={isWinner}>
+            <div>
+              {name}
+              {context && `, ${context}`}
+            </div>
+            {(occupation || time) && (
+              <StyledOccupation>
+                {removeWidows(occupation)}
+                {!!occupation && !!time && ", "}
+                {time && <StyledTime>{formatTime(time)}</StyledTime>}
+              </StyledOccupation>
+            )}
+          </Attribution>
         </LettersContainer>
-        {isMobile &&
-          !isWinner && (
+
+        {isMobile && (
+          <AnimateHeight isExpanded={!isWinner} duration={300}>
             <Keyboard
               onTapPrevious={this.selectPreviousLetter}
               onTapNext={this.selectNextLetter}
               onTapLetter={this.handleTapLetter}
               onTapDelete={this.handleTapDelete}
             />
-          )}
+          </AnimateHeight>
+        )}
       </Container>
     );
   }

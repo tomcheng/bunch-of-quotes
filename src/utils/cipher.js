@@ -2,11 +2,9 @@ import shuffle from "lodash/shuffle";
 import { alphabet } from "./constants";
 import { simpleMemoize } from "./functionUtils";
 
-const letters = alphabet.split("");
-
 export const generateCipher = () => {
-  const shuffledLetters = shuffle(letters);
-  return letters.reduce(
+  const shuffledLetters = shuffle(alphabet);
+  return alphabet.reduce(
     (cipher, letter, index) => ({
       ...cipher,
       [letter]: shuffledLetters[index]

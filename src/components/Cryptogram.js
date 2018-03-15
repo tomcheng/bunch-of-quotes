@@ -70,7 +70,7 @@ class Cryptogram extends Component {
     this.characters = applyCipher(props.quote, this.cipher)
       .split("")
       .map((letter, index) => ({
-        id: alphabet.indexOf(letter) > -1 ? index + 1 : null,
+        id: alphabet.includes(letter) ? index + 1 : null,
         letter
       }));
 
@@ -85,20 +85,30 @@ class Cryptogram extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", () => {
-      this.handleResize();
-    });
+    window.addEventListener("resize", this.handleResize);
+    window.addEventListener("keydown", this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", () => {
-      this.handleResize();
-    });
+    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  handleResize() {
+  handleResize = () => {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
-  }
+  };
+
+  handleKeyDown = evt => {
+    if (alphabet.includes(evt.key.toUpperCase())) {
+      this.handleTapLetter(evt.key.toUpperCase());
+    } else if (evt.key === "Backspace") {
+      this.handleTapDelete();
+    } else if (evt.key === "ArrowLeft") {
+      this.selectPreviousLetter();
+    } else if (evt.key === "ArrowRight") {
+      this.selectNextLetter();
+    }
+  };
 
   checkWin = guesses =>
     this.characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&

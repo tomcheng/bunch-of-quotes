@@ -9,8 +9,9 @@ const Container = styled.div`
   padding-bottom: 10px;
 `;
 
-const GuessedLetter = styled.input`
-  background-color: ${props => (props.letterSelected ? "#eee" : "transparent")};
+const GuessedLetter = styled.div`
+  background-color: ${props =>
+    props.isSelected ? "red" : props.letterSelected ? "#eee" : "transparent"};
   border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   display: block;
@@ -22,9 +23,6 @@ const GuessedLetter = styled.input`
   line-height: 20px;
   font-size: 16px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  ::selection {
-    background-color: transparent;
-  }
 `;
 
 const EncryptedLetter = styled.div`
@@ -37,12 +35,10 @@ const Letter = ({
   id,
   letter,
   guess,
+  isSelected,
   letterSelected,
   isLetter,
-  focused,
   onSelect,
-  onFocus,
-  onGuess,
   letterRef
 }) => {
   if (!isLetter) {
@@ -56,40 +52,14 @@ const Letter = ({
       }}
     >
       <GuessedLetter
-        value={guess || " "}
-        autoCorrect="off"
-        autoCapitalize="off"
-        autoComplete="off"
-        spellcheck="false"
-        onSelect={evt => {
-          evt.preventDefault();
-        }}
-        onChange={evt => {
-          const firstLetters = evt.target.value.slice(0, 2).toUpperCase();
-          let newGuess;
-
-          if (firstLetters === "") {
-            newGuess = "";
-          } else if (firstLetters.length === 1) {
-            newGuess = firstLetters;
-          } else if (firstLetters.slice(0, 1) === guess) {
-            newGuess = firstLetters.slice(1);
-          } else {
-            newGuess = firstLetters.slice(0, 1);
-          }
-
-          onGuess({ letter, id, guess: newGuess });
-        }}
         innerRef={el => {
           letterRef({ el, id });
         }}
+        isSelected={isSelected}
         letterSelected={letterSelected}
-        onFocus={evt => {
-          evt.target.selectionStart = 1;
-          evt.target.selectionEnd = 1;
-          onFocus(id);
-        }}
-      />
+      >
+        {guess}
+      </GuessedLetter>
       <EncryptedLetter>{letter}</EncryptedLetter>
     </Container>
   );
@@ -98,10 +68,9 @@ const Letter = ({
 Letter.propTypes = {
   letter: PropTypes.string.isRequired,
   isLetter: PropTypes.bool.isRequired,
+  isSelected: PropTypes.bool.isRequired,
   letterRef: PropTypes.func.isRequired,
   letterSelected: PropTypes.bool.isRequired,
-  onFocus: PropTypes.func.isRequired,
-  onGuess: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   id: PropTypes.number,
   guess: PropTypes.string

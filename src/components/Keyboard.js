@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const KEY_HEIGHT = 54;
@@ -59,7 +60,7 @@ const KeyRow = styled.div`
 
 const Key = styled.div`
   box-sizing: border-box;
-  background-color: #fafafa;
+  background-color: #fff;
   border-radius: 2px;
   flex: 0 0 ${props => props.keyWidthPercentage}%;
   height: ${KEY_HEIGHT}px;
@@ -67,43 +68,86 @@ const Key = styled.div`
   justify-content: center;
   align-items: center;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  user-select: none;
+  cursor: pointer;
+  &:active {
+    background-color: #eee;
+  }
 `;
 
 const ShortKey = styled(Key)`
   height: ${SHORT_KEY_HEIGHT}px;
 `;
 
-const Keyboard = () => (
+const Keyboard = ({ onTapPrevious, onTapNext, onTapLetter, onTapDelete }) => (
   <Container>
     <KeyRow>
-      <ShortKey keyWidthPercentage={ARROW_KEY_WIDTH_PERCENTAGE}>←</ShortKey>
-      <ShortKey keyWidthPercentage={ARROW_KEY_WIDTH_PERCENTAGE}>→</ShortKey>
+      <ShortKey
+        onClick={onTapPrevious}
+        keyWidthPercentage={ARROW_KEY_WIDTH_PERCENTAGE}
+      >
+        ←
+      </ShortKey>
+      <ShortKey
+        onClick={onTapNext}
+        keyWidthPercentage={ARROW_KEY_WIDTH_PERCENTAGE}
+      >
+        →
+      </ShortKey>
     </KeyRow>
     <KeyRow>
       {"QWERTYUIOP".split("").map(letter => (
-        <Key key={letter} keyWidthPercentage={TOP_KEY_WIDTH_PERCENTAGE}>
+        <Key
+          key={letter}
+          keyWidthPercentage={TOP_KEY_WIDTH_PERCENTAGE}
+          onClick={() => {
+            onTapLetter(letter);
+          }}
+        >
           {letter}
         </Key>
       ))}
     </KeyRow>
     <KeyRow style={{ padding: `0 ${MIDDLE_PADDING_PERCENTAGE}%` }}>
       {"ASDFGHJKL".split("").map(letter => (
-        <Key key={letter} keyWidthPercentage={MIDDLE_KEY_WIDTH_PERCENTAGE}>
+        <Key
+          key={letter}
+          keyWidthPercentage={MIDDLE_KEY_WIDTH_PERCENTAGE}
+          onClick={() => {
+            onTapLetter(letter);
+          }}
+        >
           {letter}
         </Key>
       ))}
     </KeyRow>
     <KeyRow style={{ paddingLeft: `${BOTTOM_PADDING_LEFT_PERCENTAGE}%` }}>
       {"ZXCVBNM".split("").map(letter => (
-        <Key key={letter} keyWidthPercentage={BOTTOM_KEY_WIDTH_PERCENTAGE}>
+        <Key
+          key={letter}
+          keyWidthPercentage={BOTTOM_KEY_WIDTH_PERCENTAGE}
+          onClick={() => {
+            onTapLetter(letter);
+          }}
+        >
           {letter}
         </Key>
       ))}
-      <Key keyWidthPercentage={DELETE_KEY_WIDTH_PERCENTAGE}>Delete</Key>
+      <Key
+        keyWidthPercentage={DELETE_KEY_WIDTH_PERCENTAGE}
+        onClick={onTapDelete}
+      >
+        Delete
+      </Key>
     </KeyRow>
   </Container>
 );
 
-Keyboard.propTypes = {};
+Keyboard.propTypes = {
+  onTapDelete: PropTypes.func.isRequired,
+  onTapLetter: PropTypes.func.isRequired,
+  onTapNext: PropTypes.func.isRequired,
+  onTapPrevious: PropTypes.func.isRequired
+};
 
 export default Keyboard;

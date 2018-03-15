@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import findIndex from "lodash/findIndex";
@@ -48,7 +48,7 @@ class Cryptogram extends Component {
     this.state = {
       isMobile: window.innerWidth < MOBILE_SIZE,
       guesses: {},
-      selectedId: null
+      selectedId: this.characters.filter(c => !!c.id)[0].id
     };
   }
 
@@ -69,16 +69,13 @@ class Cryptogram extends Component {
   }
 
   selectLetter = id => {
-    this.letterEls[id].focus();
-  };
-
-  handleFocus = id => {
     this.setState({ selectedId: id });
   };
 
-  handleGuess = ({ id, letter, guess }) => {
-    const { guesses } = this.state;
+  handleTapLetter = guess => {
+    const { guesses, selectedId } = this.state;
 
+    const letter = this.characters.find(c => c.id === selectedId).letter;
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
 
@@ -91,20 +88,34 @@ class Cryptogram extends Component {
           [letter]: guess
         }
       }),
-      () => {
-        if (guess === "") {
-          this.selectPreviousLetter();
-        } else {
-          this.selectNextLetter();
+      this.selectNextLetter
+    );
+  };
+
+  handleTapDelete = () => {
+    const { selectedId } = this.state;
+
+    const letter = this.characters.find(c => c.id === selectedId).letter;
+
+    this.setState(
+      state => ({
+        ...state,
+        guesses: {
+          ...state.guesses,
+          [letter]: null
         }
-      }
+      }),
+      this.selectPreviousLetter
     );
   };
 
   selectNextLetter = () => {
     const { selectedId } = this.state;
     const letters = this.characters.filter(c => c.id !== null);
-    const selectedIndex = findIndex(letters, letter => letter.id === selectedId);
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedId
+    );
 
     this.selectLetter(
       (selectedIndex === letters.length - 1
@@ -117,7 +128,10 @@ class Cryptogram extends Component {
   selectPreviousLetter = () => {
     const { selectedId } = this.state;
     const letters = this.characters.filter(c => c.id !== null).reverse();
-    const selectedIndex = findIndex(letters, letter => letter.id === selectedId);
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedId
+    );
 
     this.selectLetter(
       (selectedIndex === letters.length - 1
@@ -136,18 +150,22 @@ class Cryptogram extends Component {
         <LettersContainer>
           <Letters
             letters={this.characters}
+            selectedId={selectedId}
             selectedLetter={selectedLetter ? selectedLetter.letter : null}
             guesses={guesses}
             letterRef={({ el, id }) => {
               this.letterEls[id] = el;
             }}
-            onFocus={this.handleFocus}
-            onGuess={this.handleGuess}
             onSelect={this.selectLetter}
           />
         </LettersContainer>
         {isMobile && (
-          <Keyboard onTapPrevious={this.selectPreviousLetter} onTapNext={this.selectNextLetter}/>
+          <Keyboard
+            onTapPrevious={this.selectPreviousLetter}
+            onTapNext={this.selectNextLetter}
+            onTapLetter={this.handleTapLetter}
+            onTapDelete={this.handleTapDelete}
+          />
         )}
       </Container>
     );

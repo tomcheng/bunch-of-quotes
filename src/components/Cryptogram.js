@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import findIndex from "lodash/findIndex";
@@ -6,6 +6,7 @@ import findKey from "lodash/findKey";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Letters from "./Letters";
+import Keyboard from "./Keyboard";
 
 const MOBILE_SIZE = 420;
 
@@ -24,28 +25,6 @@ const LettersContainer = styled.div`
   flex-wrap: wrap;
   overflow: auto;
   padding: 20px;
-`;
-
-const Arrows = styled.div`
-  flex-shrink: 0;
-  display: flex;
-  height: 48px;
-  align-items: stretch;
-`;
-
-const Arrow = styled.div`
-  flex: 1 1 50%;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  &:not(:first-child) {
-    border-left: 0;
-  }
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  font-size: 16px;
-  user-select: none;
 `;
 
 class Cryptogram extends Component {
@@ -168,24 +147,7 @@ class Cryptogram extends Component {
           />
         </LettersContainer>
         {isMobile && (
-          <Arrows>
-            <Arrow
-              onClick={evt => {
-                evt.preventDefault();
-                this.selectPreviousLetter();
-              }}
-            >
-              ←
-            </Arrow>
-            <Arrow
-              onClick={evt => {
-                evt.preventDefault();
-                this.selectNextLetter();
-              }}
-            >
-              →
-            </Arrow>
-          </Arrows>
+          <Keyboard onTapPrevious={this.selectPreviousLetter} onTapNext={this.selectNextLetter}/>
         )}
       </Container>
     );

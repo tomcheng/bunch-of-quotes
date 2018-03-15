@@ -85,7 +85,8 @@ const Letter = ({
         }}
         letterSelected={letterSelected}
         onFocus={evt => {
-          evt.target.select();
+          evt.target.selectionStart = 1;
+          evt.target.selectionEnd = 1;
           onFocus(id);
         }}
       />

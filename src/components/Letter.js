@@ -22,7 +22,6 @@ const Container = styled.div`
   margin: 0 1px;
   color: #444;
   user-select: none;
-  cursor: pointer;
 `;
 
 const GuessedLetter = styled.div`

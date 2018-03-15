@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const KEY_HEIGHT = 54;
-const SHORT_KEY_HEIGHT = 36;
-const ASSUMED_WIDTH = 400;
+const SHORT_KEY_HEIGHT = 42;
+const ASSUMED_WIDTH = 411;
 const SPACE = 4;
 const SPACE_PERCENTAGE = SPACE / ASSUMED_WIDTH * 100;
 
@@ -67,7 +67,9 @@ const Key = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #444;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: bold;
   user-select: none;
   cursor: pointer;
   &:active {

@@ -234,28 +234,32 @@ class Cryptogram extends Component {
           />
           {isWinner && (
             <FadeIn delay={1000}>
-              <Attribution isWinner={isWinner}>
-                <div>
-                  {name}
-                  {context && `, ${context}`}
-                </div>
-                {(occupation || time) && (
-                  <StyledOccupation>
-                    {removeWidows(occupation)}
-                    {!!occupation && !!time && ", "}
-                    {time && <StyledTime>{formatTime(time)}</StyledTime>}
-                  </StyledOccupation>
-                )}
-              </Attribution>
+              {({ fadeInStyle }) => (
+                <Attribution style={fadeInStyle}>
+                  <div>
+                    {name}
+                    {context && `, ${context}`}
+                  </div>
+                  {(occupation || time) && (
+                    <StyledOccupation>
+                      {removeWidows(occupation)}
+                      {!!occupation && !!time && ", "}
+                      {time && <StyledTime>{formatTime(time)}</StyledTime>}
+                    </StyledOccupation>
+                  )}
+                </Attribution>
+              )}
             </FadeIn>
           )}
           {isWinner && (
             <FadeIn delay={2000}>
-              <PlayAgainContainer>
-                <PlayAgainButton onClick={onPlayAgain}>
-                  Play Again
-                </PlayAgainButton>
-              </PlayAgainContainer>
+              {({ fadeInStyle }) => (
+                <PlayAgainContainer style={fadeInStyle}>
+                  <PlayAgainButton onClick={onPlayAgain}>
+                    Play Again
+                  </PlayAgainButton>
+                </PlayAgainContainer>
+              )}
             </FadeIn>
           )}
         </MainContent>

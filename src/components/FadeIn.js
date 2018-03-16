@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 class FadeIn extends Component {
   static propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.func.isRequired,
     delay: PropTypes.number,
     duration: PropTypes.number
   };
@@ -31,16 +31,12 @@ class FadeIn extends Component {
     const { children, duration } = this.props;
     const { show } = this.state;
 
-    return (
-      <div
-        style={{
-          transition: `opacity ${duration}ms ease-in-out`,
-          opacity: show ? 1 : 0
-        }}
-      >
-        {children}
-      </div>
-    );
+    return children({
+      fadeInStyle: {
+        transition: `opacity ${duration}ms ease-in-out`,
+        opacity: show ? 1 : 0
+      }
+    });
   }
 }
 

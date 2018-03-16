@@ -10,7 +10,7 @@ import { alphabet } from "../utils/constants";
 import Letters from "./Letters";
 import Keyboard from "./Keyboard";
 
-const MOBILE_SIZE = 420;
+const MOBILE_SIZE = 1024;
 
 const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
@@ -77,7 +77,7 @@ class Cryptogram extends Component {
     this.letterEls = {};
 
     this.state = {
-      isMobile: window.innerWidth < MOBILE_SIZE,
+      isMobile: window.innerWidth <= MOBILE_SIZE,
       guesses: {},
       selectedId: this.characters.filter(c => !!c.id)[0].id,
       isWinner: false

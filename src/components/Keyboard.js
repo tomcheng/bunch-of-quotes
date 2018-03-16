@@ -1,52 +1,20 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { simpleMemoize } from "../utils/functionUtils";
 
 const KEY_HEIGHT = 54;
 const SHORT_KEY_HEIGHT = 42;
-const FULL_WIDTH = window.innerWidth;
 const SPACE = 4;
-const SPACE_PERCENTAGE = SPACE / FULL_WIDTH * 100;
-
-const ARROW_KEY_WIDTH_PERCENTAGE =
-  (FULL_WIDTH - 3 * SPACE) / 2 / (FULL_WIDTH - 2 * SPACE) * 100;
 
 const TOP_NUM_KEYS = 10;
-const KEY_WIDTH =
-  (FULL_WIDTH - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
-const TOP_KEY_WIDTH_PERCENTAGE = KEY_WIDTH / (FULL_WIDTH - 2 * SPACE) * 100;
-
 const MIDDLE_NUM_KEYS = 9;
-const MIDDLE_PADDING =
-  (FULL_WIDTH -
-    2 * SPACE -
-    MIDDLE_NUM_KEYS * KEY_WIDTH -
-    (MIDDLE_NUM_KEYS - 1) * SPACE) /
-  2;
-const MIDDLE_PADDING_PERCENTAGE =
-  MIDDLE_PADDING / (FULL_WIDTH - 2 * SPACE) * 100;
-const MIDDLE_KEY_WIDTH_PERCENTAGE =
-  KEY_WIDTH / (FULL_WIDTH - 2 * SPACE - 2 * MIDDLE_PADDING) * 100;
-
 const BOTTOM_NUM_KEYS = 7;
-const DELETE_KEY_WIDTH = 2 * KEY_WIDTH + SPACE;
-const BOTTOM_PADDING_LEFT =
-  FULL_WIDTH -
-  2 * SPACE -
-  BOTTOM_NUM_KEYS * KEY_WIDTH -
-  BOTTOM_NUM_KEYS * SPACE -
-  DELETE_KEY_WIDTH;
-const BOTTOM_PADDING_LEFT_PERCENTAGE =
-  BOTTOM_PADDING_LEFT / (FULL_WIDTH - 2 * SPACE) * 100;
-const BOTTOM_KEY_WIDTH_PERCENTAGE =
-  KEY_WIDTH / (FULL_WIDTH - 2 * SPACE - BOTTOM_PADDING_LEFT) * 100;
-const DELETE_KEY_WIDTH_PERCENTAGE =
-  DELETE_KEY_WIDTH / (FULL_WIDTH - 2 * SPACE - BOTTOM_PADDING_LEFT) * 100;
 
 const Container = styled.div`
   box-sizing: border-box;
   background-color: #919faa;
-  padding: ${SPACE_PERCENTAGE}%;
+  padding: ${props => props.spacePercentage}%;
 `;
 
 const KeyRow = styled.div`
@@ -54,7 +22,7 @@ const KeyRow = styled.div`
   display: flex;
   justify-content: space-between;
   & + & {
-    margin-top: ${SPACE_PERCENTAGE}%;
+    margin-top: ${props => props.spacePercentage}%;
   }
 `;
 
@@ -81,75 +49,159 @@ const ShortKey = styled(Key)`
   height: ${SHORT_KEY_HEIGHT}px;
 `;
 
-const Keyboard = ({ onTapPrevious, onTapNext, onTapLetter, onTapDelete }) => (
-  <Container>
-    <KeyRow>
-      <ShortKey
-        onClick={onTapPrevious}
-        keyWidthPercentage={ARROW_KEY_WIDTH_PERCENTAGE}
-      >
-        ←
-      </ShortKey>
-      <ShortKey
-        onClick={onTapNext}
-        keyWidthPercentage={ARROW_KEY_WIDTH_PERCENTAGE}
-      >
-        →
-      </ShortKey>
-    </KeyRow>
-    <KeyRow>
-      {"QWERTYUIOP".split("").map(letter => (
-        <Key
-          key={letter}
-          keyWidthPercentage={TOP_KEY_WIDTH_PERCENTAGE}
-          onClick={() => {
-            onTapLetter(letter);
-          }}
-        >
-          {letter}
-        </Key>
-      ))}
-    </KeyRow>
-    <KeyRow style={{ padding: `0 ${MIDDLE_PADDING_PERCENTAGE}%` }}>
-      {"ASDFGHJKL".split("").map(letter => (
-        <Key
-          key={letter}
-          keyWidthPercentage={MIDDLE_KEY_WIDTH_PERCENTAGE}
-          onClick={() => {
-            onTapLetter(letter);
-          }}
-        >
-          {letter}
-        </Key>
-      ))}
-    </KeyRow>
-    <KeyRow style={{ paddingLeft: `${BOTTOM_PADDING_LEFT_PERCENTAGE}%` }}>
-      {"ZXCVBNM".split("").map(letter => (
-        <Key
-          key={letter}
-          keyWidthPercentage={BOTTOM_KEY_WIDTH_PERCENTAGE}
-          onClick={() => {
-            onTapLetter(letter);
-          }}
-        >
-          {letter}
-        </Key>
-      ))}
-      <Key
-        keyWidthPercentage={DELETE_KEY_WIDTH_PERCENTAGE}
-        onClick={onTapDelete}
-      >
-        Delete
-      </Key>
-    </KeyRow>
-  </Container>
-);
+class Keyboard extends Component {
+  static propTypes = {
+    onTapDelete: PropTypes.func.isRequired,
+    onTapLetter: PropTypes.func.isRequired,
+    onTapNext: PropTypes.func.isRequired,
+    onTapPrevious: PropTypes.func.isRequired
+  };
 
-Keyboard.propTypes = {
-  onTapDelete: PropTypes.func.isRequired,
-  onTapLetter: PropTypes.func.isRequired,
-  onTapNext: PropTypes.func.isRequired,
-  onTapPrevious: PropTypes.func.isRequired
-};
+  state = { fullWidth: window.innerWidth };
+
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({ fullWidth: window.innerWidth });
+  };
+
+  getDimensions = simpleMemoize(fullWidth => {
+    const spacePercentage = SPACE / fullWidth * 100;
+
+    const arrowKeyWidthPercentage =
+      (fullWidth - 3 * SPACE) / 2 / (fullWidth - 2 * SPACE) * 100;
+
+    const keyWidth =
+      (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
+    const topKeyWidthPercentage = keyWidth / (fullWidth - 2 * SPACE) * 100;
+
+    const middlePadding =
+      (fullWidth -
+        2 * SPACE -
+        MIDDLE_NUM_KEYS * keyWidth -
+        (MIDDLE_NUM_KEYS - 1) * SPACE) /
+      2;
+    const middlePaddingPercentage =
+      middlePadding / (fullWidth - 2 * SPACE) * 100;
+    const middleKeyWidthPercentage =
+      keyWidth / (fullWidth - 2 * SPACE - 2 * middlePadding) * 100;
+
+    const deleteKeyWidth = 2 * keyWidth + SPACE;
+    const bottomPaddingLeft =
+      fullWidth -
+      2 * SPACE -
+      BOTTOM_NUM_KEYS * keyWidth -
+      BOTTOM_NUM_KEYS * SPACE -
+      deleteKeyWidth;
+    const bottomPaddingLeftPercentage =
+      bottomPaddingLeft / (fullWidth - 2 * SPACE) * 100;
+    const bottomKeyWidthPercentage =
+      keyWidth / (fullWidth - 2 * SPACE - bottomPaddingLeft) * 100;
+    const deleteKeyWidthPercentage =
+      deleteKeyWidth / (fullWidth - 2 * SPACE - bottomPaddingLeft) * 100;
+
+    return {
+      spacePercentage,
+      arrowKeyWidthPercentage,
+      topKeyWidthPercentage,
+      middlePaddingPercentage,
+      middleKeyWidthPercentage,
+      bottomPaddingLeftPercentage,
+      bottomKeyWidthPercentage,
+      deleteKeyWidthPercentage
+    };
+  });
+
+  render() {
+    const { onTapPrevious, onTapNext, onTapLetter, onTapDelete } = this.props;
+    const { fullWidth } = this.state;
+    const {
+      spacePercentage,
+      arrowKeyWidthPercentage,
+      topKeyWidthPercentage,
+      middlePaddingPercentage,
+      middleKeyWidthPercentage,
+      bottomPaddingLeftPercentage,
+      bottomKeyWidthPercentage,
+      deleteKeyWidthPercentage
+    } = this.getDimensions(fullWidth);
+
+    return (
+      <Container spacePercentage={spacePercentage}>
+        <KeyRow spacePercentage={spacePercentage}>
+          <ShortKey
+            onClick={onTapPrevious}
+            keyWidthPercentage={arrowKeyWidthPercentage}
+          >
+            ←
+          </ShortKey>
+          <ShortKey
+            onClick={onTapNext}
+            keyWidthPercentage={arrowKeyWidthPercentage}
+          >
+            →
+          </ShortKey>
+        </KeyRow>
+        <KeyRow spacePercentage={spacePercentage}>
+          {"QWERTYUIOP".split("").map(letter => (
+            <Key
+              key={letter}
+              keyWidthPercentage={topKeyWidthPercentage}
+              onClick={() => {
+                onTapLetter(letter);
+              }}
+            >
+              {letter}
+            </Key>
+          ))}
+        </KeyRow>
+        <KeyRow
+          spacePercentage={spacePercentage}
+          style={{ padding: `0 ${middlePaddingPercentage}%` }}
+        >
+          {"ASDFGHJKL".split("").map(letter => (
+            <Key
+              key={letter}
+              keyWidthPercentage={middleKeyWidthPercentage}
+              onClick={() => {
+                onTapLetter(letter);
+              }}
+            >
+              {letter}
+            </Key>
+          ))}
+        </KeyRow>
+        <KeyRow
+          spacePercentage={spacePercentage}
+          style={{ paddingLeft: `${bottomPaddingLeftPercentage}%` }}
+        >
+          {"ZXCVBNM".split("").map(letter => (
+            <Key
+              key={letter}
+              keyWidthPercentage={bottomKeyWidthPercentage}
+              onClick={() => {
+                onTapLetter(letter);
+              }}
+            >
+              {letter}
+            </Key>
+          ))}
+          <Key
+            keyWidthPercentage={deleteKeyWidthPercentage}
+            onClick={onTapDelete}
+          >
+            Delete
+          </Key>
+        </KeyRow>
+      </Container>
+    );
+  }
+}
 
 export default Keyboard;

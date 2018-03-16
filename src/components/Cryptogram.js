@@ -24,7 +24,9 @@ const Container = styled.div`
 `;
 
 const MainContent = styled.div`
-  flex: 1 1;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   position: relative;

@@ -20,6 +20,7 @@ const split = (arr, predicate) => {
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
+  flex-shrink: 0;
 `;
 
 const Word = styled.div`

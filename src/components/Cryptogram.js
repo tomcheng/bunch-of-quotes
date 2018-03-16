@@ -7,6 +7,7 @@ import keys from "lodash/keys";
 import AnimateHeight from "react-animate-height-auto";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
+import FadeIn from "./FadeIn";
 import Letters from "./Letters";
 import Keyboard from "./Keyboard";
 
@@ -41,9 +42,6 @@ const Attribution = styled.div`
   font-size: 14px;
   line-height: 20px;
   color: #444;
-  opacity: ${props => (props.isWinner ? 1 : 0)};
-  transition: opacity 0.3s ease-in-out 1s;
-  user-select: ${props => (props.isWinner ? "auto" : "none")};
 `;
 
 const StyledOccupation = styled.div`
@@ -66,12 +64,14 @@ const PlayAgainContainer = styled.div`
 const PlayAgainButton = styled.div`
   margin-top: 40px;
   margin-bottom: 20px;
-  padding: 10px 15px; 
+  padding: 10px 15px;
   border-radius: 2px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
   background-color: #444;
   color: #fff;
+  cursor: pointer;
+  user-select: none;
 `;
 
 class Cryptogram extends Component {
@@ -107,7 +107,7 @@ class Cryptogram extends Component {
       this.setupPuzzle(nextProps);
       this.setState({ guesses: {}, selectedId: 1, isWinner: false });
     }
-  };
+  }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
@@ -232,23 +232,31 @@ class Cryptogram extends Component {
             onSelect={this.selectLetter}
             isWinner={isWinner}
           />
-          <Attribution isWinner={isWinner}>
-            <div>
-              {name}
-              {context && `, ${context}`}
-            </div>
-            {(occupation || time) && (
-              <StyledOccupation>
-                {removeWidows(occupation)}
-                {!!occupation && !!time && ", "}
-                {time && <StyledTime>{formatTime(time)}</StyledTime>}
-              </StyledOccupation>
-            )}
-          </Attribution>
           {isWinner && (
-            <PlayAgainContainer>
-              <PlayAgainButton onClick={onPlayAgain}>Play Again</PlayAgainButton>
-            </PlayAgainContainer>
+            <FadeIn delay={1000}>
+              <Attribution isWinner={isWinner}>
+                <div>
+                  {name}
+                  {context && `, ${context}`}
+                </div>
+                {(occupation || time) && (
+                  <StyledOccupation>
+                    {removeWidows(occupation)}
+                    {!!occupation && !!time && ", "}
+                    {time && <StyledTime>{formatTime(time)}</StyledTime>}
+                  </StyledOccupation>
+                )}
+              </Attribution>
+            </FadeIn>
+          )}
+          {isWinner && (
+            <FadeIn delay={2000}>
+              <PlayAgainContainer>
+                <PlayAgainButton onClick={onPlayAgain}>
+                  Play Again
+                </PlayAgainButton>
+              </PlayAgainContainer>
+            </FadeIn>
           )}
         </MainContent>
 

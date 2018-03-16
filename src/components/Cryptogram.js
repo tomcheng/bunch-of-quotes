@@ -102,7 +102,7 @@ class Cryptogram extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.quote !== this.props.quote) {
-      this.setupPuzzle();
+      this.setupPuzzle(nextProps);
       this.setState({ guesses: {}, selectedId: 1, isWinner: false });
     }
   };

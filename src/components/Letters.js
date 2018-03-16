@@ -18,6 +18,8 @@ const split = (arr, predicate) => {
 };
 
 const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
 `;
 
 const Word = styled.div`

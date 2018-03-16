@@ -17,32 +17,45 @@ const split = (arr, predicate) => {
   return newArr;
 };
 
+const Container = styled.div`
+`;
+
 const Word = styled.div`
   display: inline-flex;
   margin-right: 16px;
 `;
 
-const Letters = ({ letters, selectedId, selectedLetter, guesses, letterRef, onSelect, isWinner }) => {
+const Letters = ({
+  letters,
+  selectedId,
+  selectedLetter,
+  guesses,
+  onSelect,
+  isWinner
+}) => {
   const words = split(letters, l => l.letter === " ");
 
-  return words.map((letters, wordIndex) => (
-    <Word key={wordIndex}>
-      {letters.map(({ id, letter }, index) => (
-        <Letter
-          key={index}
-          id={id}
-          isSelected={id === selectedId}
-          isLetter={id !== null}
-          letter={letter}
-          guess={guesses[letter] || " "}
-          onSelect={onSelect}
-          letterSelected={letter === selectedLetter}
-          letterRef={letterRef}
-          isWinner={isWinner}
-        />
+  return (
+    <Container>
+      {words.map((letters, wordIndex) => (
+        <Word key={wordIndex}>
+          {letters.map(({ id, letter }, index) => (
+            <Letter
+              key={index}
+              id={id}
+              isSelected={id === selectedId}
+              isLetter={id !== null}
+              letter={letter}
+              guess={guesses[letter] || " "}
+              onSelect={onSelect}
+              letterSelected={letter === selectedLetter}
+              isWinner={isWinner}
+            />
+          ))}
+        </Word>
       ))}
-    </Word>
-  ));
+    </Container>
+  );
 };
 
 Letters.propTypes = {
@@ -54,7 +67,6 @@ Letters.propTypes = {
       id: PropTypes.number
     })
   ).isRequired,
-  letterRef: PropTypes.func.isRequired,
   selectedId: PropTypes.number.isRequired,
   onSelect: PropTypes.func.isRequired,
   selectedLetter: PropTypes.string

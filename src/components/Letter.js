@@ -41,7 +41,7 @@ const GuessedLetter = styled.div`
 
 const EncryptedLetter = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.8);
-  opacity: ${props => props.isWinner ? 0.3 : 0.8};
+  opacity: ${props => (props.isWinner ? 0.3 : 0.8)};
   transition: opacity 0.8s ease-out;
   font-size: 14px;
   font-family: Courier, mono-space;
@@ -56,7 +56,6 @@ const Letter = ({
   letterSelected,
   isLetter,
   onSelect,
-  letterRef,
   isWinner
 }) => {
   if (!isLetter) {
@@ -69,13 +68,7 @@ const Letter = ({
         onSelect(id);
       }}
     >
-      <GuessedLetter
-        innerRef={el => {
-          letterRef({ el, id });
-        }}
-        isSelected={isSelected}
-        letterSelected={letterSelected}
-      >
+      <GuessedLetter isSelected={isSelected} letterSelected={letterSelected}>
         {guess}
       </GuessedLetter>
       <EncryptedLetter isWinner={isWinner}>{letter}</EncryptedLetter>
@@ -88,7 +81,6 @@ Letter.propTypes = {
   isLetter: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool.isRequired,
   isWinner: PropTypes.bool.isRequired,
-  letterRef: PropTypes.func.isRequired,
   letterSelected: PropTypes.bool.isRequired,
   onSelect: PropTypes.func.isRequired,
   id: PropTypes.number,

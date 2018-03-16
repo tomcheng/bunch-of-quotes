@@ -14,11 +14,18 @@ class App extends Component {
     ).isRequired
   };
 
+  state = { quoteIndex: 0 };
+
+  handlePlayAgain = () => {
+    this.setState(state => ({ ...state, quoteIndex: state.quoteIndex + 1 }));
+  };
+
   render() {
     const { quotes } = this.props;
+    const { quoteIndex } = this.state;
 
     return (
-      <Cryptogram {...quotes[0]} />
+      <Cryptogram {...quotes[quoteIndex]} onPlayAgain={this.handlePlayAgain} />
     );
   }
 }

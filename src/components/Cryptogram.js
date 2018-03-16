@@ -23,17 +23,16 @@ const Container = styled.div`
   justify-content: space-between;
 `;
 
-const LettersContainer = styled.div`
-  position: relative;
-  flex-shrink: 1;
+const MainContent = styled.div`
+  flex: 1 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  position: relative;
   overflow: auto;
   padding: 20px;
 `;
 
 const Attribution = styled.div`
-  flex-basis: 100%;
   margin-top: 15px;
   text-align: right;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -54,10 +53,30 @@ const StyledTime = styled.span`
   white-space: nowrap;
 `;
 
+const PlayAgainContainer = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-grow: 1;
+  flex-shrink: 0;
+`;
+
+const PlayAgainButton = styled.div`
+  margin-top: 40px;
+  margin-bottom: 20px;
+  padding: 10px 15px; 
+  border-radius: 2px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 16px;
+  background-color: #444;
+  color: #fff;
+`;
+
 class Cryptogram extends Component {
   static propTypes = {
     quote: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    onPlayAgain: PropTypes.func.isRequired,
     context: PropTypes.string,
     occupation: PropTypes.string,
     time: PropTypes.string
@@ -66,21 +85,13 @@ class Cryptogram extends Component {
   constructor(props) {
     super();
 
-    this.cipher = generateCipher();
-    this.characters = applyCipher(props.quote, this.cipher)
-      .split("")
-      .map((letter, index) => ({
-        id: alphabet.includes(letter) ? index + 1 : null,
-        letter
-      }));
-
-    this.letterEls = {};
+    this.setupPuzzle(props);
 
     this.state = {
       isMobile: window.innerWidth <= MOBILE_SIZE,
       guesses: {},
-      selectedId: this.characters.filter(c => !!c.id)[0].id,
-      isWinner: false
+      selectedId: 1,
+      isWinner: true
     };
   }
 
@@ -89,10 +100,27 @@ class Cryptogram extends Component {
     window.addEventListener("keydown", this.handleKeyDown);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.quote !== this.props.quote) {
+      this.setupPuzzle();
+      this.setState({ guesses: {}, selectedId: 1, isWinner: false });
+    }
+  };
+
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
     window.removeEventListener("keydown", this.handleKeyDown);
   }
+
+  setupPuzzle = (props = this.props) => {
+    this.cipher = generateCipher();
+    this.characters = applyCipher(props.quote, this.cipher)
+      .split("")
+      .map((letter, index) => ({
+        id: alphabet.includes(letter) ? index + 1 : null,
+        letter
+      }));
+  };
 
   handleResize = () => {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
@@ -187,21 +215,18 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { name, context, occupation, time } = this.props;
+    const { name, context, occupation, time, onPlayAgain } = this.props;
     const { guesses, isMobile, selectedId, isWinner } = this.state;
     const selectedLetter = this.characters.find(c => c.id === selectedId);
 
     return (
       <Container>
-        <LettersContainer>
+        <MainContent>
           <Letters
             letters={this.characters}
             selectedId={selectedId}
             selectedLetter={selectedLetter ? selectedLetter.letter : null}
             guesses={guesses}
-            letterRef={({ el, id }) => {
-              this.letterEls[id] = el;
-            }}
             onSelect={this.selectLetter}
             isWinner={isWinner}
           />
@@ -218,7 +243,12 @@ class Cryptogram extends Component {
               </StyledOccupation>
             )}
           </Attribution>
-        </LettersContainer>
+          {isWinner && (
+            <PlayAgainContainer>
+              <PlayAgainButton onClick={onPlayAgain}>Play Again</PlayAgainButton>
+            </PlayAgainContainer>
+          )}
+        </MainContent>
 
         {isMobile && (
           <AnimateHeight isExpanded={!isWinner} duration={300}>

@@ -91,7 +91,7 @@ class Cryptogram extends Component {
       isMobile: window.innerWidth <= MOBILE_SIZE,
       guesses: {},
       selectedId: 1,
-      isWinner: true
+      isWinner: false
     };
   }
 

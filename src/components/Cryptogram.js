@@ -65,6 +65,10 @@ const PlayAgainButton = styled.div`
   align-items: center;
 `;
 
+const KeyboardContainer = styled.div`
+  align-self: stretch;
+`;
+
 const Options = styled.div`
   position: fixed;
   top: 0;
@@ -422,14 +426,16 @@ class Cryptogram extends Component {
           </MainContent>
 
           {isMobile && (
-            <AnimateHeight isExpanded={!isWinner} duration={300}>
-              <Keyboard
-                onTapPrevious={this.selectPreviousLetter}
-                onTapNext={this.selectNextLetter}
-                onTapLetter={this.handleTapLetter}
-                onTapDelete={this.handleTapDelete}
-              />
-            </AnimateHeight>
+            <KeyboardContainer>
+              <AnimateHeight isExpanded={!isWinner} duration={300}>
+                <Keyboard
+                  onTapPrevious={this.selectPreviousLetter}
+                  onTapNext={this.selectNextLetter}
+                  onTapLetter={this.handleTapLetter}
+                  onTapDelete={this.handleTapDelete}
+                />
+              </AnimateHeight>
+            </KeyboardContainer>
           )}
 
           {!isMobile && (

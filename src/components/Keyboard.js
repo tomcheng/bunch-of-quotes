@@ -36,7 +36,6 @@ const Key = styled.div`
   justify-content: center;
   align-items: center;
   color: #444;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: bold;
   user-select: none;
   cursor: pointer;

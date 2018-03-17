@@ -13,6 +13,17 @@ const blink = keyframes`
   }
 `;
 
+const errorBlink = keyframes`
+  0%, 100% {
+    background-color: red;
+    color: #fff;
+  }
+  50% {
+    background-color: transparent;
+    color: red;
+  }
+`;
+
 const Container = styled.div`
   width: 16px;
   display: inline-flex;
@@ -26,6 +37,7 @@ const Container = styled.div`
 
 const GuessedLetter = styled.div`
   background-color: ${props => (props.letterSelected ? "#eee" : "transparent")};
+  color: ${props => (props.isMistake ? "red" : "inherit")};
   border: 0;
   display: block;
   height: 20px;
@@ -33,18 +45,16 @@ const GuessedLetter = styled.div`
   text-align: center;
   line-height: 22px;
   margin-bottom: 1px;
-  font-size: 16px;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   ${props =>
-    props.isSelected ? `animation: 1.1s ${blink} step-end infinite` : ""};
+    props.isSelected ? `animation: 1.1s ${props.isMistake ? errorBlink : blink} step-end infinite` : ""};
 `;
 
 const EncryptedLetter = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.8);
   opacity: ${props => (props.isWinner ? 0.3 : 0.8)};
   transition: opacity 0.8s ease-out;
-  font-size: 14px;
   font-family: Courier, mono-space;
+  font-size: 14px;
   text-align: center;
 `;
 
@@ -53,6 +63,7 @@ const Letter = ({
   letter,
   guess,
   isSelected,
+  isMistake,
   letterSelected,
   isLetter,
   onSelect,
@@ -68,7 +79,11 @@ const Letter = ({
         onSelect(id);
       }}
     >
-      <GuessedLetter isSelected={isSelected} letterSelected={letterSelected}>
+      <GuessedLetter
+        isSelected={isSelected}
+        letterSelected={letterSelected}
+        isMistake={isMistake}
+      >
         {guess}
       </GuessedLetter>
       <EncryptedLetter isWinner={isWinner}>{letter}</EncryptedLetter>
@@ -79,6 +94,7 @@ const Letter = ({
 Letter.propTypes = {
   letter: PropTypes.string.isRequired,
   isLetter: PropTypes.bool.isRequired,
+  isMistake: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool.isRequired,
   isWinner: PropTypes.bool.isRequired,
   letterSelected: PropTypes.bool.isRequired,

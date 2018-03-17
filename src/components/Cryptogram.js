@@ -23,6 +23,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 22px;
 `;
 
 const MainContent = styled.div`
@@ -49,7 +52,6 @@ const PlayAgainButton = styled.div`
   margin-bottom: 20px;
   padding: 10px 15px;
   border-radius: 2px;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
   background-color: #444;
   color: #fff;
@@ -73,7 +75,8 @@ class Cryptogram extends Component {
     guesses: {},
     selectedId: 1,
     isWinner: false,
-    sidebarOpen: false
+    sidebarOpen: false,
+    mistakes: []
   };
 
   componentDidMount() {
@@ -142,20 +145,31 @@ class Cryptogram extends Component {
 
   handleTapLetter = guess => {
     const { quote } = this.props;
-    const { guesses, selectedId, cipher } = this.state;
+    const { guesses, selectedId, cipher, mistakes } = this.state;
 
     const characters = this.getCharacters(quote, cipher);
     const letter = characters.find(c => c.id === selectedId).letter;
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
     const newGuesses = { ...guesses, ...removals, [letter]: guess };
+    const newMistakes = mistakes.filter(
+      mistake => mistake !== letter && mistake !== prevLetter
+    );
 
     if (this.checkWin(newGuesses)) {
-      this.setState({ guesses: newGuesses, selectedId: null, isWinner: true });
+      this.setState({
+        guesses: newGuesses,
+        mistakes: newMistakes,
+        selectedId: null,
+        isWinner: true
+      });
       return;
     }
 
-    this.setState({ guesses: newGuesses }, this.selectNextLetter);
+    this.setState(
+      { guesses: newGuesses, mistakes: newMistakes },
+      this.selectNextLetter
+    );
   };
 
   handleTapDelete = () => {
@@ -171,7 +185,8 @@ class Cryptogram extends Component {
         guesses: {
           ...state.guesses,
           [letter]: null
-        }
+        },
+        mistakes: state.mistakes.filter(mistake => mistake !== letter)
       }),
       this.selectPreviousLetter
     );
@@ -225,6 +240,17 @@ class Cryptogram extends Component {
     this.setState({ guesses: {}, sidebarOpen: false });
   };
 
+  handleShowMistakes = () => {
+    const { guesses, cipher } = this.state;
+
+    const mistakes = keys(guesses).filter(letter => {
+      const guess = guesses[letter];
+      return cipher[guess] && cipher[guess] !== letter;
+    });
+
+    this.setState({ mistakes, sidebarOpen: false });
+  };
+
   render() {
     const { quote, name, context, occupation, time, onPlayAgain } = this.props;
     const {
@@ -233,14 +259,20 @@ class Cryptogram extends Component {
       isMobile,
       selectedId,
       isWinner,
-      sidebarOpen
+      sidebarOpen,
+      mistakes
     } = this.state;
     const characters = this.getCharacters(quote, cipher);
     const selectedLetter = characters.find(c => c.id === selectedId);
 
     return (
       <Sidebar
-        sidebar={<SidebarContent onClearGuesses={this.handleClearGuesses} />}
+        sidebar={
+          <SidebarContent
+            onClearGuesses={this.handleClearGuesses}
+            onShowMistakes={this.handleShowMistakes}
+          />
+        }
         onSetOpen={this.handleSetOpen}
         open={sidebarOpen}
       >
@@ -251,8 +283,9 @@ class Cryptogram extends Component {
               selectedId={selectedId}
               selectedLetter={selectedLetter ? selectedLetter.letter : null}
               guesses={guesses}
-              onSelect={this.selectLetter}
+              mistakes={mistakes}
               isWinner={isWinner}
+              onSelect={this.selectLetter}
             />
             {isWinner && (
               <FadeIn delay={1000}>

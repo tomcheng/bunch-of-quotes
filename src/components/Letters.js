@@ -33,8 +33,9 @@ const Letters = ({
   selectedId,
   selectedLetter,
   guesses,
-  onSelect,
-  isWinner
+  mistakes,
+  isWinner,
+  onSelect
 }) => {
   const words = split(letters, l => l.letter === " ");
 
@@ -48,6 +49,7 @@ const Letters = ({
               id={id}
               isSelected={id === selectedId}
               isLetter={id !== null}
+              isMistake={mistakes.includes(letter)}
               letter={letter}
               guess={guesses[letter] || " "}
               onSelect={onSelect}
@@ -70,6 +72,7 @@ Letters.propTypes = {
       id: PropTypes.number
     })
   ).isRequired,
+  mistakes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onSelect: PropTypes.func.isRequired,
   selectedId: PropTypes.number,
   selectedLetter: PropTypes.string

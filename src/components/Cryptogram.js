@@ -109,27 +109,22 @@ class Cryptogram extends Component {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   };
 
-  getCharacters = simpleMemoize((quote, cipher) =>
-    applyCipher(quote, cipher)
-      .split("")
-      .map((letter, index) => ({
-        id: alphabet.includes(letter) ? index + 1 : null,
-        letter
-      }))
+  getCharacters = simpleMemoize(
+    (quote = this.props.quote, cipher = this.state.cipher) =>
+      applyCipher(quote, cipher)
+        .split("")
+        .map((letter, index) => ({
+          id: alphabet.includes(letter) ? index + 1 : null,
+          letter
+        }))
   );
 
-  getLetters = () =>
-    this.getCharacters(this.props.quote, this.state.cipher).filter(
-      c => c.id !== null
-    );
+  getLetters = () => this.getCharacters().filter(c => c.id !== null);
 
   getSelectedLetter = () => {
-    const { quote } = this.props;
-    const { selectedId, cipher } = this.state;
+    const { selectedId } = this.state;
 
-    const character = this.getCharacters(quote, cipher).find(
-      c => c.id === selectedId
-    );
+    const character = this.getCharacters().find(c => c.id === selectedId);
 
     return character ? character.letter : null;
   };
@@ -142,9 +137,17 @@ class Cryptogram extends Component {
     } else if (evt.key === "Backspace") {
       this.handleTapDelete();
     } else if (evt.key === "ArrowLeft") {
-      this.selectPreviousLetter();
+      if (evt.metaKey) {
+        this.selectPreviousWord();
+      } else {
+        this.selectPreviousLetter();
+      }
     } else if (evt.key === "ArrowRight") {
-      this.selectNextLetter();
+      if (evt.metaKey) {
+        this.selectNextWord();
+      } else {
+        this.selectNextLetter();
+      }
     } else if (evt.key === "Tab") {
       evt.preventDefault();
       if (evt.shiftKey) {
@@ -156,9 +159,8 @@ class Cryptogram extends Component {
   };
 
   checkWin = guesses => {
-    const { quote } = this.props;
     const { cipher } = this.state;
-    const characters = this.getCharacters(quote, cipher);
+    const characters = this.getCharacters();
 
     return (
       characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
@@ -297,6 +299,50 @@ class Cryptogram extends Component {
     );
   };
 
+  selectNextWord = () => {
+    const { selectedId } = this.state;
+
+    const characters = this.getCharacters();
+    const wordStarts = characters.filter(
+      ({ id }, index) =>
+        (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
+        id === selectedId
+    );
+    const selectedIndex = findIndex(
+      wordStarts,
+      letter => letter.id === selectedId
+    );
+
+    this.selectLetter(
+      (selectedIndex === wordStarts.length - 1
+        ? wordStarts[0]
+        : wordStarts[selectedIndex + 1]
+      ).id
+    );
+  };
+
+  selectPreviousWord = () => {
+    const { selectedId } = this.state;
+
+    const characters = this.getCharacters();
+    const wordStarts = characters.filter(
+      ({ id }, index) =>
+        (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
+        id === selectedId
+    ).reverse();
+    const selectedIndex = findIndex(
+      wordStarts,
+      letter => letter.id === selectedId
+    );
+
+    this.selectLetter(
+      (selectedIndex === wordStarts.length - 1
+          ? wordStarts[0]
+          : wordStarts[selectedIndex + 1]
+      ).id
+    );
+  };
+
   handleSetOpen = open => {
     this.setState({ sidebarOpen: open });
   };
@@ -356,9 +402,8 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { quote, name, context, occupation, time, onPlayAgain } = this.props;
+    const { name, context, occupation, time, onPlayAgain } = this.props;
     const {
-      cipher,
       guesses,
       isMobile,
       selectedId,
@@ -367,7 +412,7 @@ class Cryptogram extends Component {
       hints,
       mistakes
     } = this.state;
-    const characters = this.getCharacters(quote, cipher);
+    const characters = this.getCharacters();
     const selectedLetter = this.getSelectedLetter();
 
     return (

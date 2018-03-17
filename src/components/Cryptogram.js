@@ -145,6 +145,13 @@ class Cryptogram extends Component {
       this.selectPreviousLetter();
     } else if (evt.key === "ArrowRight") {
       this.selectNextLetter();
+    } else if (evt.key === "Tab") {
+      evt.preventDefault();
+      if (evt.shiftKey) {
+        this.selectPreviousOpenLetter();
+      } else {
+        this.selectNextOpenLetter();
+      }
     }
   };
 
@@ -250,6 +257,42 @@ class Cryptogram extends Component {
       (selectedIndex === letters.length - 1
         ? letters[0]
         : letters[selectedIndex + 1]
+      ).id
+    );
+  };
+
+  selectNextOpenLetter = () => {
+    const { selectedId, guesses } = this.state;
+    const openLetters = this.getLetters().filter(
+      ({ letter, id }) => !guesses[letter] || selectedId === id
+    );
+    const selectedIndex = findIndex(
+      openLetters,
+      letter => letter.id === selectedId
+    );
+
+    this.selectLetter(
+      (selectedIndex === openLetters.length - 1
+        ? openLetters[0]
+        : openLetters[selectedIndex + 1]
+      ).id
+    );
+  };
+
+  selectPreviousOpenLetter = () => {
+    const { selectedId, guesses } = this.state;
+    const openLetters = this.getLetters()
+      .filter(({ letter, id }) => !guesses[letter] || selectedId === id)
+      .reverse();
+    const selectedIndex = findIndex(
+      openLetters,
+      letter => letter.id === selectedId
+    );
+
+    this.selectLetter(
+      (selectedIndex === openLetters.length - 1
+        ? openLetters[0]
+        : openLetters[selectedIndex + 1]
       ).id
     );
   };

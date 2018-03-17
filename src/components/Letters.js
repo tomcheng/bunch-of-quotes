@@ -70,8 +70,8 @@ Letters.propTypes = {
       id: PropTypes.number
     })
   ).isRequired,
-  selectedId: PropTypes.number.isRequired,
   onSelect: PropTypes.func.isRequired,
+  selectedId: PropTypes.number,
   selectedLetter: PropTypes.string
 };
 

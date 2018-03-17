@@ -7,16 +7,15 @@ import keys from "lodash/keys";
 import AnimateHeight from "react-animate-height-auto";
 import Sidebar from "react-sidebar";
 import { generateCipher, applyCipher } from "../utils/cipher";
+import { simpleMemoize } from "../utils/functionUtils";
 import { alphabet } from "../utils/constants";
 import SidebarContent from "./SidebarContent";
 import FadeIn from "./FadeIn";
 import Letters from "./Letters";
+import Attribution from "./Attribution";
 import Keyboard from "./Keyboard";
 
 const MOBILE_SIZE = 1024;
-
-const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
-const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const Container = styled.div`
   height: 100%;
@@ -35,24 +34,6 @@ const MainContent = styled.div`
   position: relative;
   overflow: auto;
   padding: 20px;
-`;
-
-const Attribution = styled.div`
-  margin-top: 15px;
-  text-align: right;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  color: #444;
-`;
-
-const StyledOccupation = styled.div`
-  opacity: 0.6;
-  font-size: 13px;
-`;
-
-const StyledTime = styled.span`
-  white-space: nowrap;
 `;
 
 const PlayAgainContainer = styled.div`
@@ -86,19 +67,14 @@ class Cryptogram extends Component {
     time: PropTypes.string
   };
 
-  constructor(props) {
-    super();
-
-    this.setupPuzzle(props);
-
-    this.state = {
-      isMobile: window.innerWidth <= MOBILE_SIZE,
-      guesses: {},
-      selectedId: 1,
-      isWinner: false,
-      sidebarOpen: false
-    };
-  }
+  state = {
+    cipher: generateCipher(),
+    isMobile: window.innerWidth <= MOBILE_SIZE,
+    guesses: {},
+    selectedId: 1,
+    isWinner: false,
+    sidebarOpen: false
+  };
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
@@ -107,8 +83,12 @@ class Cryptogram extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.quote !== this.props.quote) {
-      this.setupPuzzle(nextProps);
-      this.setState({ guesses: {}, selectedId: 1, isWinner: false });
+      this.setState({
+        cipher: generateCipher(),
+        guesses: {},
+        selectedId: 1,
+        isWinner: false
+      });
     }
   }
 
@@ -117,19 +97,18 @@ class Cryptogram extends Component {
     window.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  setupPuzzle = (props = this.props) => {
-    this.cipher = generateCipher();
-    this.characters = applyCipher(props.quote, this.cipher)
+  handleResize = () => {
+    this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
+  };
+
+  getCharacters = simpleMemoize((quote, cipher) =>
+    applyCipher(quote, cipher)
       .split("")
       .map((letter, index) => ({
         id: alphabet.includes(letter) ? index + 1 : null,
         letter
-      }));
-  };
-
-  handleResize = () => {
-    this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
-  };
+      }))
+  );
 
   handleKeyDown = evt => {
     if (alphabet.includes(evt.key.toUpperCase())) {
@@ -143,21 +122,30 @@ class Cryptogram extends Component {
     }
   };
 
-  checkWin = guesses =>
-    this.characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
-    keys(guesses).every(key => {
-      const guess = guesses[key];
-      return this.cipher[guess] === key;
-    });
+  checkWin = guesses => {
+    const { quote } = this.props;
+    const { cipher } = this.state;
+    const characters = this.getCharacters(quote, cipher);
+
+    return (
+      characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
+      keys(guesses).every(key => {
+        const guess = guesses[key];
+        return cipher[guess] === key;
+      })
+    );
+  };
 
   selectLetter = id => {
     this.setState({ selectedId: id });
   };
 
   handleTapLetter = guess => {
-    const { guesses, selectedId } = this.state;
+    const { quote } = this.props;
+    const { guesses, selectedId, cipher } = this.state;
 
-    const letter = this.characters.find(c => c.id === selectedId).letter;
+    const characters = this.getCharacters(quote, cipher);
+    const letter = characters.find(c => c.id === selectedId).letter;
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
     const newGuesses = { ...guesses, ...removals, [letter]: guess };
@@ -171,9 +159,11 @@ class Cryptogram extends Component {
   };
 
   handleTapDelete = () => {
-    const { selectedId } = this.state;
-
-    const letter = this.characters.find(c => c.id === selectedId).letter;
+    const { quote } = this.props;
+    const { selectedId, cipher } = this.state;
+    const letter = this.getCharacters(quote, cipher).find(
+      c => c.id === selectedId
+    ).letter;
 
     this.setState(
       state => ({
@@ -188,8 +178,12 @@ class Cryptogram extends Component {
   };
 
   selectNextLetter = () => {
-    const { selectedId } = this.state;
-    const letters = this.characters.filter(c => c.id !== null);
+    const { quote } = this.props;
+    const { selectedId, cipher } = this.state;
+
+    const letters = this.getCharacters(quote, cipher).filter(
+      c => c.id !== null
+    );
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedId
@@ -204,8 +198,12 @@ class Cryptogram extends Component {
   };
 
   selectPreviousLetter = () => {
-    const { selectedId } = this.state;
-    const letters = this.characters.filter(c => c.id !== null).reverse();
+    const { quote } = this.props;
+    const { selectedId, cipher } = this.state;
+
+    const letters = this.getCharacters(quote, cipher)
+      .filter(c => c.id !== null)
+      .reverse();
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedId
@@ -228,9 +226,17 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { name, context, occupation, time, onPlayAgain } = this.props;
-    const { guesses, isMobile, selectedId, isWinner, sidebarOpen } = this.state;
-    const selectedLetter = this.characters.find(c => c.id === selectedId);
+    const { quote, name, context, occupation, time, onPlayAgain } = this.props;
+    const {
+      cipher,
+      guesses,
+      isMobile,
+      selectedId,
+      isWinner,
+      sidebarOpen
+    } = this.state;
+    const characters = this.getCharacters(quote, cipher);
+    const selectedLetter = characters.find(c => c.id === selectedId);
 
     return (
       <Sidebar
@@ -241,7 +247,7 @@ class Cryptogram extends Component {
         <Container>
           <MainContent>
             <Letters
-              letters={this.characters}
+              letters={characters}
               selectedId={selectedId}
               selectedLetter={selectedLetter ? selectedLetter.letter : null}
               guesses={guesses}
@@ -249,23 +255,12 @@ class Cryptogram extends Component {
               isWinner={isWinner}
             />
             {isWinner && (
-              <FadeIn delay={1000}>
-                {({ fadeInStyle }) => (
-                  <Attribution style={fadeInStyle}>
-                    <div>
-                      {name}
-                      {context && `, ${context}`}
-                    </div>
-                    {(occupation || time) && (
-                      <StyledOccupation>
-                        {removeWidows(occupation)}
-                        {!!occupation && !!time && ", "}
-                        {time && <StyledTime>{formatTime(time)}</StyledTime>}
-                      </StyledOccupation>
-                    )}
-                  </Attribution>
-                )}
-              </FadeIn>
+              <Attribution
+                name={name}
+                context={context}
+                occupation={occupation}
+                time={time}
+              />
             )}
             {isWinner && (
               <FadeIn delay={2000}>

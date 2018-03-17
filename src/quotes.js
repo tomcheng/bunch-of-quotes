@@ -4585,8 +4585,8 @@ export const authors = {
   "Zora Neale Hurston": ["folklorist and writer", "1891-1960"],
 };
 
-export default quotes.map(([quote, name, context]) => ({
-  quote,
+export default quotes.map(([text, name, context]) => ({
+  text,
   context,
   name,
   occupation: authors[name] ? authors[name][0] : null,

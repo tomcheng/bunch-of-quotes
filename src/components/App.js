@@ -10,7 +10,7 @@ class App extends Component {
   static propTypes = {
     quotes: PropTypes.arrayOf(
       PropTypes.shape({
-        quote: PropTypes.string.isRequired,
+        text: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         occupation: PropTypes.string,
         time: PropTypes.string
@@ -49,7 +49,7 @@ class App extends Component {
     const { quoteIndex, cipher, isMobile } = this.state;
 
     const currentQuote = quotes[quoteIndex];
-    const characters = applyCipher(currentQuote.quote, cipher)
+    const characters = applyCipher(currentQuote.text, cipher)
       .split("")
       .map((letter, index) => ({
         id: alphabet.includes(letter) ? index + 1 : null,
@@ -58,7 +58,7 @@ class App extends Component {
 
     return (
       <Cryptogram
-        {...currentQuote}
+        quote={currentQuote}
         characters={characters}
         cipher={cipher}
         isMobile={isMobile}

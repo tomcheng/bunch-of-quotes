@@ -95,12 +95,14 @@ class Cryptogram extends Component {
       })
     ).isRequired,
     isMobile: PropTypes.bool.isRequired,
-    quote: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    onPlayAgain: PropTypes.func.isRequired,
-    context: PropTypes.string,
-    occupation: PropTypes.string,
-    time: PropTypes.string
+    quote: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+      context: PropTypes.string,
+      occupation: PropTypes.string,
+      time: PropTypes.string
+    }).isRequired,
+    onPlayAgain: PropTypes.func.isRequired
   };
 
   state = getInitialState();
@@ -191,8 +193,7 @@ class Cryptogram extends Component {
   };
 
   checkWin = guesses => {
-    const { characters } = this.props;
-    const { cipher } = this.state;
+    const { characters, cipher } = this.props;
 
     return (
       characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
@@ -303,7 +304,8 @@ class Cryptogram extends Component {
   };
 
   handleShowMistakes = () => {
-    const { guesses, cipher } = this.state;
+    const { cipher } = this.props;
+    const { guesses } = this.state;
 
     const mistakes = keys(guesses).filter(letter => {
       const guess = guesses[letter];
@@ -314,7 +316,7 @@ class Cryptogram extends Component {
   };
 
   handleRevealLetter = () => {
-    const { cipher } = this.state;
+    const { cipher } = this.props;
 
     const hintLetter = this.getSelectedLetter();
     const answer = findKey(cipher, letter => letter === hintLetter);
@@ -329,7 +331,7 @@ class Cryptogram extends Component {
   };
 
   handleRevealAnswer = () => {
-    const { cipher } = this.state;
+    const { cipher } = this.props;
     const correctAnswers = this.getUniqueLetters().reduce(
       (guesses, letter) => ({
         ...guesses,
@@ -348,15 +350,8 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const {
-      characters,
-      name,
-      context,
-      occupation,
-      time,
-      isMobile,
-      onPlayAgain
-    } = this.props;
+    const { characters, isMobile, onPlayAgain } = this.props;
+    const { name, context, occupation, time } = this.props.quote;
     const {
       guesses,
       selectedId,

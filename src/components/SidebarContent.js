@@ -9,12 +9,13 @@ const Container = styled.div`
   font-size: 16px;
   line-height: 22px;
   min-width: 200px;
+  padding: 4px;
 `;
 
 const Action = styled.div`
   padding: 0 20px;
   background-color: #fff;
-  margin: 4px;
+  margin-bottom: 4px;
   border-radius: 2px;
   font-weight: bold;
   height: 54px;
@@ -24,10 +25,10 @@ const Action = styled.div`
 
 const SidebarContent = ({ onClearGuesses, onGetHint, onShowMistakes, onRevealAnswer }) => (
   <Container>
-    <Action onClick={onGetHint}>Get a hint</Action>
     <Action onClick={onShowMistakes}>Show mistakes</Action>
-    <Action onClick={onClearGuesses}>Clear guesses</Action>
+    <Action onClick={onGetHint}>Get a hint</Action>
     <Action onClick={onRevealAnswer}>Reveal Answer</Action>
+    <Action onClick={onClearGuesses}>Clear guesses</Action>
   </Container>
 );
 

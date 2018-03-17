@@ -334,6 +334,7 @@ class Cryptogram extends Component {
         }
         onSetOpen={this.handleSetOpen}
         open={sidebarOpen}
+        touchHandleWidth={isWinner ? 0 : 20}
       >
         <Container>
           <MainContent>

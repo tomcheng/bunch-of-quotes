@@ -25,10 +25,10 @@ const Action = styled.div`
 
 const SidebarContent = ({ onClearGuesses, onGetHint, onShowMistakes, onRevealAnswer }) => (
   <Container>
-    <Action onClick={onShowMistakes}>Show mistakes</Action>
-    <Action onClick={onGetHint}>Get a hint</Action>
-    <Action onClick={onRevealAnswer}>Reveal Answer</Action>
     <Action onClick={onClearGuesses}>Clear guesses</Action>
+    <Action onClick={onGetHint}>Get a hint</Action>
+    <Action onClick={onShowMistakes}>Show mistakes</Action>
+    <Action onClick={onRevealAnswer}>Reveal Answer</Action>
   </Container>
 );
 

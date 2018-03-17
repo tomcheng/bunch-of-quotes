@@ -170,11 +170,8 @@ class App extends Component {
     this.selectNext(this.getWordStartsWithSelected().reverse());
   };
 
-  getSelectedLetter = () => {
-    const { selectedId } = this.state;
-    const character = this.getCharacters().find(c => c.id === selectedId);
-    return character ? character.letter : null;
-  };
+  getSelectedLetter = () =>
+    this.getCharacters().find(c => c.id === this.state.selectedId).letter;
 
   handleSelectLetter = id => {
     this.setState({ selectedId: id });
@@ -239,14 +236,6 @@ class App extends Component {
     }));
   };
 
-  handleSetSidebarOpen = open => {
-    this.setState({ sidebarOpen: open });
-  };
-
-  handleToggleSidebar = () => {
-    this.setState(state => ({ ...state, sidebarOpen: !state.sidebarOpen }));
-  };
-
   handleClearGuesses = () => {
     this.setState(state => ({
       ...state,
@@ -300,6 +289,14 @@ class App extends Component {
       isWinner: true,
       sidebarOpen: false
     });
+  };
+
+  handleSetSidebarOpen = open => {
+    this.setState({ sidebarOpen: open });
+  };
+
+  handleToggleSidebar = () => {
+    this.setState(state => ({ ...state, sidebarOpen: !state.sidebarOpen }));
   };
 
   render() {

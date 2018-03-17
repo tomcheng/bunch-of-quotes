@@ -108,15 +108,11 @@ class App extends Component {
 
   getLetters = () => this.getCharacters().filter(c => c.id !== null);
 
-  getUniqueLetters = () => uniq(this.getLetters().map(({ letter }) => letter));
-
-  getOpenLettersWithSelected = () => {
-    const { selectedId, guesses } = this.state;
-
-    return this.getLetters().filter(
-      ({ letter, id }) => !guesses[letter] || selectedId === id
+  getOpenLettersWithSelected = () =>
+    this.getLetters().filter(
+      ({ letter, id }) =>
+        !this.state.guesses[letter] || this.state.selectedId === id
     );
-  };
 
   getWordStartsWithSelected = () => {
     const { selectedId } = this.state;
@@ -275,7 +271,9 @@ class App extends Component {
 
   handleRevealAnswer = () => {
     const { cipher } = this.state;
-    const correctAnswers = this.getUniqueLetters().reduce(
+    const correctAnswers = uniq(
+      this.getLetters().map(({ letter }) => letter)
+    ).reduce(
       (guesses, letter) => ({
         ...guesses,
         [letter]: findKey(cipher, l => l === letter)

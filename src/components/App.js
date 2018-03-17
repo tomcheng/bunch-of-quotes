@@ -21,7 +21,8 @@ class App extends Component {
   state = {
     cipher: generateCipher(),
     quoteIndex: 0,
-    isMobile: window.innerWidth < MOBILE_SIZE
+    isMobile: window.innerWidth < MOBILE_SIZE,
+    selectedId: 1,
   };
 
   componentDidMount() {
@@ -36,17 +37,22 @@ class App extends Component {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   };
 
+  handleSelectLetter = ({ id }) => {
+    this.setState({ selectedId: id});
+  };
+
   handlePlayAgain = () => {
     this.setState(state => ({
       ...state,
       quoteIndex: state.quoteIndex + 1,
-      cipher: generateCipher()
+      cipher: generateCipher(),
+      selectedId: 1
     }));
   };
 
   render() {
     const { quotes } = this.props;
-    const { quoteIndex, cipher, isMobile } = this.state;
+    const { quoteIndex, cipher, selectedId, isMobile } = this.state;
 
     const currentQuote = quotes[quoteIndex];
     const characters = applyCipher(currentQuote.text, cipher)
@@ -58,11 +64,13 @@ class App extends Component {
 
     return (
       <Cryptogram
+        isMobile={isMobile}
         quote={currentQuote}
         characters={characters}
         cipher={cipher}
-        isMobile={isMobile}
+        selectedId={selectedId}
         onPlayAgain={this.handlePlayAgain}
+        onSelectLetter={this.handleSelectLetter}
       />
     );
   }

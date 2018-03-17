@@ -78,7 +78,6 @@ const Options = styled.div`
 
 const getInitialState = () => ({
   guesses: {},
-  selectedId: 1,
   isWinner: false,
   sidebarOpen: false,
   hints: [],
@@ -102,7 +101,9 @@ class Cryptogram extends Component {
       occupation: PropTypes.string,
       time: PropTypes.string
     }).isRequired,
-    onPlayAgain: PropTypes.func.isRequired
+    selectedId: PropTypes.number.isRequired,
+    onPlayAgain: PropTypes.func.isRequired,
+    onSelectLetter: PropTypes.func.isRequired,
   };
 
   state = getInitialState();
@@ -122,8 +123,7 @@ class Cryptogram extends Component {
   }
 
   getSelectedLetter = () => {
-    const { characters } = this.props;
-    const { selectedId } = this.state;
+    const { characters, selectedId } = this.props;
     const character = characters.find(c => c.id === selectedId);
     return character ? character.letter : null;
   };
@@ -133,7 +133,8 @@ class Cryptogram extends Component {
   getUniqueLetters = () => uniq(this.getLetters().map(({ letter }) => letter));
 
   getOpenLettersWithSelected = () => {
-    const { selectedId, guesses } = this.state;
+    const { selectedId } = this.props;
+    const { guesses } = this.state;
 
     return this.getLetters().filter(
       ({ letter, id }) => !guesses[letter] || selectedId === id
@@ -141,8 +142,7 @@ class Cryptogram extends Component {
   };
 
   getWordStartsWithSelected = () => {
-    const { characters } = this.props;
-    const { selectedId } = this.state;
+    const { characters, selectedId } = this.props;
     return characters.filter(
       ({ id }, index) =>
         (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
@@ -151,11 +151,11 @@ class Cryptogram extends Component {
   };
 
   selectLetter = id => {
-    this.setState({ selectedId: id });
+    this.props.onSelectLetter({ id });
   };
 
   selectNext = letters => {
-    const { selectedId } = this.state;
+    const { selectedId } = this.props;
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedId
@@ -252,7 +252,6 @@ class Cryptogram extends Component {
       this.setState({
         guesses: newGuesses,
         mistakes: newMistakes,
-        selectedId: null,
         isWinner: true
       });
       return;
@@ -343,18 +342,16 @@ class Cryptogram extends Component {
     this.setState({
       guesses: correctAnswers,
       mistakes: [],
-      selectedId: null,
       isWinner: true,
       sidebarOpen: false
     });
   };
 
   render() {
-    const { characters, isMobile, onPlayAgain } = this.props;
+    const { isMobile, characters, selectedId, onPlayAgain } = this.props;
     const { name, context, occupation, time } = this.props.quote;
     const {
       guesses,
-      selectedId,
       isWinner,
       sidebarOpen,
       hints,

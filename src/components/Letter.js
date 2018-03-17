@@ -36,9 +36,11 @@ const Container = styled.div`
 `;
 
 const GuessedLetter = styled.div`
-  background-color: ${props => (props.letterSelected ? "#eee" : "transparent")};
+  background-color: ${props =>
+    props.letterSelected && !props.isWinner ? "#eee" : "transparent"};
   color: ${props => (props.isMistake ? "red" : "inherit")};
-  font-weight: ${props => (props.isHint && !props.isWinner ? "bold" : "inherit")};
+  font-weight: ${props =>
+    props.isHint && !props.isWinner ? "bold" : "inherit"};
   border: 0;
   display: block;
   height: 20px;
@@ -47,7 +49,11 @@ const GuessedLetter = styled.div`
   line-height: 22px;
   margin-bottom: 1px;
   ${props =>
-    props.isSelected ? `animation: 1.1s ${props.isMistake ? errorBlink : blink} step-end infinite` : ""};
+    props.isSelected && !props.isWinner
+      ? `animation: 1.1s ${
+          props.isMistake ? errorBlink : blink
+        } step-end infinite`
+      : ""};
 `;
 
 const EncryptedLetter = styled.div`

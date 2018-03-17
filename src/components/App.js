@@ -268,14 +268,16 @@ class App extends Component {
   };
 
   handleRevealLetter = () => {
-    const { cipher } = this.state;
+    const { cipher, guesses } = this.state;
 
     const hintLetter = this.getSelectedLetter();
     const answer = findKey(cipher, letter => letter === hintLetter);
+    const existingLetter = findKey(guesses, letter => letter === answer);
+    const removals = existingLetter ? { [existingLetter]: null } : {};
 
     this.setState(state => ({
       ...state,
-      guesses: { ...state.guesses, [hintLetter]: answer },
+      guesses: { ...state.guesses, ...removals, [hintLetter]: answer },
       sidebarOpen: false,
       hints: state.hints.concat([hintLetter]),
       mistakes: state.mistakes.filter(letter => letter !== hintLetter)

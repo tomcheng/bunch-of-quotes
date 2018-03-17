@@ -14,7 +14,7 @@ class App extends Component {
     ).isRequired
   };
 
-  state = { quoteIndex: 0 };
+  state = { quoteIndex: 0, sidebarOpen: true };
 
   handlePlayAgain = () => {
     this.setState(state => ({ ...state, quoteIndex: state.quoteIndex + 1 }));

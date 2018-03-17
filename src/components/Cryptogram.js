@@ -5,8 +5,10 @@ import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
 import AnimateHeight from "react-animate-height-auto";
+import Sidebar from "react-sidebar";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
+import SidebarContent from "./SidebarContent";
 import FadeIn from "./FadeIn";
 import Letters from "./Letters";
 import Keyboard from "./Keyboard";
@@ -93,7 +95,8 @@ class Cryptogram extends Component {
       isMobile: window.innerWidth <= MOBILE_SIZE,
       guesses: {},
       selectedId: 1,
-      isWinner: false
+      isWinner: false,
+      sidebarOpen: false
     };
   }
 
@@ -216,65 +219,79 @@ class Cryptogram extends Component {
     );
   };
 
+  handleSetOpen = open => {
+    this.setState({ sidebarOpen: open });
+  };
+
+  handleClearGuesses = () => {
+    this.setState({ guesses: {}, sidebarOpen: false });
+  };
+
   render() {
     const { name, context, occupation, time, onPlayAgain } = this.props;
-    const { guesses, isMobile, selectedId, isWinner } = this.state;
+    const { guesses, isMobile, selectedId, isWinner, sidebarOpen } = this.state;
     const selectedLetter = this.characters.find(c => c.id === selectedId);
 
     return (
-      <Container>
-        <MainContent>
-          <Letters
-            letters={this.characters}
-            selectedId={selectedId}
-            selectedLetter={selectedLetter ? selectedLetter.letter : null}
-            guesses={guesses}
-            onSelect={this.selectLetter}
-            isWinner={isWinner}
-          />
-          {isWinner && (
-            <FadeIn delay={1000}>
-              {({ fadeInStyle }) => (
-                <Attribution style={fadeInStyle}>
-                  <div>
-                    {name}
-                    {context && `, ${context}`}
-                  </div>
-                  {(occupation || time) && (
-                    <StyledOccupation>
-                      {removeWidows(occupation)}
-                      {!!occupation && !!time && ", "}
-                      {time && <StyledTime>{formatTime(time)}</StyledTime>}
-                    </StyledOccupation>
-                  )}
-                </Attribution>
-              )}
-            </FadeIn>
-          )}
-          {isWinner && (
-            <FadeIn delay={2000}>
-              {({ fadeInStyle }) => (
-                <PlayAgainContainer style={fadeInStyle}>
-                  <PlayAgainButton onClick={onPlayAgain}>
-                    Play Again
-                  </PlayAgainButton>
-                </PlayAgainContainer>
-              )}
-            </FadeIn>
-          )}
-        </MainContent>
-
-        {isMobile && (
-          <AnimateHeight isExpanded={!isWinner} duration={300}>
-            <Keyboard
-              onTapPrevious={this.selectPreviousLetter}
-              onTapNext={this.selectNextLetter}
-              onTapLetter={this.handleTapLetter}
-              onTapDelete={this.handleTapDelete}
+      <Sidebar
+        sidebar={<SidebarContent onClearGuesses={this.handleClearGuesses} />}
+        onSetOpen={this.handleSetOpen}
+        open={sidebarOpen}
+      >
+        <Container>
+          <MainContent>
+            <Letters
+              letters={this.characters}
+              selectedId={selectedId}
+              selectedLetter={selectedLetter ? selectedLetter.letter : null}
+              guesses={guesses}
+              onSelect={this.selectLetter}
+              isWinner={isWinner}
             />
-          </AnimateHeight>
-        )}
-      </Container>
+            {isWinner && (
+              <FadeIn delay={1000}>
+                {({ fadeInStyle }) => (
+                  <Attribution style={fadeInStyle}>
+                    <div>
+                      {name}
+                      {context && `, ${context}`}
+                    </div>
+                    {(occupation || time) && (
+                      <StyledOccupation>
+                        {removeWidows(occupation)}
+                        {!!occupation && !!time && ", "}
+                        {time && <StyledTime>{formatTime(time)}</StyledTime>}
+                      </StyledOccupation>
+                    )}
+                  </Attribution>
+                )}
+              </FadeIn>
+            )}
+            {isWinner && (
+              <FadeIn delay={2000}>
+                {({ fadeInStyle }) => (
+                  <PlayAgainContainer style={fadeInStyle}>
+                    <PlayAgainButton onClick={onPlayAgain}>
+                      Play Again
+                    </PlayAgainButton>
+                  </PlayAgainContainer>
+                )}
+              </FadeIn>
+            )}
+          </MainContent>
+
+          {isMobile && (
+            <AnimateHeight isExpanded={!isWinner} duration={300}>
+              <Keyboard
+                onTapPrevious={this.selectPreviousLetter}
+                onTapNext={this.selectNextLetter}
+                onTapLetter={this.handleTapLetter}
+                onTapDelete={this.handleTapDelete}
+              />
+            </AnimateHeight>
+          )}
+        </Container>
+      </Sidebar>
     );
   }
 }

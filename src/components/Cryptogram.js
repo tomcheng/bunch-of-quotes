@@ -126,17 +126,88 @@ class Cryptogram extends Component {
         letter
       }));
 
-  getLetters = () => this.getCharacters().filter(c => c.id !== null);
-
   getSelectedLetter = () => {
     const { selectedId } = this.state;
-
     const character = this.getCharacters().find(c => c.id === selectedId);
-
     return character ? character.letter : null;
   };
 
+  getLetters = () => this.getCharacters().filter(c => c.id !== null);
+
   getUniqueLetters = () => uniq(this.getLetters().map(({ letter }) => letter));
+
+  getOpenLettersWithSelected = () => {
+    const { selectedId, guesses } = this.state;
+
+    return this.getLetters().filter(
+      ({ letter, id }) => !guesses[letter] || selectedId === id
+    );
+  };
+
+  getWordStartsWithSelected = () => {
+    const { selectedId } = this.state;
+    const characters = this.getCharacters();
+    return characters.filter(
+      ({ id }, index) =>
+        (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
+        id === selectedId
+    );
+  };
+
+  selectLetter = id => {
+    this.setState({ selectedId: id });
+  };
+
+  selectNext = letters => {
+    const { selectedId } = this.state;
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedId
+    );
+    this.selectLetter(
+      (selectedIndex === letters.length - 1
+        ? letters[0]
+        : letters[selectedIndex + 1]
+      ).id
+    );
+  };
+
+  selectNextLetter = () => {
+    this.selectNext(this.getLetters());
+  };
+
+  selectPreviousLetter = () => {
+    this.selectNext(this.getLetters().reverse());
+  };
+
+  selectNextOpenLetter = () => {
+    this.selectNext(this.getOpenLettersWithSelected());
+  };
+
+  selectPreviousOpenLetter = () => {
+    this.selectNext(this.getOpenLettersWithSelected().reverse());
+  };
+
+  selectNextWord = () => {
+    this.selectNext(this.getWordStartsWithSelected());
+  };
+
+  selectPreviousWord = () => {
+    this.selectNext(this.getWordStartsWithSelected().reverse());
+  };
+
+  checkWin = guesses => {
+    const { cipher } = this.state;
+    const characters = this.getCharacters();
+
+    return (
+      characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
+      keys(guesses).every(key => {
+        const guess = guesses[key];
+        return cipher[guess] === key;
+      })
+    );
+  };
 
   handleKeyDown = evt => {
     if (alphabet.includes(evt.key.toUpperCase())) {
@@ -167,26 +238,8 @@ class Cryptogram extends Component {
     }
   };
 
-  checkWin = guesses => {
-    const { cipher } = this.state;
-    const characters = this.getCharacters();
-
-    return (
-      characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
-      keys(guesses).every(key => {
-        const guess = guesses[key];
-        return cipher[guess] === key;
-      })
-    );
-  };
-
-  selectLetter = id => {
-    this.setState({ selectedId: id });
-  };
-
   handleTapLetter = guess => {
     const { guesses, mistakes, hints } = this.state;
-
     const letter = this.getSelectedLetter();
     const prevLetter = findKey(guesses, l => l === guess);
 
@@ -235,122 +288,6 @@ class Cryptogram extends Component {
         mistakes: state.mistakes.filter(mistake => mistake !== letter)
       }),
       this.selectPreviousLetter
-    );
-  };
-
-  selectNextLetter = () => {
-    const { selectedId } = this.state;
-
-    const letters = this.getLetters();
-    const selectedIndex = findIndex(
-      letters,
-      letter => letter.id === selectedId
-    );
-
-    this.selectLetter(
-      (selectedIndex === letters.length - 1
-        ? letters[0]
-        : letters[selectedIndex + 1]
-      ).id
-    );
-  };
-
-  selectPreviousLetter = () => {
-    const { selectedId } = this.state;
-
-    const letters = this.getLetters().reverse();
-    const selectedIndex = findIndex(
-      letters,
-      letter => letter.id === selectedId
-    );
-
-    this.selectLetter(
-      (selectedIndex === letters.length - 1
-        ? letters[0]
-        : letters[selectedIndex + 1]
-      ).id
-    );
-  };
-
-  selectNextOpenLetter = () => {
-    const { selectedId, guesses } = this.state;
-    const openLetters = this.getLetters().filter(
-      ({ letter, id }) => !guesses[letter] || selectedId === id
-    );
-    const selectedIndex = findIndex(
-      openLetters,
-      letter => letter.id === selectedId
-    );
-
-    this.selectLetter(
-      (selectedIndex === openLetters.length - 1
-        ? openLetters[0]
-        : openLetters[selectedIndex + 1]
-      ).id
-    );
-  };
-
-  selectPreviousOpenLetter = () => {
-    const { selectedId, guesses } = this.state;
-    const openLetters = this.getLetters()
-      .filter(({ letter, id }) => !guesses[letter] || selectedId === id)
-      .reverse();
-    const selectedIndex = findIndex(
-      openLetters,
-      letter => letter.id === selectedId
-    );
-
-    this.selectLetter(
-      (selectedIndex === openLetters.length - 1
-        ? openLetters[0]
-        : openLetters[selectedIndex + 1]
-      ).id
-    );
-  };
-
-  selectNextWord = () => {
-    const { selectedId } = this.state;
-
-    const characters = this.getCharacters();
-    const wordStarts = characters.filter(
-      ({ id }, index) =>
-        (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
-        id === selectedId
-    );
-    const selectedIndex = findIndex(
-      wordStarts,
-      letter => letter.id === selectedId
-    );
-
-    this.selectLetter(
-      (selectedIndex === wordStarts.length - 1
-        ? wordStarts[0]
-        : wordStarts[selectedIndex + 1]
-      ).id
-    );
-  };
-
-  selectPreviousWord = () => {
-    const { selectedId } = this.state;
-
-    const characters = this.getCharacters();
-    const wordStarts = characters
-      .filter(
-        ({ id }, index) =>
-          (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
-          id === selectedId
-      )
-      .reverse();
-    const selectedIndex = findIndex(
-      wordStarts,
-      letter => letter.id === selectedId
-    );
-
-    this.selectLetter(
-      (selectedIndex === wordStarts.length - 1
-        ? wordStarts[0]
-        : wordStarts[selectedIndex + 1]
-      ).id
     );
   };
 

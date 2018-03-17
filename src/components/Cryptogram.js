@@ -8,15 +8,12 @@ import pick from "lodash/pick";
 import uniq from "lodash/uniq";
 import AnimateHeight from "react-animate-height-auto";
 import Sidebar from "react-sidebar";
-import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import SidebarContent from "./SidebarContent";
 import FadeIn from "./FadeIn";
 import Letters from "./Letters";
 import Attribution from "./Attribution";
 import Keyboard from "./Keyboard";
-
-const MOBILE_SIZE = 1024;
 
 const Container = styled.div`
   height: 100%;
@@ -80,8 +77,6 @@ const Options = styled.div`
 `;
 
 const getInitialState = () => ({
-  cipher: generateCipher(),
-  isMobile: window.innerWidth <= MOBILE_SIZE,
   guesses: {},
   selectedId: 1,
   isWinner: false,
@@ -92,6 +87,14 @@ const getInitialState = () => ({
 
 class Cryptogram extends Component {
   static propTypes = {
+    cipher: PropTypes.objectOf(PropTypes.string).isRequired,
+    characters: PropTypes.arrayOf(
+      PropTypes.shape({
+        letter: PropTypes.string.isRequired,
+        id: PropTypes.number
+      })
+    ).isRequired,
+    isMobile: PropTypes.bool.isRequired,
     quote: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     onPlayAgain: PropTypes.func.isRequired,
@@ -103,7 +106,6 @@ class Cryptogram extends Component {
   state = getInitialState();
 
   componentDidMount() {
-    window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", this.handleKeyDown);
   }
 
@@ -114,29 +116,17 @@ class Cryptogram extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
     window.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  handleResize = () => {
-    this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
-  };
-
-  getCharacters = (quote = this.props.quote, cipher = this.state.cipher) =>
-    applyCipher(quote, cipher)
-      .split("")
-      .map((letter, index) => ({
-        id: alphabet.includes(letter) ? index + 1 : null,
-        letter
-      }));
-
   getSelectedLetter = () => {
+    const { characters } = this.props;
     const { selectedId } = this.state;
-    const character = this.getCharacters().find(c => c.id === selectedId);
+    const character = characters.find(c => c.id === selectedId);
     return character ? character.letter : null;
   };
 
-  getLetters = () => this.getCharacters().filter(c => c.id !== null);
+  getLetters = () => this.props.characters.filter(c => c.id !== null);
 
   getUniqueLetters = () => uniq(this.getLetters().map(({ letter }) => letter));
 
@@ -149,8 +139,8 @@ class Cryptogram extends Component {
   };
 
   getWordStartsWithSelected = () => {
+    const { characters } = this.props;
     const { selectedId } = this.state;
-    const characters = this.getCharacters();
     return characters.filter(
       ({ id }, index) =>
         (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
@@ -201,8 +191,8 @@ class Cryptogram extends Component {
   };
 
   checkWin = guesses => {
+    const { characters } = this.props;
     const { cipher } = this.state;
-    const characters = this.getCharacters();
 
     return (
       characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
@@ -358,17 +348,23 @@ class Cryptogram extends Component {
   };
 
   render() {
-    const { name, context, occupation, time, onPlayAgain } = this.props;
+    const {
+      characters,
+      name,
+      context,
+      occupation,
+      time,
+      isMobile,
+      onPlayAgain
+    } = this.props;
     const {
       guesses,
-      isMobile,
       selectedId,
       isWinner,
       sidebarOpen,
       hints,
       mistakes
     } = this.state;
-    const characters = this.getCharacters();
     const selectedLetter = this.getSelectedLetter();
 
     return (

@@ -66,6 +66,16 @@ const PlayAgainButton = styled.div`
   align-items: center;
 `;
 
+const Options = styled.div`
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  cursor: pointer;
+  color: ${props => (props.sidebarOpen ? "#fff" : "#444")};
+  z-index: 1000000;
+`;
+
 const getInitialState = () => ({
   cipher: generateCipher(),
   isMobile: window.innerWidth <= MOBILE_SIZE,
@@ -325,11 +335,13 @@ class Cryptogram extends Component {
     const { selectedId } = this.state;
 
     const characters = this.getCharacters();
-    const wordStarts = characters.filter(
-      ({ id }, index) =>
-        (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
-        id === selectedId
-    ).reverse();
+    const wordStarts = characters
+      .filter(
+        ({ id }, index) =>
+          (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
+          id === selectedId
+      )
+      .reverse();
     const selectedIndex = findIndex(
       wordStarts,
       letter => letter.id === selectedId
@@ -337,14 +349,18 @@ class Cryptogram extends Component {
 
     this.selectLetter(
       (selectedIndex === wordStarts.length - 1
-          ? wordStarts[0]
-          : wordStarts[selectedIndex + 1]
+        ? wordStarts[0]
+        : wordStarts[selectedIndex + 1]
       ).id
     );
   };
 
   handleSetOpen = open => {
     this.setState({ sidebarOpen: open });
+  };
+
+  handleToggleOpen = () => {
+    this.setState(state => ({ ...state, sidebarOpen: !state.sidebarOpen }));
   };
 
   handleClearGuesses = () => {
@@ -419,6 +435,7 @@ class Cryptogram extends Component {
       <Sidebar
         sidebar={
           <SidebarContent
+            isDesktop={!isMobile}
             onClearGuesses={this.handleClearGuesses}
             onShowMistakes={this.handleShowMistakes}
             onRevealLetter={this.handleRevealLetter}
@@ -428,6 +445,7 @@ class Cryptogram extends Component {
         onSetOpen={this.handleSetOpen}
         open={sidebarOpen}
         touchHandleWidth={isWinner ? 0 : 20}
+        pullRight={!isMobile}
       >
         <Container>
           <MainContent>
@@ -476,6 +494,17 @@ class Cryptogram extends Component {
                 onTapDelete={this.handleTapDelete}
               />
             </AnimateHeight>
+          )}
+
+          {!isMobile && (
+            <Options onClick={this.handleToggleOpen} sidebarOpen={sidebarOpen}>
+              <span style={{ display: sidebarOpen ? "none" : "inline" }}>
+                <i className="fa fa-cog" />
+              </span>
+              <span style={{ display: sidebarOpen ? "inline-block" : "none" }}>
+                <i className="fa fa-times" />
+              </span>
+            </Options>
           )}
         </Container>
       </Sidebar>

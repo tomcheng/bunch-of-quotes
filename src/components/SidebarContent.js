@@ -9,7 +9,7 @@ const Container = styled.div`
   font-size: 16px;
   line-height: 22px;
   min-width: 200px;
-  padding: 4px;
+  padding: ${props => props.isDesktop ? "40px 4px 4px" : "4px"};
 `;
 
 const Action = styled.div`
@@ -21,10 +21,11 @@ const Action = styled.div`
   height: 54px;
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
 
-const SidebarContent = ({ onClearGuesses, onRevealLetter, onShowMistakes, onRevealAnswer }) => (
-  <Container>
+const SidebarContent = ({ isDesktop, onClearGuesses, onRevealLetter, onShowMistakes, onRevealAnswer }) => (
+  <Container isDesktop={isDesktop}>
     <Action onClick={onClearGuesses}>Clear guesses</Action>
     <Action onClick={onShowMistakes}>Show mistakes</Action>
     <Action onClick={onRevealLetter}>Reveal Letter</Action>
@@ -33,6 +34,7 @@ const SidebarContent = ({ onClearGuesses, onRevealLetter, onShowMistakes, onReve
 );
 
 SidebarContent.propTypes = {
+  isDesktop: PropTypes.bool.isRequired,
   onClearGuesses: PropTypes.func.isRequired,
   onRevealAnswer: PropTypes.func.isRequired,
   onRevealLetter: PropTypes.func.isRequired,

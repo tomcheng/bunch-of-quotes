@@ -1,13 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import FadeIn from "./FadeIn";
 import styled from "styled-components";
 
 const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
 const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const Container = styled.div`
-  margin-top: 15px;
   text-align: right;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 14px;
@@ -24,10 +22,8 @@ const Time = styled.span`
   white-space: nowrap;
 `;
 
-const Attribution = ({ name, context, occupation, time}) => (
-  <FadeIn delay={1000}>
-    {({ fadeInStyle }) => (
-      <Container style={fadeInStyle}>
+const Attribution = ({ containerStyle, name, context, occupation, time}) => (
+      <Container style={containerStyle}>
         <div>
           {name}
           {context && `, ${context}`}
@@ -40,12 +36,11 @@ const Attribution = ({ name, context, occupation, time}) => (
           </Occupation>
         )}
       </Container>
-    )}
-  </FadeIn>
 );
 
 Attribution.propTypes = {
   name: PropTypes.string.isRequired,
+  containerStyle: PropTypes.object,
   context: PropTypes.string,
   occupation: PropTypes.string,
   time: PropTypes.string

@@ -255,12 +255,17 @@ class Cryptogram extends Component {
               isWinner={isWinner}
             />
             {isWinner && (
-              <Attribution
-                name={name}
-                context={context}
-                occupation={occupation}
-                time={time}
-              />
+              <FadeIn delay={1000}>
+                {({ fadeInStyle }) => (
+                  <Attribution
+                    containerStyle={{ ...fadeInStyle, marginTop: 15 }}
+                    name={name}
+                    context={context}
+                    occupation={occupation}
+                    time={time}
+                  />
+                )}
+              </FadeIn>
             )}
             {isWinner && (
               <FadeIn delay={2000}>

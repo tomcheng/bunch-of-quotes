@@ -1,10 +1,27 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
+import findIndex from "lodash/findIndex";
+import findKey from "lodash/findKey";
+import keys from "lodash/keys";
+import pick from "lodash/pick";
+import uniq from "lodash/uniq";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Cryptogram from "./Cryptogram";
 
 const MOBILE_SIZE = 1024;
+
+const getInitialState = () => ({
+  isMobile: window.innerWidth < MOBILE_SIZE,
+  quoteIndex: 0,
+  cipher: generateCipher(),
+  guesses: {},
+  hints: [],
+  mistakes: [],
+  selectedId: 1,
+  isWinner: false,
+  sidebarOpen: false
+});
 
 class App extends Component {
   static propTypes = {
@@ -18,59 +35,309 @@ class App extends Component {
     ).isRequired
   };
 
-  state = {
-    cipher: generateCipher(),
-    quoteIndex: 0,
-    isMobile: window.innerWidth < MOBILE_SIZE,
-    selectedId: 1,
-  };
+  state = getInitialState();
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
+    window.addEventListener("keydown", this.handleKeyDown);
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("keydown", this.handleKeyDown);
   }
 
   handleResize = () => {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   };
 
-  handleSelectLetter = ({ id }) => {
-    this.setState({ selectedId: id});
+  handleKeyDown = evt => {
+    if (alphabet.includes(evt.key.toUpperCase())) {
+      this.handleGuess(evt.key.toUpperCase());
+    } else if (evt.key === "Backspace") {
+      this.handleDelete();
+    } else if (evt.key === "ArrowLeft") {
+      evt.preventDefault();
+      if (evt.metaKey) {
+        this.selectPreviousWord();
+      } else {
+        this.selectPreviousLetter();
+      }
+    } else if (evt.key === "ArrowRight") {
+      evt.preventDefault();
+      if (evt.metaKey) {
+        this.selectNextWord();
+      } else {
+        this.selectNextLetter();
+      }
+    } else if (evt.key === "Tab") {
+      evt.preventDefault();
+      if (evt.shiftKey) {
+        this.selectPreviousOpenLetter();
+      } else {
+        this.selectNextOpenLetter();
+      }
+    }
   };
 
-  handlePlayAgain = () => {
-    this.setState(state => ({
-      ...state,
-      quoteIndex: state.quoteIndex + 1,
-      cipher: generateCipher(),
-      selectedId: 1
-    }));
+  checkWin = guesses => {
+    const { cipher } = this.state;
+
+    return (
+      this.getCharacters()
+        .filter(c => !!c.id)
+        .every(c => !!guesses[c.letter]) &&
+      keys(guesses).every(key => {
+        const guess = guesses[key];
+        return cipher[guess] === key;
+      })
+    );
   };
 
-  render() {
+  getCharacters = () => {
     const { quotes } = this.props;
-    const { quoteIndex, cipher, selectedId, isMobile } = this.state;
+    const { quoteIndex, cipher } = this.state;
 
-    const currentQuote = quotes[quoteIndex];
-    const characters = applyCipher(currentQuote.text, cipher)
+    return applyCipher(quotes[quoteIndex].text, cipher)
       .split("")
       .map((letter, index) => ({
         id: alphabet.includes(letter) ? index + 1 : null,
         letter
       }));
+  };
+
+  getLetters = () => this.getCharacters().filter(c => c.id !== null);
+
+  getUniqueLetters = () => uniq(this.getLetters().map(({ letter }) => letter));
+
+  getOpenLettersWithSelected = () => {
+    const { selectedId, guesses } = this.state;
+
+    return this.getLetters().filter(
+      ({ letter, id }) => !guesses[letter] || selectedId === id
+    );
+  };
+
+  getWordStartsWithSelected = () => {
+    const { selectedId } = this.state;
+    const characters = this.getCharacters();
+    return characters.filter(
+      ({ id }, index) =>
+        (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
+        id === selectedId
+    );
+  };
+
+  selectLetter = id => {
+    this.setState({ selectedId: id });
+  };
+
+  selectNext = letters => {
+    const { selectedId } = this.state;
+    const selectedIndex = findIndex(
+      letters,
+      letter => letter.id === selectedId
+    );
+    this.selectLetter(
+      (selectedIndex === letters.length - 1
+        ? letters[0]
+        : letters[selectedIndex + 1]
+      ).id
+    );
+  };
+
+  selectNextLetter = () => {
+    this.selectNext(this.getLetters());
+  };
+
+  selectPreviousLetter = () => {
+    this.selectNext(this.getLetters().reverse());
+  };
+
+  selectNextOpenLetter = () => {
+    this.selectNext(this.getOpenLettersWithSelected());
+  };
+
+  selectPreviousOpenLetter = () => {
+    this.selectNext(this.getOpenLettersWithSelected().reverse());
+  };
+
+  selectNextWord = () => {
+    this.selectNext(this.getWordStartsWithSelected());
+  };
+
+  selectPreviousWord = () => {
+    this.selectNext(this.getWordStartsWithSelected().reverse());
+  };
+
+  getSelectedLetter = () => {
+    const { selectedId } = this.state;
+    const character = this.getCharacters().find(c => c.id === selectedId);
+    return character ? character.letter : null;
+  };
+
+  handleSelectLetter = id => {
+    this.setState({ selectedId: id });
+  };
+
+  handleGuess = guess => {
+    const { guesses, mistakes, hints } = this.state;
+    const letter = this.getSelectedLetter();
+    const prevLetter = findKey(guesses, l => l === guess);
+
+    if (hints.includes(prevLetter) || hints.includes(letter)) {
+      return;
+    }
+
+    const removals = prevLetter ? { [prevLetter]: null } : {};
+    const newGuesses = { ...guesses, ...removals, [letter]: guess };
+    const newMistakes = mistakes.filter(
+      mistake => mistake !== letter && mistake !== prevLetter
+    );
+
+    if (this.checkWin(newGuesses)) {
+      this.setState({
+        guesses: newGuesses,
+        mistakes: newMistakes,
+        isWinner: true
+      });
+      return;
+    }
+
+    this.setState(
+      { guesses: newGuesses, mistakes: newMistakes },
+      this.selectNextLetter
+    );
+  };
+
+  handleDelete = () => {
+    const { hints } = this.state;
+    const letter = this.getSelectedLetter();
+
+    if (hints.includes(letter)) {
+      this.selectPreviousLetter();
+      return;
+    }
+
+    this.setState(
+      state => ({
+        ...state,
+        guesses: {
+          ...state.guesses,
+          [letter]: null
+        },
+        mistakes: state.mistakes.filter(mistake => mistake !== letter)
+      }),
+      this.selectPreviousLetter
+    );
+  };
+
+  handlePlayAgain = () => {
+    this.setState(state => ({
+      ...getInitialState(),
+      quoteIndex: state.quoteIndex + 1
+    }));
+  };
+
+  handleSetSidebarOpen = open => {
+    this.setState({ sidebarOpen: open });
+  };
+
+  handleToggleSidebar = () => {
+    this.setState(state => ({ ...state, sidebarOpen: !state.sidebarOpen }));
+  };
+
+  handleClearGuesses = () => {
+    this.setState(state => ({
+      ...state,
+      guesses: pick(state.guesses, state.hints),
+      mistakes: [],
+      sidebarOpen: false
+    }));
+  };
+
+  handleShowMistakes = () => {
+    const { cipher, guesses } = this.state;
+
+    const mistakes = keys(guesses).filter(letter => {
+      const guess = guesses[letter];
+      return cipher[guess] && cipher[guess] !== letter;
+    });
+
+    this.setState({ mistakes, sidebarOpen: false });
+  };
+
+  handleRevealLetter = () => {
+    const { cipher } = this.state;
+
+    const hintLetter = this.getSelectedLetter();
+    const answer = findKey(cipher, letter => letter === hintLetter);
+
+    this.setState(state => ({
+      ...state,
+      guesses: { ...state.guesses, [hintLetter]: answer },
+      sidebarOpen: false,
+      hints: state.hints.concat([hintLetter]),
+      mistakes: state.mistakes.filter(letter => letter !== hintLetter)
+    }));
+  };
+
+  handleRevealAnswer = () => {
+    const { cipher } = this.state;
+    const correctAnswers = this.getUniqueLetters().reduce(
+      (guesses, letter) => ({
+        ...guesses,
+        [letter]: findKey(cipher, l => l === letter)
+      }),
+      {}
+    );
+
+    this.setState({
+      guesses: correctAnswers,
+      mistakes: [],
+      isWinner: true,
+      sidebarOpen: false
+    });
+  };
+
+  render() {
+    const { quotes } = this.props;
+    const {
+      isMobile,
+      quoteIndex,
+      cipher,
+      guesses,
+      hints,
+      mistakes,
+      selectedId,
+      isWinner,
+      sidebarOpen
+    } = this.state;
 
     return (
       <Cryptogram
         isMobile={isMobile}
-        quote={currentQuote}
-        characters={characters}
+        quote={quotes[quoteIndex]}
+        characters={this.getCharacters()}
         cipher={cipher}
+        guesses={guesses}
+        hints={hints}
+        mistakes={mistakes}
         selectedId={selectedId}
+        isWinner={isWinner}
+        sidebarOpen={sidebarOpen}
+        onClearGuesses={this.handleClearGuesses}
+        onDelete={this.handleDelete}
+        onGuess={this.handleGuess}
         onPlayAgain={this.handlePlayAgain}
+        onRevealAnswer={this.handleRevealAnswer}
+        onRevealLetter={this.handleRevealLetter}
         onSelectLetter={this.handleSelectLetter}
+        onSelectNextLetter={this.selectNextLetter}
+        onSelectPreviousLetter={this.selectPreviousLetter}
+        onSetSidebarOpen={this.handleSetSidebarOpen}
+        onShowMistakes={this.handleShowMistakes}
+        onToggleSidebar={this.handleToggleSidebar}
       />
     );
   }

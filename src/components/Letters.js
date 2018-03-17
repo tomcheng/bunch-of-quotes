@@ -31,7 +31,6 @@ const Word = styled.div`
 const Letters = ({
   letters,
   selectedId,
-  selectedLetter,
   guesses,
   hints,
   mistakes,
@@ -39,6 +38,7 @@ const Letters = ({
   onSelect
 }) => {
   const words = split(letters, l => l.letter === " ");
+  const selectedLetter = letters.find(l => l.id === selectedId).letter;
 
   return (
     <Container>
@@ -76,9 +76,8 @@ Letters.propTypes = {
     })
   ).isRequired,
   mistakes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedId: PropTypes.number.isRequired,
   onSelect: PropTypes.func.isRequired,
-  selectedId: PropTypes.number,
-  selectedLetter: PropTypes.string
 };
 
 export default Letters;

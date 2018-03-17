@@ -59,23 +59,23 @@ class App extends Component {
     } else if (evt.key === "ArrowLeft") {
       evt.preventDefault();
       if (evt.metaKey) {
-        this.selectPreviousWord();
+        this.handleSelectPreviousWord();
       } else {
-        this.selectPreviousLetter();
+        this.handleSelectPreviousLetter();
       }
     } else if (evt.key === "ArrowRight") {
       evt.preventDefault();
       if (evt.metaKey) {
-        this.selectNextWord();
+        this.handleSelectNextWord();
       } else {
-        this.selectNextLetter();
+        this.handleSelectNextLetter();
       }
     } else if (evt.key === "Tab") {
       evt.preventDefault();
       if (evt.shiftKey) {
-        this.selectPreviousOpenLetter();
+        this.handleSelectPreviousOpenLetter();
       } else {
-        this.selectNextOpenLetter();
+        this.handleSelectNextOpenLetter();
       }
     }
   };
@@ -146,27 +146,27 @@ class App extends Component {
     );
   };
 
-  selectNextLetter = () => {
+  handleSelectNextLetter = () => {
     this.selectNext(this.getLetters());
   };
 
-  selectPreviousLetter = () => {
+  handleSelectPreviousLetter = () => {
     this.selectNext(this.getLetters().reverse());
   };
 
-  selectNextOpenLetter = () => {
+  handleSelectNextOpenLetter = () => {
     this.selectNext(this.getOpenLettersWithSelected());
   };
 
-  selectPreviousOpenLetter = () => {
+  handleSelectPreviousOpenLetter = () => {
     this.selectNext(this.getOpenLettersWithSelected().reverse());
   };
 
-  selectNextWord = () => {
+  handleSelectNextWord = () => {
     this.selectNext(this.getWordStartsWithSelected());
   };
 
-  selectPreviousWord = () => {
+  handleSelectPreviousWord = () => {
     this.selectNext(this.getWordStartsWithSelected().reverse());
   };
 
@@ -206,7 +206,7 @@ class App extends Component {
 
     this.setState(
       { guesses: newGuesses, mistakes: newMistakes },
-      this.selectNextLetter
+      this.handleSelectNextLetter
     );
   };
 
@@ -215,7 +215,7 @@ class App extends Component {
     const letter = this.getSelectedLetter();
 
     if (hints.includes(letter)) {
-      this.selectPreviousLetter();
+      this.handleSelectPreviousLetter();
       return;
     }
 
@@ -228,7 +228,7 @@ class App extends Component {
         },
         mistakes: state.mistakes.filter(mistake => mistake !== letter)
       }),
-      this.selectPreviousLetter
+      this.handleSelectPreviousLetter
     );
   };
 
@@ -333,8 +333,8 @@ class App extends Component {
         onRevealAnswer={this.handleRevealAnswer}
         onRevealLetter={this.handleRevealLetter}
         onSelectLetter={this.handleSelectLetter}
-        onSelectNextLetter={this.selectNextLetter}
-        onSelectPreviousLetter={this.selectPreviousLetter}
+        onSelectNextLetter={this.handleSelectNextLetter}
+        onSelectPreviousLetter={this.handleSelectPreviousLetter}
         onSetSidebarOpen={this.handleSetSidebarOpen}
         onShowMistakes={this.handleShowMistakes}
         onToggleSidebar={this.handleToggleSidebar}

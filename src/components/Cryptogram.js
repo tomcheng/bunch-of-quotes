@@ -4,6 +4,7 @@ import styled from "styled-components";
 import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
+import pick from "lodash/pick";
 import uniq from "lodash/uniq";
 import AnimateHeight from "react-animate-height-auto";
 import Sidebar from "react-sidebar";
@@ -256,7 +257,12 @@ class Cryptogram extends Component {
   };
 
   handleClearGuesses = () => {
-    this.setState({ guesses: {}, mistakes: [], sidebarOpen: false });
+    this.setState(state => ({
+      ...state,
+      guesses: pick(state.guesses, state.hints),
+      mistakes: [],
+      sidebarOpen: false
+    }));
   };
 
   handleShowMistakes = () => {

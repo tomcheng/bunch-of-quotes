@@ -33,6 +33,7 @@ const Letters = ({
   selectedId,
   selectedLetter,
   guesses,
+  hints,
   mistakes,
   isWinner,
   onSelect
@@ -50,6 +51,7 @@ const Letters = ({
               isSelected={id === selectedId}
               isLetter={id !== null}
               isMistake={mistakes.includes(letter)}
+              isHint={hints.includes(letter)}
               letter={letter}
               guess={guesses[letter] || " "}
               onSelect={onSelect}
@@ -65,6 +67,7 @@ const Letters = ({
 
 Letters.propTypes = {
   guesses: PropTypes.object.isRequired,
+  hints: PropTypes.arrayOf(PropTypes.string).isRequired,
   isWinner: PropTypes.bool.isRequired,
   letters: PropTypes.arrayOf(
     PropTypes.shape({

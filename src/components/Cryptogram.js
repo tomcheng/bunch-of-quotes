@@ -71,6 +71,7 @@ const getInitialState = () => ({
   selectedId: 1,
   isWinner: false,
   sidebarOpen: false,
+  hints: [],
   mistakes: []
 });
 
@@ -164,10 +165,15 @@ class Cryptogram extends Component {
   };
 
   handleTapLetter = guess => {
-    const { guesses, mistakes } = this.state;
+    const { guesses, mistakes, hints } = this.state;
 
     const letter = this.getSelectedLetter();
     const prevLetter = findKey(guesses, l => l === guess);
+
+    if (hints.includes(prevLetter) || hints.includes(letter)) {
+      return;
+    }
+
     const removals = prevLetter ? { [prevLetter]: null } : {};
     const newGuesses = { ...guesses, ...removals, [letter]: guess };
     const newMistakes = mistakes.filter(
@@ -191,7 +197,13 @@ class Cryptogram extends Component {
   };
 
   handleTapDelete = () => {
+    const { hints } = this.state;
     const letter = this.getSelectedLetter();
+
+    if (hints.includes(letter)) {
+      this.selectPreviousLetter();
+      return;
+    }
 
     this.setState(
       state => ({
@@ -260,22 +272,19 @@ class Cryptogram extends Component {
   };
 
   handleGetHint = () => {
-    const { guesses, cipher } = this.state;
-    const notGuessed = this.getUniqueLetters().filter(
-      letter => !guesses[letter]
+    const { cipher, hints } = this.state;
+
+    const hintLetter = sample(
+      this.getUniqueLetters().filter(letter => !hints.includes(letter))
     );
-
-    if (notGuessed.length === 0) {
-      return;
-    }
-
-    const hintLetter = sample(notGuessed);
     const answer = findKey(cipher, letter => letter === hintLetter);
 
     this.setState(state => ({
       ...state,
       guesses: { ...state.guesses, [hintLetter]: answer },
-      sidebarOpen: false
+      sidebarOpen: false,
+      hints: state.hints.concat([hintLetter]),
+      mistakes: state.mistakes.filter(letter => letter !== hintLetter)
     }));
   };
 
@@ -307,6 +316,7 @@ class Cryptogram extends Component {
       selectedId,
       isWinner,
       sidebarOpen,
+      hints,
       mistakes
     } = this.state;
     const characters = this.getCharacters(quote, cipher);
@@ -332,6 +342,7 @@ class Cryptogram extends Component {
               selectedId={selectedId}
               selectedLetter={selectedLetter}
               guesses={guesses}
+              hints={hints}
               mistakes={mistakes}
               isWinner={isWinner}
               onSelect={this.selectLetter}

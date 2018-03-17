@@ -38,6 +38,7 @@ const Container = styled.div`
 const GuessedLetter = styled.div`
   background-color: ${props => (props.letterSelected ? "#eee" : "transparent")};
   color: ${props => (props.isMistake ? "red" : "inherit")};
+  font-weight: ${props => (props.isHint ? "bold" : "inherit")};
   border: 0;
   display: block;
   height: 20px;
@@ -62,8 +63,9 @@ const Letter = ({
   id,
   letter,
   guess,
-  isSelected,
+  isHint,
   isMistake,
+  isSelected,
   letterSelected,
   isLetter,
   onSelect,
@@ -80,9 +82,10 @@ const Letter = ({
       }}
     >
       <GuessedLetter
+        isHint={isHint}
+        isMistake={isMistake}
         isSelected={isSelected}
         letterSelected={letterSelected}
-        isMistake={isMistake}
       >
         {guess}
       </GuessedLetter>
@@ -94,6 +97,7 @@ const Letter = ({
 Letter.propTypes = {
   letter: PropTypes.string.isRequired,
   isLetter: PropTypes.bool.isRequired,
+  isHint: PropTypes.bool.isRequired,
   isMistake: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool.isRequired,
   isWinner: PropTypes.bool.isRequired,

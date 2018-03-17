@@ -9,17 +9,20 @@ const Container = styled.div`
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
   line-height: 22px;
+  min-width: 180px;
 `;
 
-const SidebarContent = ({ onClearGuesses, onShowMistakes }) => (
+const SidebarContent = ({ onClearGuesses, onGetHint, onShowMistakes }) => (
   <Container>
     <div onClick={onClearGuesses}>Clear Guesses</div>
     <div onClick={onShowMistakes}>Show Mistakes</div>
+    <div onClick={onGetHint}>Get a Hint</div>
   </Container>
 );
 
 SidebarContent.propTypes = {
   onClearGuesses: PropTypes.func.isRequired,
+  onGetHint: PropTypes.func.isRequired,
   onShowMistakes: PropTypes.func.isRequired
 };
 

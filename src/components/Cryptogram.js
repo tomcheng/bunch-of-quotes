@@ -4,6 +4,8 @@ import styled from "styled-components";
 import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
+import uniq from "lodash/uniq";
+import sample from "lodash/sample";
 import AnimateHeight from "react-animate-height-auto";
 import Sidebar from "react-sidebar";
 import { generateCipher, applyCipher } from "../utils/cipher";
@@ -59,7 +61,7 @@ const PlayAgainButton = styled.div`
   user-select: none;
 `;
 
-const getInitialState = () => ( {
+const getInitialState = () => ({
   cipher: generateCipher(),
   isMobile: window.innerWidth <= MOBILE_SIZE,
   guesses: {},
@@ -109,6 +111,11 @@ class Cryptogram extends Component {
         letter
       }))
   );
+
+  getLetters = () =>
+    this.getCharacters(this.props.quote, this.state.cipher).filter(
+      c => c.id !== null
+    );
 
   getSelectedLetter = () => {
     const { quote } = this.props;
@@ -195,12 +202,9 @@ class Cryptogram extends Component {
   };
 
   selectNextLetter = () => {
-    const { quote } = this.props;
-    const { selectedId, cipher } = this.state;
+    const { selectedId } = this.state;
 
-    const letters = this.getCharacters(quote, cipher).filter(
-      c => c.id !== null
-    );
+    const letters = this.getLetters();
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedId
@@ -215,12 +219,9 @@ class Cryptogram extends Component {
   };
 
   selectPreviousLetter = () => {
-    const { quote } = this.props;
-    const { selectedId, cipher } = this.state;
+    const { selectedId } = this.state;
 
-    const letters = this.getCharacters(quote, cipher)
-      .filter(c => c.id !== null)
-      .reverse();
+    const letters = this.getLetters().reverse();
     const selectedIndex = findIndex(
       letters,
       letter => letter.id === selectedId
@@ -253,6 +254,26 @@ class Cryptogram extends Component {
     this.setState({ mistakes, sidebarOpen: false });
   };
 
+  handleGetHint = () => {
+    const { guesses, cipher } = this.state;
+    const notGuessed = uniq(
+      this.getLetters().map(({ letter }) => letter)
+    ).filter(letter => !guesses[letter]);
+
+    if (notGuessed.length === 0) {
+      return;
+    }
+
+    const hintLetter = sample(notGuessed);
+    const answer = findKey(cipher, letter => letter === hintLetter);
+
+    this.setState(state => ({
+      ...state,
+      guesses: { ...state.guesses, [hintLetter]: answer },
+      sidebarOpen: false
+    }));
+  };
+
   render() {
     const { quote, name, context, occupation, time, onPlayAgain } = this.props;
     const {
@@ -273,6 +294,7 @@ class Cryptogram extends Component {
           <SidebarContent
             onClearGuesses={this.handleClearGuesses}
             onShowMistakes={this.handleShowMistakes}
+            onGetHint={this.handleGetHint}
           />
         }
         onSetOpen={this.handleSetOpen}

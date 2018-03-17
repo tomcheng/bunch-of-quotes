@@ -24,6 +24,7 @@ const Container = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: space-between;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
@@ -39,6 +40,7 @@ const MainContent = styled.div`
   position: relative;
   overflow: auto;
   padding: 20px;
+  max-width: 1024px;
 `;
 
 const PlayAgainContainer = styled.div`

@@ -147,12 +147,14 @@ class Cryptogram extends Component {
     } else if (evt.key === "Backspace") {
       this.handleTapDelete();
     } else if (evt.key === "ArrowLeft") {
+      evt.preventDefault();
       if (evt.metaKey) {
         this.selectPreviousWord();
       } else {
         this.selectPreviousLetter();
       }
     } else if (evt.key === "ArrowRight") {
+      evt.preventDefault();
       if (evt.metaKey) {
         this.selectNextWord();
       } else {

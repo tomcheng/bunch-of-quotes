@@ -160,7 +160,7 @@ const Cryptogram = ({
           <span style={{ display: sidebarOpen ? "none" : "inline" }}>
             <i className="fa fa-cog" />
           </span>
-          <span style={{ display: sidebarOpen ? "inline-block" : "none" }}>
+          <span style={{ display: sidebarOpen ? "inline" : "none" }}>
             <i className="fa fa-times" />
           </span>
         </Options>

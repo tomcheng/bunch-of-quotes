@@ -77,6 +77,8 @@ class App extends Component {
       } else {
         this.handleSelectNextOpenLetter();
       }
+    } else if (evt.key === "Enter" && this.state.isWinner) {
+      this.handlePlayAgain();
     }
   };
 

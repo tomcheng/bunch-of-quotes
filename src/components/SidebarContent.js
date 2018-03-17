@@ -23,19 +23,19 @@ const Action = styled.div`
   align-items: center;
 `;
 
-const SidebarContent = ({ onClearGuesses, onGetHint, onShowMistakes, onRevealAnswer }) => (
+const SidebarContent = ({ onClearGuesses, onRevealLetter, onShowMistakes, onRevealAnswer }) => (
   <Container>
     <Action onClick={onClearGuesses}>Clear guesses</Action>
-    <Action onClick={onGetHint}>Get a hint</Action>
     <Action onClick={onShowMistakes}>Show mistakes</Action>
+    <Action onClick={onRevealLetter}>Reveal Letter</Action>
     <Action onClick={onRevealAnswer}>Reveal Answer</Action>
   </Container>
 );
 
 SidebarContent.propTypes = {
   onClearGuesses: PropTypes.func.isRequired,
-  onGetHint: PropTypes.func.isRequired,
   onRevealAnswer: PropTypes.func.isRequired,
+  onRevealLetter: PropTypes.func.isRequired,
   onShowMistakes: PropTypes.func.isRequired
 };
 

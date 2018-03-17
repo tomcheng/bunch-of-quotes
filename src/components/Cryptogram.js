@@ -5,7 +5,6 @@ import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
 import uniq from "lodash/uniq";
-import sample from "lodash/sample";
 import AnimateHeight from "react-animate-height-auto";
 import Sidebar from "react-sidebar";
 import { generateCipher, applyCipher } from "../utils/cipher";
@@ -271,12 +270,10 @@ class Cryptogram extends Component {
     this.setState({ mistakes, sidebarOpen: false });
   };
 
-  handleGetHint = () => {
-    const { cipher, hints } = this.state;
+  handleRevealLetter = () => {
+    const { cipher } = this.state;
 
-    const hintLetter = sample(
-      this.getUniqueLetters().filter(letter => !hints.includes(letter))
-    );
+    const hintLetter = this.getSelectedLetter();
     const answer = findKey(cipher, letter => letter === hintLetter);
 
     this.setState(state => ({
@@ -328,7 +325,7 @@ class Cryptogram extends Component {
           <SidebarContent
             onClearGuesses={this.handleClearGuesses}
             onShowMistakes={this.handleShowMistakes}
-            onGetHint={this.handleGetHint}
+            onRevealLetter={this.handleRevealLetter}
             onRevealAnswer={this.handleRevealAnswer}
           />
         }

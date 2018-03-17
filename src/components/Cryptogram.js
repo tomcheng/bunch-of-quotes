@@ -59,6 +59,16 @@ const PlayAgainButton = styled.div`
   user-select: none;
 `;
 
+const getInitialState = () => ( {
+  cipher: generateCipher(),
+  isMobile: window.innerWidth <= MOBILE_SIZE,
+  guesses: {},
+  selectedId: 1,
+  isWinner: false,
+  sidebarOpen: false,
+  mistakes: []
+});
+
 class Cryptogram extends Component {
   static propTypes = {
     quote: PropTypes.string.isRequired,
@@ -69,15 +79,7 @@ class Cryptogram extends Component {
     time: PropTypes.string
   };
 
-  state = {
-    cipher: generateCipher(),
-    isMobile: window.innerWidth <= MOBILE_SIZE,
-    guesses: {},
-    selectedId: 1,
-    isWinner: false,
-    sidebarOpen: false,
-    mistakes: []
-  };
+  state = getInitialState();
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
@@ -86,12 +88,7 @@ class Cryptogram extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.quote !== this.props.quote) {
-      this.setState({
-        cipher: generateCipher(),
-        guesses: {},
-        selectedId: 1,
-        isWinner: false
-      });
+      this.setState(getInitialState());
     }
   }
 
@@ -242,7 +239,7 @@ class Cryptogram extends Component {
   };
 
   handleClearGuesses = () => {
-    this.setState({ guesses: {}, sidebarOpen: false });
+    this.setState({ guesses: {}, mistakes: [], sidebarOpen: false });
   };
 
   handleShowMistakes = () => {

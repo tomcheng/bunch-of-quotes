@@ -52,13 +52,16 @@ const PlayAgainContainer = styled.div`
 const PlayAgainButton = styled.div`
   margin-top: 40px;
   margin-bottom: 20px;
-  padding: 10px 15px;
+  padding: 0 15px;
   border-radius: 2px;
-  font-size: 16px;
+  font-weight: bold;
   background-color: #444;
   color: #fff;
   cursor: pointer;
   user-select: none;
+  height: 54px;
+  display: flex;
+  align-items: center;
 `;
 
 const getInitialState = () => ({
@@ -127,6 +130,8 @@ class Cryptogram extends Component {
 
     return character ? character.letter : null;
   };
+
+  getUniqueLetters = () => uniq(this.getLetters().map(({ letter }) => letter));
 
   handleKeyDown = evt => {
     if (alphabet.includes(evt.key.toUpperCase())) {
@@ -256,9 +261,9 @@ class Cryptogram extends Component {
 
   handleGetHint = () => {
     const { guesses, cipher } = this.state;
-    const notGuessed = uniq(
-      this.getLetters().map(({ letter }) => letter)
-    ).filter(letter => !guesses[letter]);
+    const notGuessed = this.getUniqueLetters().filter(
+      letter => !guesses[letter]
+    );
 
     if (notGuessed.length === 0) {
       return;
@@ -272,6 +277,25 @@ class Cryptogram extends Component {
       guesses: { ...state.guesses, [hintLetter]: answer },
       sidebarOpen: false
     }));
+  };
+
+  handleRevealAnswer = () => {
+    const { cipher } = this.state;
+    const correctAnswers = this.getUniqueLetters().reduce(
+      (guesses, letter) => ({
+        ...guesses,
+        [letter]: findKey(cipher, l => l === letter)
+      }),
+      {}
+    );
+
+    this.setState({
+      guesses: correctAnswers,
+      mistakes: [],
+      selectedId: null,
+      isWinner: true,
+      sidebarOpen: false
+    });
   };
 
   render() {
@@ -295,6 +319,7 @@ class Cryptogram extends Component {
             onClearGuesses={this.handleClearGuesses}
             onShowMistakes={this.handleShowMistakes}
             onGetHint={this.handleGetHint}
+            onRevealAnswer={this.handleRevealAnswer}
           />
         }
         onSetOpen={this.handleSetOpen}

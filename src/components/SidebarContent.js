@@ -3,26 +3,38 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const Container = styled.div`
-  padding: 20px;
-  background-color: #fff;
+  background-color: #919faa;
   height: 100%;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
   line-height: 22px;
-  min-width: 180px;
+  min-width: 200px;
 `;
 
-const SidebarContent = ({ onClearGuesses, onGetHint, onShowMistakes }) => (
+const Action = styled.div`
+  padding: 0 20px;
+  background-color: #fff;
+  margin: 4px;
+  border-radius: 2px;
+  font-weight: bold;
+  height: 54px;
+  display: flex;
+  align-items: center;
+`;
+
+const SidebarContent = ({ onClearGuesses, onGetHint, onShowMistakes, onRevealAnswer }) => (
   <Container>
-    <div onClick={onClearGuesses}>Clear Guesses</div>
-    <div onClick={onShowMistakes}>Show Mistakes</div>
-    <div onClick={onGetHint}>Get a Hint</div>
+    <Action onClick={onGetHint}>Get a hint</Action>
+    <Action onClick={onShowMistakes}>Show mistakes</Action>
+    <Action onClick={onClearGuesses}>Clear guesses</Action>
+    <Action onClick={onRevealAnswer}>Reveal Answer</Action>
   </Container>
 );
 
 SidebarContent.propTypes = {
   onClearGuesses: PropTypes.func.isRequired,
   onGetHint: PropTypes.func.isRequired,
+  onRevealAnswer: PropTypes.func.isRequired,
   onShowMistakes: PropTypes.func.isRequired
 };
 

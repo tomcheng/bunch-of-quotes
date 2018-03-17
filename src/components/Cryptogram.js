@@ -9,7 +9,6 @@ import uniq from "lodash/uniq";
 import AnimateHeight from "react-animate-height-auto";
 import Sidebar from "react-sidebar";
 import { generateCipher, applyCipher } from "../utils/cipher";
-import { simpleMemoize } from "../utils/functionUtils";
 import { alphabet } from "../utils/constants";
 import SidebarContent from "./SidebarContent";
 import FadeIn from "./FadeIn";
@@ -119,15 +118,13 @@ class Cryptogram extends Component {
     this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   };
 
-  getCharacters = simpleMemoize(
-    (quote = this.props.quote, cipher = this.state.cipher) =>
-      applyCipher(quote, cipher)
-        .split("")
-        .map((letter, index) => ({
-          id: alphabet.includes(letter) ? index + 1 : null,
-          letter
-        }))
-  );
+  getCharacters = (quote = this.props.quote, cipher = this.state.cipher) =>
+    applyCipher(quote, cipher)
+      .split("")
+      .map((letter, index) => ({
+        id: alphabet.includes(letter) ? index + 1 : null,
+        letter
+      }));
 
   getLetters = () => this.getCharacters().filter(c => c.id !== null);
 

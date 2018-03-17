@@ -113,6 +113,17 @@ class Cryptogram extends Component {
       }))
   );
 
+  getSelectedLetter = () => {
+    const { quote } = this.props;
+    const { selectedId, cipher } = this.state;
+
+    const character = this.getCharacters(quote, cipher).find(
+      c => c.id === selectedId
+    );
+
+    return character ? character.letter : null;
+  };
+
   handleKeyDown = evt => {
     if (alphabet.includes(evt.key.toUpperCase())) {
       this.handleTapLetter(evt.key.toUpperCase());
@@ -144,11 +155,9 @@ class Cryptogram extends Component {
   };
 
   handleTapLetter = guess => {
-    const { quote } = this.props;
-    const { guesses, selectedId, cipher, mistakes } = this.state;
+    const { guesses, mistakes } = this.state;
 
-    const characters = this.getCharacters(quote, cipher);
-    const letter = characters.find(c => c.id === selectedId).letter;
+    const letter = this.getSelectedLetter();
     const prevLetter = findKey(guesses, l => l === guess);
     const removals = prevLetter ? { [prevLetter]: null } : {};
     const newGuesses = { ...guesses, ...removals, [letter]: guess };
@@ -173,11 +182,7 @@ class Cryptogram extends Component {
   };
 
   handleTapDelete = () => {
-    const { quote } = this.props;
-    const { selectedId, cipher } = this.state;
-    const letter = this.getCharacters(quote, cipher).find(
-      c => c.id === selectedId
-    ).letter;
+    const letter = this.getSelectedLetter();
 
     this.setState(
       state => ({
@@ -263,7 +268,7 @@ class Cryptogram extends Component {
       mistakes
     } = this.state;
     const characters = this.getCharacters(quote, cipher);
-    const selectedLetter = characters.find(c => c.id === selectedId);
+    const selectedLetter = this.getSelectedLetter();
 
     return (
       <Sidebar
@@ -281,7 +286,7 @@ class Cryptogram extends Component {
             <Letters
               letters={characters}
               selectedId={selectedId}
-              selectedLetter={selectedLetter ? selectedLetter.letter : null}
+              selectedLetter={selectedLetter}
               guesses={guesses}
               mistakes={mistakes}
               isWinner={isWinner}

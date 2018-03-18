@@ -339,6 +339,8 @@ class App extends Component {
         onSelectLetter={this.handleSelectLetter}
         onSelectNextLetter={this.handleSelectNextLetter}
         onSelectPreviousLetter={this.handleSelectPreviousLetter}
+        onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
+        onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
         onSetSidebarOpen={this.handleSetSidebarOpen}
         onShowMistakes={this.handleShowMistakes}
         onToggleSidebar={this.handleToggleSidebar}

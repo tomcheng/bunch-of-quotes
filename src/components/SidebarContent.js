@@ -28,8 +28,8 @@ const SidebarContent = ({ isDesktop, onClearGuesses, onRevealLetter, onShowMista
   <Container isDesktop={isDesktop}>
     <Action onClick={onClearGuesses}>Clear guesses</Action>
     <Action onClick={onShowMistakes}>Show mistakes</Action>
-    <Action onClick={onRevealLetter}>Reveal Letter</Action>
-    <Action onClick={onRevealAnswer}>Reveal Answer</Action>
+    <Action onClick={onRevealLetter}>Reveal letter</Action>
+    <Action onClick={onRevealAnswer}>Reveal answer</Action>
   </Container>
 );
 

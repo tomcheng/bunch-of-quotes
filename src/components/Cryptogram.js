@@ -86,6 +86,8 @@ const Cryptogram = ({
   onPlayAgain,
   onRevealAnswer,
   onRevealLetter,
+  onSelectDoubleNextLetter,
+  onSelectDoublePreviousLetter,
   onSelectLetter,
   onSelectNextLetter,
   onSelectPreviousLetter,
@@ -146,8 +148,10 @@ const Cryptogram = ({
         <KeyboardContainer>
           <AnimateHeight isExpanded={!isWinner} duration={300}>
             <Keyboard
+              onTapDoublePrevious={onSelectDoublePreviousLetter}
               onTapPrevious={onSelectPreviousLetter}
               onTapNext={onSelectNextLetter}
+              onTapDoubleNext={onSelectDoubleNextLetter}
               onTapLetter={onGuess}
               onTapDelete={onDelete}
             />
@@ -197,6 +201,8 @@ Cryptogram.propTypes = {
   onPlayAgain: PropTypes.func.isRequired,
   onRevealAnswer: PropTypes.func.isRequired,
   onRevealLetter: PropTypes.func.isRequired,
+  onSelectDoubleNextLetter: PropTypes.func.isRequired,
+  onSelectDoublePreviousLetter: PropTypes.func.isRequired,
   onSelectLetter: PropTypes.func.isRequired,
   onSelectNextLetter: PropTypes.func.isRequired,
   onSelectPreviousLetter: PropTypes.func.isRequired,

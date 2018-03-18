@@ -52,6 +52,8 @@ const ShortKey = styled(Key)`
 class Keyboard extends Component {
   static propTypes = {
     onTapDelete: PropTypes.func.isRequired,
+    onTapDoubleNext: PropTypes.func.isRequired,
+    onTapDoublePrevious: PropTypes.func.isRequired,
     onTapLetter: PropTypes.func.isRequired,
     onTapNext: PropTypes.func.isRequired,
     onTapPrevious: PropTypes.func.isRequired
@@ -72,7 +74,7 @@ class Keyboard extends Component {
   };
 
   getDimensions = simpleMemoize(fullWidth => {
-    const arrowKeyWidth = (fullWidth - 3 * SPACE) / 2;
+    const arrowKeyWidth = (fullWidth - 5 * SPACE) / 4;
     const keyWidth =
       (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
     const deleteKeyWidth = 2 * keyWidth + SPACE;
@@ -85,7 +87,14 @@ class Keyboard extends Component {
   });
 
   render() {
-    const { onTapPrevious, onTapNext, onTapLetter, onTapDelete } = this.props;
+    const {
+      onTapDoublePrevious,
+      onTapPrevious,
+      onTapNext,
+      onTapDoubleNext,
+      onTapLetter,
+      onTapDelete
+    } = this.props;
     const { fullWidth } = this.state;
     const { keyWidth, deleteKeyWidth, arrowKeyWidth } = this.getDimensions(
       fullWidth
@@ -95,16 +104,28 @@ class Keyboard extends Component {
       <Container>
         <KeyRow>
           <ShortKey
+            onClick={onTapDoublePrevious}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
+          >
+            <i className="fa fa-angle-double-left" />
+          </ShortKey>
+          <ShortKey
             onClick={onTapPrevious}
             style={{ flexBasis: arrowKeyWidth + "px" }}
           >
-            <i className="fa fa-long-arrow-alt-left" />
+            <i className="fa fa-angle-left" />
           </ShortKey>
           <ShortKey
             onClick={onTapNext}
             style={{ flexBasis: arrowKeyWidth + "px" }}
           >
-            <i className="fa fa-long-arrow-alt-right" />
+            <i className="fa fa-angle-right" />
+          </ShortKey>
+          <ShortKey
+            onClick={onTapDoubleNext}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
+          >
+            <i className="fa fa-angle-double-right" />
           </ShortKey>
         </KeyRow>
         <KeyRow>

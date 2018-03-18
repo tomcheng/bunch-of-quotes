@@ -98,13 +98,13 @@ class Keyboard extends Component {
             onClick={onTapPrevious}
             style={{ flexBasis: arrowKeyWidth + "px" }}
           >
-            ←
+            <i className="fa fa-long-arrow-alt-left" />
           </ShortKey>
           <ShortKey
             onClick={onTapNext}
             style={{ flexBasis: arrowKeyWidth + "px" }}
           >
-            →
+            <i className="fa fa-long-arrow-alt-right" />
           </ShortKey>
         </KeyRow>
         <KeyRow>

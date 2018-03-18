@@ -7,7 +7,10 @@ import registerServiceWorker from "./registerServiceWorker";
 import quotes from "./quotes";
 
 const shuffledQuotes = shuffle(quotes);
+let index = 0;
 
-ReactDOM.render(<App quotes={shuffledQuotes} />, document.getElementById("root"));
+const getQuote = () => shuffledQuotes[index++];
+
+ReactDOM.render(<App getQuote={getQuote} />, document.getElementById("root"));
 
 registerServiceWorker();

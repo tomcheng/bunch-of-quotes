@@ -11,31 +11,28 @@ import Cryptogram from "./Cryptogram";
 
 const MOBILE_SIZE = 1024;
 
-const getInitialState = () => ({
-  isMobile: window.innerWidth < MOBILE_SIZE,
-  quoteIndex: 0,
-  cipher: generateCipher(),
-  guesses: {},
-  hints: [],
-  mistakes: [],
-  selectedId: 1,
-  isWinner: false,
-  sidebarOpen: false
-});
-
 class App extends Component {
   static propTypes = {
-    quotes: PropTypes.arrayOf(
-      PropTypes.shape({
-        text: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        occupation: PropTypes.string,
-        time: PropTypes.string
-      })
-    ).isRequired
+    getQuote: PropTypes.func.isRequired
   };
 
-  state = getInitialState();
+  getInitialState = (props = this.props) => ({
+    isMobile: window.innerWidth < MOBILE_SIZE,
+    quote: props.getQuote(),
+    cipher: generateCipher(),
+    guesses: {},
+    hints: [],
+    mistakes: [],
+    selectedId: 1,
+    isWinner: false,
+    sidebarOpen: false
+  });
+
+  constructor(props) {
+    super();
+
+    this.state = this.getInitialState(props);
+  }
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
@@ -97,10 +94,9 @@ class App extends Component {
   };
 
   getCharacters = () => {
-    const { quotes } = this.props;
-    const { quoteIndex, cipher } = this.state;
+    const { quote, cipher } = this.state;
 
-    return applyCipher(quotes[quoteIndex].text, cipher)
+    return applyCipher(quote.text, cipher)
       .split("")
       .map((letter, index) => ({
         id: alphabet.includes(letter) ? index + 1 : null,
@@ -182,7 +178,7 @@ class App extends Component {
 
     if (hints.includes(letter)) {
       this.handleSelectNextLetter();
-      return
+      return;
     }
 
     if (hints.includes(prevLetter)) {
@@ -233,10 +229,7 @@ class App extends Component {
   };
 
   handlePlayAgain = () => {
-    this.setState(state => ({
-      ...getInitialState(),
-      quoteIndex: state.quoteIndex + 1
-    }));
+    this.setState(this.getInitialState());
   };
 
   handleClearGuesses = () => {
@@ -305,10 +298,9 @@ class App extends Component {
   };
 
   render() {
-    const { quotes } = this.props;
     const {
+      quote,
       isMobile,
-      quoteIndex,
       cipher,
       guesses,
       hints,
@@ -321,7 +313,7 @@ class App extends Component {
     return (
       <Cryptogram
         isMobile={isMobile}
-        quote={quotes[quoteIndex]}
+        quote={quote}
         characters={this.getCharacters()}
         cipher={cipher}
         guesses={guesses}

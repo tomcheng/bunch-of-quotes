@@ -9,4 +9,5 @@ import quotes from "./quotes";
 const shuffledQuotes = shuffle(quotes);
 
 ReactDOM.render(<App quotes={shuffledQuotes} />, document.getElementById("root"));
+
 registerServiceWorker();

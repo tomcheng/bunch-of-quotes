@@ -8,21 +8,19 @@ const SHORT_KEY_HEIGHT = 42;
 const SPACE = 4;
 
 const TOP_NUM_KEYS = 10;
-const MIDDLE_NUM_KEYS = 9;
-const BOTTOM_NUM_KEYS = 7;
 
 const Container = styled.div`
   box-sizing: border-box;
   background-color: #919faa;
-  padding: ${props => props.spacePercentage}%;
+  padding: ${SPACE}px;
 `;
 
 const KeyRow = styled.div`
   box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
-  & + & {
-    margin-top: ${props => props.spacePercentage}%;
+  justify-content: center;
+  &:not(:first-child) {
+    margin-top: ${SPACE}px;
   }
 `;
 
@@ -30,7 +28,7 @@ const Key = styled.div`
   box-sizing: border-box;
   background-color: #fff;
   border-radius: 2px;
-  flex: 0 0 ${props => props.keyWidthPercentage}%;
+  flex: 0 0;
   height: ${KEY_HEIGHT}px;
   display: flex;
   justify-content: center;
@@ -39,6 +37,9 @@ const Key = styled.div`
   font-weight: bold;
   user-select: none;
   cursor: pointer;
+  &:not(:first-child) {
+    margin-left: ${SPACE}px;
+  }
   &:active {
     background-color: #eee;
   }
@@ -71,87 +72,46 @@ class Keyboard extends Component {
   };
 
   getDimensions = simpleMemoize(fullWidth => {
-    const spacePercentage = SPACE / fullWidth * 100;
-
-    const arrowKeyWidthPercentage =
-      (fullWidth - 3 * SPACE) / 2 / (fullWidth - 2 * SPACE) * 100;
-
+    const arrowKeyWidth = (fullWidth - 3 * SPACE) / 2;
     const keyWidth =
       (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
-    const topKeyWidthPercentage = keyWidth / (fullWidth - 2 * SPACE) * 100;
-
-    const middlePadding =
-      (fullWidth -
-        2 * SPACE -
-        MIDDLE_NUM_KEYS * keyWidth -
-        (MIDDLE_NUM_KEYS - 1) * SPACE) /
-      2;
-    const middlePaddingPercentage =
-      middlePadding / (fullWidth - 2 * SPACE) * 100;
-    const middleKeyWidthPercentage =
-      keyWidth / (fullWidth - 2 * SPACE - 2 * middlePadding) * 100;
-
     const deleteKeyWidth = 2 * keyWidth + SPACE;
-    const bottomPaddingLeft =
-      fullWidth -
-      2 * SPACE -
-      BOTTOM_NUM_KEYS * keyWidth -
-      BOTTOM_NUM_KEYS * SPACE -
-      deleteKeyWidth;
-    const bottomPaddingLeftPercentage =
-      bottomPaddingLeft / (fullWidth - 2 * SPACE) * 100;
-    const bottomKeyWidthPercentage =
-      keyWidth / (fullWidth - 2 * SPACE - bottomPaddingLeft) * 100;
-    const deleteKeyWidthPercentage =
-      deleteKeyWidth / (fullWidth - 2 * SPACE - bottomPaddingLeft) * 100;
 
     return {
-      spacePercentage,
-      arrowKeyWidthPercentage,
-      topKeyWidthPercentage,
-      middlePaddingPercentage,
-      middleKeyWidthPercentage,
-      bottomPaddingLeftPercentage,
-      bottomKeyWidthPercentage,
-      deleteKeyWidthPercentage
+      keyWidth,
+      deleteKeyWidth,
+      arrowKeyWidth
     };
   });
 
   render() {
     const { onTapPrevious, onTapNext, onTapLetter, onTapDelete } = this.props;
     const { fullWidth } = this.state;
-    const {
-      spacePercentage,
-      arrowKeyWidthPercentage,
-      topKeyWidthPercentage,
-      middlePaddingPercentage,
-      middleKeyWidthPercentage,
-      bottomPaddingLeftPercentage,
-      bottomKeyWidthPercentage,
-      deleteKeyWidthPercentage
-    } = this.getDimensions(fullWidth);
+    const { keyWidth, deleteKeyWidth, arrowKeyWidth } = this.getDimensions(
+      fullWidth
+    );
 
     return (
-      <Container spacePercentage={spacePercentage}>
-        <KeyRow spacePercentage={spacePercentage}>
+      <Container>
+        <KeyRow>
           <ShortKey
             onClick={onTapPrevious}
-            keyWidthPercentage={arrowKeyWidthPercentage}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
           >
             ←
           </ShortKey>
           <ShortKey
             onClick={onTapNext}
-            keyWidthPercentage={arrowKeyWidthPercentage}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
           >
             →
           </ShortKey>
         </KeyRow>
-        <KeyRow spacePercentage={spacePercentage}>
+        <KeyRow>
           {"QWERTYUIOP".split("").map(letter => (
             <Key
               key={letter}
-              keyWidthPercentage={topKeyWidthPercentage}
+              style={{ flexBasis: keyWidth + "px" }}
               onClick={() => {
                 onTapLetter(letter);
               }}
@@ -160,14 +120,11 @@ class Keyboard extends Component {
             </Key>
           ))}
         </KeyRow>
-        <KeyRow
-          spacePercentage={spacePercentage}
-          style={{ padding: `0 ${middlePaddingPercentage}%` }}
-        >
+        <KeyRow>
           {"ASDFGHJKL".split("").map(letter => (
             <Key
               key={letter}
-              keyWidthPercentage={middleKeyWidthPercentage}
+              style={{ flexBasis: keyWidth + "px" }}
               onClick={() => {
                 onTapLetter(letter);
               }}
@@ -176,14 +133,11 @@ class Keyboard extends Component {
             </Key>
           ))}
         </KeyRow>
-        <KeyRow
-          spacePercentage={spacePercentage}
-          style={{ paddingLeft: `${bottomPaddingLeftPercentage}%` }}
-        >
+        <KeyRow style={{ justifyContent: "flex-end" }}>
           {"ZXCVBNM".split("").map(letter => (
             <Key
               key={letter}
-              keyWidthPercentage={bottomKeyWidthPercentage}
+              style={{ flexBasis: keyWidth + "px" }}
               onClick={() => {
                 onTapLetter(letter);
               }}
@@ -192,7 +146,7 @@ class Keyboard extends Component {
             </Key>
           ))}
           <Key
-            keyWidthPercentage={deleteKeyWidthPercentage}
+            style={{ flexBasis: deleteKeyWidth + "px" }}
             onClick={onTapDelete}
           >
             Delete

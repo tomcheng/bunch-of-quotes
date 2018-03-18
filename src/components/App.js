@@ -180,7 +180,12 @@ class App extends Component {
     const letter = this.getSelectedLetter();
     const prevLetter = findKey(guesses, l => l === guess);
 
-    if (hints.includes(prevLetter) || hints.includes(letter)) {
+    if (hints.includes(letter)) {
+      this.handleSelectNextLetter();
+      return
+    }
+
+    if (hints.includes(prevLetter)) {
       return;
     }
 

@@ -1,5 +1,6 @@
-import PropTypes from "prop-types";
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { quoteType } from "../utils/customPropTypes";
 import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
@@ -8,19 +9,16 @@ import uniq from "lodash/uniq";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Cryptogram from "./Cryptogram";
+import Solved from "./Solved";
 
 const MOBILE_SIZE = 1024;
 
 class App extends Component {
   static propTypes = {
-    currentQuote: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-      context: PropTypes.string,
-      occupation: PropTypes.string,
-      time: PropTypes.string
-    }).isRequired,
-    onGetNewQuote: PropTypes.func.isRequired
+    currentQuote: quoteType.isRequired,
+    solvedQuotes: PropTypes.arrayOf(quoteType).isRequired,
+    onGetNewQuote: PropTypes.func.isRequired,
+    onMarkAsSolved: PropTypes.func.isRequired
   };
 
   getInitialState = () => ({
@@ -31,7 +29,8 @@ class App extends Component {
     mistakes: [],
     selectedId: 1,
     isWinner: false,
-    sidebarOpen: false
+    sidebarOpen: false,
+    showSolved: false
   });
 
   constructor(props) {
@@ -199,11 +198,14 @@ class App extends Component {
     );
 
     if (this.checkWin(newGuesses)) {
-      this.setState({
-        guesses: newGuesses,
-        mistakes: newMistakes,
-        isWinner: true
-      });
+      this.setState(
+        {
+          guesses: newGuesses,
+          mistakes: newMistakes,
+          isWinner: true
+        },
+        this.props.onMarkAsSolved
+      );
       return;
     }
 
@@ -288,12 +290,15 @@ class App extends Component {
       {}
     );
 
-    this.setState({
-      guesses: correctAnswers,
-      mistakes: [],
-      isWinner: true,
-      sidebarOpen: false
-    });
+    this.setState(
+      {
+        guesses: correctAnswers,
+        mistakes: [],
+        isWinner: true,
+        sidebarOpen: false
+      },
+      this.props.onMarkAsSolved
+    );
   };
 
   handleSetSidebarOpen = open => {
@@ -305,7 +310,7 @@ class App extends Component {
   };
 
   render() {
-    const { currentQuote } = this.props;
+    const { currentQuote, solvedQuotes } = this.props;
     const {
       isMobile,
       cipher,
@@ -314,8 +319,13 @@ class App extends Component {
       mistakes,
       selectedId,
       isWinner,
-      sidebarOpen
+      sidebarOpen,
+      showSolved
     } = this.state;
+
+    if (showSolved) {
+      return <Solved quotes={solvedQuotes} />;
+    }
 
     return (
       <Cryptogram

@@ -34,4 +34,4 @@ export const getUnsolvedQuote = () =>
   sample(values(omit(quotes, getSolvedHashes())));
 
 export const getSolvedQuotes = () =>
-  getSolvedHashes().map(hash => quotes[hash]);
+  getSolvedHashes().reverse().map(hash => quotes[hash]);

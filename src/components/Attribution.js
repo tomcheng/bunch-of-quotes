@@ -7,7 +7,6 @@ const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const Container = styled.div`
   text-align: right;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #444;

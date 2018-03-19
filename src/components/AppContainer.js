@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import App from "./App";
-import { getUnsolvedQuote, getSolvedQuotes, markQuoteAsSolved } from "../quotesRepo";
+import {
+  getUnsolvedQuote,
+  getSolvedQuotes,
+  markQuoteAsSolved
+} from "../quotesRepo";
 
 class AppContainer extends Component {
   state = {
@@ -9,19 +13,24 @@ class AppContainer extends Component {
   };
 
   handleGetNewQuote = () => {
-    markQuoteAsSolved(this.state.currentQuote);
+    this.setState({ currentQuote: getUnsolvedQuote() });
+  };
 
-    this.setState({
-      currentQuote: getUnsolvedQuote(),
-      solvedQuotes: getSolvedQuotes() 
-    });
+  handleMarkAsSolved = () => {
+    markQuoteAsSolved(this.state.currentQuote);
+    this.setState({ solvedQuotes: getSolvedQuotes() });
   };
 
   render() {
-    const { currentQuote } = this.state;
+    const { currentQuote, solvedQuotes } = this.state;
 
     return (
-      <App currentQuote={currentQuote} onGetNewQuote={this.handleGetNewQuote} />
+      <App
+        currentQuote={currentQuote}
+        solvedQuotes={solvedQuotes}
+        onGetNewQuote={this.handleGetNewQuote}
+        onMarkAsSolved={this.handleMarkAsSolved}
+      />
     );
   }
 }

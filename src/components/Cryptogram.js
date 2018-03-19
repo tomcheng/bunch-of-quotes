@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import AnimateHeight from "react-animate-height-auto";
 import FadeIn from "./FadeIn";
+import Button from "./Button";
 import Letters from "./Letters";
 import Attribution from "./Attribution";
 import Keyboard from "./Keyboard";
@@ -39,19 +40,9 @@ const PlayAgainContainer = styled.div`
   flex-shrink: 0;
 `;
 
-const PlayAgainButton = styled.div`
+const PlayAgainButton = styled(Button)`
   margin-top: 40px;
   margin-bottom: 20px;
-  padding: 0 15px;
-  border-radius: 2px;
-  font-weight: bold;
-  background-color: #444;
-  color: #fff;
-  cursor: pointer;
-  user-select: none;
-  height: 54px;
-  display: flex;
-  align-items: center;
 `;
 
 const KeyboardContainer = styled.div`

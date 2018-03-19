@@ -37,8 +37,8 @@ const SidebarContent = ({
   onToggleShowSolvedQuotes
 }) => (
   <Container isDesktop={isDesktop}>
-    <Action onClick={onToggleShowSolvedQuotes}>
-      {showSolved ? "Go back" : "See solved quotes"}
+    <Action onClick={onToggleShowSolvedQuotes} disabled={showSolved}>
+      See solved quotes
     </Action>
     <Action onClick={onClearGuesses} disabled={isWinner || showSolved}>
       Clear guesses

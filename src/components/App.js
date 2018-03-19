@@ -35,10 +35,10 @@ class App extends Component {
     showSolved: false
   });
 
-  constructor(props) {
+  constructor() {
     super();
 
-    this.state = this.getInitialState(props);
+    this.state = this.getInitialState();
   }
 
   componentDidMount() {
@@ -352,7 +352,7 @@ class App extends Component {
         pullRight={!isMobile}
       >
         {showSolved ? (
-          <Solved quotes={solvedQuotes} />
+          <Solved quotes={solvedQuotes} onGoBack={this.handleToggleShowSolvedQuotes} />
         ) : (
           <Cryptogram
             isMobile={isMobile}

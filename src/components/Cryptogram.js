@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import AnimateHeight from "react-animate-height-auto";
 import FadeIn from "./FadeIn";
+import Footer from "./Footer";
 import Button from "./Button";
 import Letters from "./Letters";
 import Attribution from "./Attribution";
@@ -13,40 +14,27 @@ const Container = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
   line-height: 22px;
 `;
 
-const MainContent = styled.div`
+const Body = styled.div`
   flex-grow: 1;
   flex-shrink: 1;
   overflow: auto;
   display: flex;
+  justify-content: center;
+`;
+
+const MainContent = styled.div`
+  display: flex;
   flex-direction: column;
   position: relative;
-  overflow: auto;
   padding: 20px;
   max-width: 1024px;
-`;
-
-const PlayAgainContainer = styled.div`
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  flex-grow: 1;
-  flex-shrink: 0;
-`;
-
-const PlayAgainButton = styled(Button)`
-  margin-top: 40px;
-  margin-bottom: 20px;
-`;
-
-const KeyboardContainer = styled.div`
-  align-self: stretch;
 `;
 
 const Options = styled.div`
@@ -80,52 +68,51 @@ const Cryptogram = ({
   onToggleSidebar
 }) => (
   <Container>
-    <MainContent>
-      <Letters
-        letters={characters}
-        selectedId={selectedId}
-        guesses={guesses}
-        hints={hints}
-        mistakes={mistakes}
-        isWinner={isWinner}
-        onSelect={onSelectLetter}
-      />
-      {isWinner && (
-        <FadeIn delay={1000}>
-          {({ fadeInStyle }) => (
-            <Attribution
-              {...quote}
-              containerStyle={{ ...fadeInStyle, marginTop: 15 }}
-            />
-          )}
-        </FadeIn>
-      )}
-      {isWinner && (
-        <FadeIn delay={2000}>
-          {({ fadeInStyle }) => (
-            <PlayAgainContainer style={fadeInStyle}>
-              <PlayAgainButton onClick={onPlayAgain}>
-                Play Again
-              </PlayAgainButton>
-            </PlayAgainContainer>
-          )}
-        </FadeIn>
-      )}
-    </MainContent>
+    <Body>
+      <MainContent>
+        <Letters
+          letters={characters}
+          selectedId={selectedId}
+          guesses={guesses}
+          hints={hints}
+          mistakes={mistakes}
+          isWinner={isWinner}
+          onSelect={onSelectLetter}
+        />
+        {isWinner && (
+          <FadeIn delay={1000}>
+            {({ fadeInStyle }) => (
+              <Attribution
+                {...quote}
+                containerStyle={{ ...fadeInStyle, marginTop: 15 }}
+              />
+            )}
+          </FadeIn>
+        )}
+      </MainContent>
+    </Body>
+
+    {isWinner && (
+      <FadeIn delay={2000}>
+        {({ fadeInStyle }) => (
+          <Footer style={fadeInStyle}>
+            <Button onClick={onPlayAgain}>Play Again</Button>
+          </Footer>
+        )}
+      </FadeIn>
+    )}
 
     {isMobile && (
-      <KeyboardContainer>
-        <AnimateHeight isExpanded={!isWinner} duration={300}>
-          <Keyboard
-            onTapDoublePrevious={onSelectDoublePreviousLetter}
-            onTapPrevious={onSelectPreviousLetter}
-            onTapNext={onSelectNextLetter}
-            onTapDoubleNext={onSelectDoubleNextLetter}
-            onTapLetter={onGuess}
-            onTapDelete={onDelete}
-          />
-        </AnimateHeight>
-      </KeyboardContainer>
+      <AnimateHeight isExpanded={!isWinner} duration={300}>
+        <Keyboard
+          onTapDoublePrevious={onSelectDoublePreviousLetter}
+          onTapPrevious={onSelectPreviousLetter}
+          onTapNext={onSelectNextLetter}
+          onTapDoubleNext={onSelectDoubleNextLetter}
+          onTapLetter={onGuess}
+          onTapDelete={onDelete}
+        />
+      </AnimateHeight>
     )}
 
     {!isMobile && (

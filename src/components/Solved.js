@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { quoteType } from "../utils/customPropTypes";
 import Button from "./Button";
+import Footer from "./Footer";
 import Attribution from "./Attribution";
 
 const Container = styled.div`
@@ -48,14 +49,6 @@ const EmptyText = styled.div`
   opacity: 0.4;
 `;
 
-const ButtonContainer = styled.div`
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
-`;
-
 const Solved = ({ quotes, onGoBack }) => (
   <Container>
     <Body>
@@ -73,9 +66,9 @@ const Solved = ({ quotes, onGoBack }) => (
       </Quotes>
     </Body>
 
-    <ButtonContainer>
+    <Footer>
       <Button onClick={onGoBack}>Go back</Button>
-    </ButtonContainer>
+    </Footer>
   </Container>
 );
 

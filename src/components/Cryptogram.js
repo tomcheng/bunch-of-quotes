@@ -129,7 +129,6 @@ const Cryptogram = ({
 );
 
 Cryptogram.propTypes = {
-  cipher: PropTypes.objectOf(PropTypes.string).isRequired,
   characters: PropTypes.arrayOf(
     PropTypes.shape({
       letter: PropTypes.string.isRequired,

@@ -6,7 +6,6 @@ import findKey from "lodash/findKey";
 import keys from "lodash/keys";
 import pick from "lodash/pick";
 import uniq from "lodash/uniq";
-import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
 import Sidebar from "react-sidebar";
 import SidebarContent from "./SidebarContent";
@@ -17,6 +16,13 @@ const MOBILE_SIZE = 1024;
 
 class App extends Component {
   static propTypes = {
+    characters: PropTypes.arrayOf(
+      PropTypes.shape({
+        letter: PropTypes.string.isRequired,
+        id: PropTypes.number
+      })
+    ).isRequired,
+    cipher: PropTypes.objectOf(PropTypes.string).isRequired,
     currentQuote: quoteType.isRequired,
     solvedQuotes: PropTypes.arrayOf(quoteType).isRequired,
     onGetNewQuote: PropTypes.func.isRequired,
@@ -25,7 +31,6 @@ class App extends Component {
 
   getInitialState = () => ({
     isMobile: window.innerWidth < MOBILE_SIZE,
-    cipher: generateCipher(),
     guesses: {},
     hints: [],
     mistakes: [],
@@ -87,12 +92,10 @@ class App extends Component {
   };
 
   checkWin = guesses => {
-    const { cipher } = this.state;
+    const { cipher, characters } = this.props;
 
     return (
-      this.getCharacters()
-        .filter(c => !!c.id)
-        .every(c => !!guesses[c.letter]) &&
+      characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
       keys(guesses).every(key => {
         const guess = guesses[key];
         return cipher[guess] === key;
@@ -100,19 +103,7 @@ class App extends Component {
     );
   };
 
-  getCharacters = () => {
-    const { currentQuote } = this.props;
-    const { cipher } = this.state;
-
-    return applyCipher(currentQuote.text, cipher)
-      .split("")
-      .map((letter, index) => ({
-        id: alphabet.includes(letter) ? index + 1 : null,
-        letter
-      }));
-  };
-
-  getLetters = () => this.getCharacters().filter(c => c.id !== null);
+  getLetters = () => this.props.characters.filter(c => c.id !== null);
 
   getOpenLettersWithSelected = () =>
     this.getLetters().filter(
@@ -121,8 +112,9 @@ class App extends Component {
     );
 
   getWordStartsWithSelected = () => {
+    const { characters } = this.props;
     const { selectedId } = this.state;
-    const characters = this.getCharacters();
+
     return characters.filter(
       ({ id }, index) =>
         (!!id && (!characters[index - 1] || !characters[index - 1].id)) ||
@@ -173,7 +165,7 @@ class App extends Component {
   };
 
   getSelectedLetter = () =>
-    this.getCharacters().find(c => c.id === this.state.selectedId).letter;
+    this.props.characters.find(c => c.id === this.state.selectedId).letter;
 
   handleSelectLetter = id => {
     this.setState({ selectedId: id });
@@ -253,7 +245,8 @@ class App extends Component {
   };
 
   handleShowMistakes = () => {
-    const { cipher, guesses } = this.state;
+    const { cipher } = this.props;
+    const { guesses } = this.state;
 
     const mistakes = keys(guesses).filter(letter => {
       const guess = guesses[letter];
@@ -264,7 +257,8 @@ class App extends Component {
   };
 
   handleRevealLetter = () => {
-    const { cipher, guesses } = this.state;
+    const { cipher } = this.props;
+    const { guesses } = this.state;
 
     const hintLetter = this.getSelectedLetter();
     const answer = findKey(cipher, letter => letter === hintLetter);
@@ -281,7 +275,7 @@ class App extends Component {
   };
 
   handleRevealAnswer = () => {
-    const { cipher } = this.state;
+    const { cipher } = this.props;
     const correctAnswers = uniq(
       this.getLetters().map(({ letter }) => letter)
     ).reduce(
@@ -320,10 +314,9 @@ class App extends Component {
   };
 
   render() {
-    const { currentQuote, solvedQuotes } = this.props;
+    const { currentQuote, solvedQuotes, characters } = this.props;
     const {
       isMobile,
-      cipher,
       guesses,
       hints,
       mistakes,
@@ -353,13 +346,15 @@ class App extends Component {
         shadow={enableSidebar}
       >
         {showSolved ? (
-          <Solved quotes={solvedQuotes} onGoBack={this.handleToggleShowSolvedQuotes} />
+          <Solved
+            quotes={solvedQuotes}
+            onGoBack={this.handleToggleShowSolvedQuotes}
+          />
         ) : (
           <Cryptogram
             isMobile={isMobile}
             quote={currentQuote}
-            characters={this.getCharacters()}
-            cipher={cipher}
+            characters={characters}
             guesses={guesses}
             hints={hints}
             mistakes={mistakes}

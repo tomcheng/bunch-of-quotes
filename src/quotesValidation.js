@@ -1,5 +1,6 @@
 import forOwn from "lodash/forOwn"
 import sortBy from "lodash/sortBy";
+import { hash } from "./utils/hash";
 
 const isValidTime = time => {
   if (time.match(/^(c\. )?\d\d\d\d\??-\d\d\d\d$/)) {
@@ -82,6 +83,11 @@ export const isValid = ({ authors, quotes: unsortedQuotes }) => {
     const nextQuote = quotes[index + 1];
     if (nextQuote && isSimilar(quote, nextQuote[0])) {
       console.log("Duplicate:", quote, nextQuote[0]);
+      valid = false;
+    }
+
+    if (nextQuote && hash(quote) === hash(nextQuote[0])) {
+      console.log("Same hash:", quote, nextQuote[0]);
       valid = false;
     }
 

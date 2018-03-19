@@ -2,8 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import AnimateHeight from "react-animate-height-auto";
-import Sidebar from "react-sidebar";
-import SidebarContent from "./SidebarContent";
 import FadeIn from "./FadeIn";
 import Letters from "./Letters";
 import Attribution from "./Attribution";
@@ -80,97 +78,76 @@ const Cryptogram = ({
   mistakes,
   isWinner,
   sidebarOpen,
-  onClearGuesses,
   onDelete,
   onGuess,
   onPlayAgain,
-  onRevealAnswer,
-  onRevealLetter,
   onSelectDoubleNextLetter,
   onSelectDoublePreviousLetter,
   onSelectLetter,
   onSelectNextLetter,
   onSelectPreviousLetter,
-  onSetSidebarOpen,
-  onShowMistakes,
   onToggleSidebar
 }) => (
-  <Sidebar
-    sidebar={
-      <SidebarContent
-        isDesktop={!isMobile}
-        onClearGuesses={onClearGuesses}
-        onShowMistakes={onShowMistakes}
-        onRevealLetter={onRevealLetter}
-        onRevealAnswer={onRevealAnswer}
+  <Container>
+    <MainContent>
+      <Letters
+        letters={characters}
+        selectedId={selectedId}
+        guesses={guesses}
+        hints={hints}
+        mistakes={mistakes}
+        isWinner={isWinner}
+        onSelect={onSelectLetter}
       />
-    }
-    onSetOpen={onSetSidebarOpen}
-    open={sidebarOpen}
-    touchHandleWidth={isWinner ? 0 : 20}
-    pullRight={!isMobile}
-  >
-    <Container>
-      <MainContent>
-        <Letters
-          letters={characters}
-          selectedId={selectedId}
-          guesses={guesses}
-          hints={hints}
-          mistakes={mistakes}
-          isWinner={isWinner}
-          onSelect={onSelectLetter}
-        />
-        {isWinner && (
-          <FadeIn delay={1000}>
-            {({ fadeInStyle }) => (
-              <Attribution
-                {...quote}
-                containerStyle={{ ...fadeInStyle, marginTop: 15 }}
-              />
-            )}
-          </FadeIn>
-        )}
-        {isWinner && (
-          <FadeIn delay={2000}>
-            {({ fadeInStyle }) => (
-              <PlayAgainContainer style={fadeInStyle}>
-                <PlayAgainButton onClick={onPlayAgain}>
-                  Play Again
-                </PlayAgainButton>
-              </PlayAgainContainer>
-            )}
-          </FadeIn>
-        )}
-      </MainContent>
-
-      {isMobile && (
-        <KeyboardContainer>
-          <AnimateHeight isExpanded={!isWinner} duration={300}>
-            <Keyboard
-              onTapDoublePrevious={onSelectDoublePreviousLetter}
-              onTapPrevious={onSelectPreviousLetter}
-              onTapNext={onSelectNextLetter}
-              onTapDoubleNext={onSelectDoubleNextLetter}
-              onTapLetter={onGuess}
-              onTapDelete={onDelete}
+      {isWinner && (
+        <FadeIn delay={1000}>
+          {({ fadeInStyle }) => (
+            <Attribution
+              {...quote}
+              containerStyle={{ ...fadeInStyle, marginTop: 15 }}
             />
-          </AnimateHeight>
-        </KeyboardContainer>
+          )}
+        </FadeIn>
       )}
+      {isWinner && (
+        <FadeIn delay={2000}>
+          {({ fadeInStyle }) => (
+            <PlayAgainContainer style={fadeInStyle}>
+              <PlayAgainButton onClick={onPlayAgain}>
+                Play Again
+              </PlayAgainButton>
+            </PlayAgainContainer>
+          )}
+        </FadeIn>
+      )}
+    </MainContent>
 
-      {!isMobile && (
-        <Options onClick={onToggleSidebar} sidebarOpen={sidebarOpen}>
-          <span style={{ display: sidebarOpen ? "none" : "inline" }}>
-            <i className="fa fa-cog" />
-          </span>
-          <span style={{ display: sidebarOpen ? "inline" : "none" }}>
-            <i className="fa fa-times" />
-          </span>
-        </Options>
-      )}
-    </Container>
-  </Sidebar>
+    {isMobile && (
+      <KeyboardContainer>
+        <AnimateHeight isExpanded={!isWinner} duration={300}>
+          <Keyboard
+            onTapDoublePrevious={onSelectDoublePreviousLetter}
+            onTapPrevious={onSelectPreviousLetter}
+            onTapNext={onSelectNextLetter}
+            onTapDoubleNext={onSelectDoubleNextLetter}
+            onTapLetter={onGuess}
+            onTapDelete={onDelete}
+          />
+        </AnimateHeight>
+      </KeyboardContainer>
+    )}
+
+    {!isMobile && (
+      <Options onClick={onToggleSidebar} sidebarOpen={sidebarOpen}>
+        <span style={{ display: sidebarOpen ? "none" : "inline" }}>
+          <i className="fa fa-cog" />
+        </span>
+        <span style={{ display: sidebarOpen ? "inline" : "none" }}>
+          <i className="fa fa-times" />
+        </span>
+      </Options>
+    )}
+  </Container>
 );
 
 Cryptogram.propTypes = {
@@ -195,19 +172,14 @@ Cryptogram.propTypes = {
   }).isRequired,
   selectedId: PropTypes.number.isRequired,
   sidebarOpen: PropTypes.bool.isRequired,
-  onClearGuesses: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onGuess: PropTypes.func.isRequired,
   onPlayAgain: PropTypes.func.isRequired,
-  onRevealAnswer: PropTypes.func.isRequired,
-  onRevealLetter: PropTypes.func.isRequired,
   onSelectDoubleNextLetter: PropTypes.func.isRequired,
   onSelectDoublePreviousLetter: PropTypes.func.isRequired,
   onSelectLetter: PropTypes.func.isRequired,
   onSelectNextLetter: PropTypes.func.isRequired,
   onSelectPreviousLetter: PropTypes.func.isRequired,
-  onSetSidebarOpen: PropTypes.func.isRequired,
-  onShowMistakes: PropTypes.func.isRequired,
   onToggleSidebar: PropTypes.func.isRequired
 };
 

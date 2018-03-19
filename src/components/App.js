@@ -8,6 +8,8 @@ import pick from "lodash/pick";
 import uniq from "lodash/uniq";
 import { generateCipher, applyCipher } from "../utils/cipher";
 import { alphabet } from "../utils/constants";
+import Sidebar from "react-sidebar";
+import SidebarContent from "./SidebarContent";
 import Cryptogram from "./Cryptogram";
 import Solved from "./Solved";
 
@@ -328,32 +330,44 @@ class App extends Component {
     }
 
     return (
-      <Cryptogram
-        isMobile={isMobile}
-        quote={currentQuote}
-        characters={this.getCharacters()}
-        cipher={cipher}
-        guesses={guesses}
-        hints={hints}
-        mistakes={mistakes}
-        selectedId={selectedId}
-        isWinner={isWinner}
-        sidebarOpen={sidebarOpen}
-        onClearGuesses={this.handleClearGuesses}
-        onDelete={this.handleDelete}
-        onGuess={this.handleGuess}
-        onPlayAgain={this.handlePlayAgain}
-        onRevealAnswer={this.handleRevealAnswer}
-        onRevealLetter={this.handleRevealLetter}
-        onSelectLetter={this.handleSelectLetter}
-        onSelectNextLetter={this.handleSelectNextLetter}
-        onSelectPreviousLetter={this.handleSelectPreviousLetter}
-        onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
-        onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
-        onSetSidebarOpen={this.handleSetSidebarOpen}
-        onShowMistakes={this.handleShowMistakes}
-        onToggleSidebar={this.handleToggleSidebar}
-      />
+      <Sidebar
+        sidebar={
+          <SidebarContent
+            isDesktop={!isMobile}
+            onClearGuesses={this.handleClearGuesses}
+            onShowMistakes={this.handleShowMistakes}
+            onRevealLetter={this.handleRevealLetter}
+            onRevealAnswer={this.handleRevealAnswer}
+          />
+        }
+        onSetOpen={this.handleSetSidebarOpen}
+        open={sidebarOpen}
+        touchHandleWidth={isWinner ? 0 : 20}
+        pullRight={!isMobile}
+      >
+        <Cryptogram
+          isMobile={isMobile}
+          quote={currentQuote}
+          characters={this.getCharacters()}
+          cipher={cipher}
+          guesses={guesses}
+          hints={hints}
+          mistakes={mistakes}
+          selectedId={selectedId}
+          isWinner={isWinner}
+          sidebarOpen={sidebarOpen}
+          onDelete={this.handleDelete}
+          onGuess={this.handleGuess}
+          onPlayAgain={this.handlePlayAgain}
+          onSelectLetter={this.handleSelectLetter}
+          onSelectNextLetter={this.handleSelectNextLetter}
+          onSelectPreviousLetter={this.handleSelectPreviousLetter}
+          onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
+          onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
+          onSetSidebarOpen={this.handleSetSidebarOpen}
+          onToggleSidebar={this.handleToggleSidebar}
+        />
+      </Sidebar>
     );
   }
 }

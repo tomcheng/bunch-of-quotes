@@ -1,16 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./components/App";
-import shuffle from "lodash/shuffle";
+import AppContainer from "./components/AppContainer";
 import registerServiceWorker from "./registerServiceWorker";
-import quotes from "./quotes";
 
-const shuffledQuotes = shuffle(quotes);
-let index = 0;
-
-const getQuote = () => shuffledQuotes[index++];
-
-ReactDOM.render(<App getQuote={getQuote} />, document.getElementById("root"));
+ReactDOM.render(<AppContainer />, document.getElementById("root"));
 
 registerServiceWorker();

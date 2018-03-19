@@ -13,12 +13,18 @@ const MOBILE_SIZE = 1024;
 
 class App extends Component {
   static propTypes = {
-    getQuote: PropTypes.func.isRequired
+    currentQuote: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+      context: PropTypes.string,
+      occupation: PropTypes.string,
+      time: PropTypes.string
+    }).isRequired,
+    onGetNewQuote: PropTypes.func.isRequired
   };
 
-  getInitialState = (props = this.props) => ({
+  getInitialState = () => ({
     isMobile: window.innerWidth < MOBILE_SIZE,
-    quote: props.getQuote(),
     cipher: generateCipher(),
     guesses: {},
     hints: [],
@@ -94,9 +100,10 @@ class App extends Component {
   };
 
   getCharacters = () => {
-    const { quote, cipher } = this.state;
+    const { currentQuote } = this.props;
+    const { cipher } = this.state;
 
-    return applyCipher(quote.text, cipher)
+    return applyCipher(currentQuote.text, cipher)
       .split("")
       .map((letter, index) => ({
         id: alphabet.includes(letter) ? index + 1 : null,
@@ -229,7 +236,7 @@ class App extends Component {
   };
 
   handlePlayAgain = () => {
-    this.setState(this.getInitialState());
+    this.setState(this.getInitialState(), this.props.onGetNewQuote);
   };
 
   handleClearGuesses = () => {
@@ -298,8 +305,8 @@ class App extends Component {
   };
 
   render() {
+    const { currentQuote } = this.props;
     const {
-      quote,
       isMobile,
       cipher,
       guesses,
@@ -313,7 +320,7 @@ class App extends Component {
     return (
       <Cryptogram
         isMobile={isMobile}
-        quote={quote}
+        quote={currentQuote}
         characters={this.getCharacters()}
         cipher={cipher}
         guesses={guesses}

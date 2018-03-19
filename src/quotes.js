@@ -529,6 +529,8 @@ export const quotes = [
   ["Easy reading is damned hard writing.", "Nathaniel Hawthorne"],
   ["Eat food. Not too much. Mostly plants.", "Michael Pollan"],
   ["Edible, adj.: Good to eat, and wholesome to digest, as a worm to a toad, a toad to a snake, a snake to a pig, a pig to a man, and a man to a worm.", "Ambrose Bierce"],
+  ["Education is what survives when what has been learned has been forgotten.", "B.F. Skinner"],
+  ["Education makes people easy to lead, but difficult to drive; easy to govern, but impossible to enslave.", "Henry Peter Brougham"],
   ["Education's purpose is to replace an empty mind with an open one.", "Malcolm S. Forbes"],
   ["Egotism is the anesthetic that dulls the pain of stupidity.", "Frank William Leahy"],
   ["Elitism is the slur directed at merit by mediocrity.", "Sydney J. Harris"],
@@ -3236,8 +3238,6 @@ export const quotes = [
   ["It is well to remember that the entire universe, with one trifling exception, is composed of others.", "John Andrew Holmes"],
   ["One cannot do right in one department of life whilst he is occupied in doing wrong in any other department. Life is one indivisible whole.", "Mahatma Gandhi"],
   ["Music is the only language in which you cannot say a mean or sarcastic thing.", "John Erskine"],
-  ["Education makes people easy to lead, but difficult to drive; easy to govern, but impossible to enslave.", "Henry Peter Brougham"],
-  ["Education is what survives when what has been learned has been forgotten.", "B.F. Skinner"],
 ];
 
 // prettier-ignore
@@ -4506,7 +4506,7 @@ export const authors = {
   "Truman Capote": ["author", "1924-1984"],
   "Tzvetan Todorov": ["philosopher", "1939-"],
   "Ulysses S. Grant": ["United States president", "1822-1885"],
-  "Umberto Eco": ["philosopher and novelist", "1932-"],
+  "Umberto Eco": ["philosopher and novelist", "1932-2016"],
   "Upton Sinclair": ["novelist and reformer", "1878-1968"],
   "Ursula K. Le Guin": ["author", "1929-"],
   "Vaclav Havel": ["writer and Czech Republic president", "1936-"],
@@ -4600,11 +4600,3 @@ export const authors = {
   "Zelda Fitzgerald": ["novelist", "1900-1948"],
   "Zora Neale Hurston": ["folklorist and writer", "1891-1960"],
 };
-
-export default quotes.map(([text, name, context]) => ({
-  text,
-  context,
-  name,
-  occupation: authors[name] ? authors[name][0] : null,
-  time: authors[name] ? authors[name][1] : null
-}));

@@ -8,6 +8,8 @@ import {
   markQuoteAsSolved
 } from "../quotesRepo";
 
+const MOBILE_SIZE = 1024;
+
 const getCharacters = (cipher, currentQuote) =>
   applyCipher(currentQuote.text, cipher)
     .split("")
@@ -20,7 +22,20 @@ class AppContainer extends Component {
   state = {
     cipher: generateCipher(),
     currentQuote: getUnsolvedQuote(),
+    isMobile: window.innerWidth < MOBILE_SIZE,
     solvedQuotes: getSolvedQuotes()
+  };
+
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
   };
 
   handleGetNewQuote = () => {
@@ -36,7 +51,7 @@ class AppContainer extends Component {
   };
 
   render() {
-    const { cipher, currentQuote, solvedQuotes } = this.state;
+    const { cipher, currentQuote, solvedQuotes, isMobile } = this.state;
 
     return (
       <App
@@ -44,6 +59,7 @@ class AppContainer extends Component {
         characters={getCharacters(cipher, currentQuote)}
         currentQuote={currentQuote}
         solvedQuotes={solvedQuotes}
+        isMobile={isMobile}
         onGetNewQuote={this.handleGetNewQuote}
         onMarkAsSolved={this.handleMarkAsSolved}
       />

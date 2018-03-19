@@ -12,7 +12,15 @@ import SidebarContent from "./SidebarContent";
 import Cryptogram from "./Cryptogram";
 import Solved from "./Solved";
 
-const MOBILE_SIZE = 1024;
+const initialState = {
+  guesses: {},
+  hints: [],
+  mistakes: [],
+  selectedId: 1,
+  isWinner: false,
+  sidebarOpen: false,
+  showSolved: false
+};
 
 class App extends Component {
   static propTypes = {
@@ -24,41 +32,21 @@ class App extends Component {
     ).isRequired,
     cipher: PropTypes.objectOf(PropTypes.string).isRequired,
     currentQuote: quoteType.isRequired,
+    isMobile: PropTypes.bool.isRequired,
     solvedQuotes: PropTypes.arrayOf(quoteType).isRequired,
     onGetNewQuote: PropTypes.func.isRequired,
     onMarkAsSolved: PropTypes.func.isRequired
   };
 
-  getInitialState = () => ({
-    isMobile: window.innerWidth < MOBILE_SIZE,
-    guesses: {},
-    hints: [],
-    mistakes: [],
-    selectedId: 1,
-    isWinner: false,
-    sidebarOpen: false,
-    showSolved: false
-  });
-
-  constructor() {
-    super();
-
-    this.state = this.getInitialState();
-  }
+  state = initialState;
 
   componentDidMount() {
-    window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
     window.removeEventListener("keydown", this.handleKeyDown);
   }
-
-  handleResize = () => {
-    this.setState({ isMobile: window.innerWidth < MOBILE_SIZE });
-  };
 
   handleKeyDown = evt => {
     if (alphabet.includes(evt.key.toUpperCase())) {
@@ -232,7 +220,7 @@ class App extends Component {
   };
 
   handlePlayAgain = () => {
-    this.setState(this.getInitialState(), this.props.onGetNewQuote);
+    this.setState(initialState, this.props.onGetNewQuote);
   };
 
   handleClearGuesses = () => {
@@ -276,6 +264,7 @@ class App extends Component {
 
   handleRevealAnswer = () => {
     const { cipher } = this.props;
+
     const correctAnswers = uniq(
       this.getLetters().map(({ letter }) => letter)
     ).reduce(
@@ -314,9 +303,8 @@ class App extends Component {
   };
 
   render() {
-    const { currentQuote, solvedQuotes, characters } = this.props;
+    const { currentQuote, solvedQuotes, characters, isMobile } = this.props;
     const {
-      isMobile,
       guesses,
       hints,
       mistakes,

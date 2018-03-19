@@ -332,14 +332,13 @@ class App extends Component {
       sidebarOpen,
       showSolved
     } = this.state;
+    const enableSidebar = !isWinner && !showSolved;
 
     return (
       <Sidebar
         sidebar={
           <SidebarContent
             isDesktop={!isMobile}
-            isWinner={isWinner}
-            showSolved={showSolved}
             onClearGuesses={this.handleClearGuesses}
             onShowMistakes={this.handleShowMistakes}
             onRevealLetter={this.handleRevealLetter}
@@ -350,6 +349,8 @@ class App extends Component {
         onSetOpen={this.handleSetSidebarOpen}
         open={sidebarOpen}
         pullRight={!isMobile}
+        touchHandleWidth={enableSidebar ? 20 : 0}
+        shadow={enableSidebar}
       >
         {showSolved ? (
           <Solved quotes={solvedQuotes} onGoBack={this.handleToggleShowSolvedQuotes} />

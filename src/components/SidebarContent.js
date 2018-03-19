@@ -22,14 +22,10 @@ const Action = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
-  pointer-events: ${props => (props.disabled ? "none" : "auto")};
-  opacity: ${props => (props.disabled ? 0.4 : 1)};
 `;
 
 const SidebarContent = ({
   isDesktop,
-  isWinner,
-  showSolved,
   onClearGuesses,
   onRevealLetter,
   onShowMistakes,
@@ -37,28 +33,26 @@ const SidebarContent = ({
   onToggleShowSolvedQuotes
 }) => (
   <Container isDesktop={isDesktop}>
-    <Action onClick={onToggleShowSolvedQuotes} disabled={showSolved}>
-      See solved quotes
-    </Action>
-    <Action onClick={onClearGuesses} disabled={isWinner || showSolved}>
+    <Action onClick={onClearGuesses}>
       Clear guesses
     </Action>
-    <Action onClick={onShowMistakes} disabled={isWinner || showSolved}>
+    <Action onClick={onShowMistakes}>
       Show mistakes
     </Action>
-    <Action onClick={onRevealLetter} disabled={isWinner || showSolved}>
+    <Action onClick={onRevealLetter}>
       Reveal letter
     </Action>
-    <Action onClick={onRevealAnswer} disabled={isWinner || showSolved}>
+    <Action onClick={onRevealAnswer}>
       Reveal answer
+    </Action>
+    <Action onClick={onToggleShowSolvedQuotes}>
+      See solved quotes
     </Action>
   </Container>
 );
 
 SidebarContent.propTypes = {
   isDesktop: PropTypes.bool.isRequired,
-  isWinner: PropTypes.bool.isRequired,
-  showSolved: PropTypes.bool.isRequired,
   onClearGuesses: PropTypes.func.isRequired,
   onRevealAnswer: PropTypes.func.isRequired,
   onRevealLetter: PropTypes.func.isRequired,

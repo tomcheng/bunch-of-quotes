@@ -303,6 +303,14 @@ class App extends Component {
     );
   };
 
+  handleToggleShowSolvedQuotes = () => {
+    this.setState(state => ({
+      ...state,
+      showSolved: !state.showSolved,
+      sidebarOpen: false
+    }));
+  };
+
   handleSetSidebarOpen = open => {
     this.setState({ sidebarOpen: open });
   };
@@ -325,48 +333,50 @@ class App extends Component {
       showSolved
     } = this.state;
 
-    if (showSolved) {
-      return <Solved quotes={solvedQuotes} />;
-    }
-
     return (
       <Sidebar
         sidebar={
           <SidebarContent
             isDesktop={!isMobile}
+            isWinner={isWinner}
+            showSolved={showSolved}
             onClearGuesses={this.handleClearGuesses}
             onShowMistakes={this.handleShowMistakes}
             onRevealLetter={this.handleRevealLetter}
             onRevealAnswer={this.handleRevealAnswer}
+            onToggleShowSolvedQuotes={this.handleToggleShowSolvedQuotes}
           />
         }
         onSetOpen={this.handleSetSidebarOpen}
         open={sidebarOpen}
-        touchHandleWidth={isWinner ? 0 : 20}
         pullRight={!isMobile}
       >
-        <Cryptogram
-          isMobile={isMobile}
-          quote={currentQuote}
-          characters={this.getCharacters()}
-          cipher={cipher}
-          guesses={guesses}
-          hints={hints}
-          mistakes={mistakes}
-          selectedId={selectedId}
-          isWinner={isWinner}
-          sidebarOpen={sidebarOpen}
-          onDelete={this.handleDelete}
-          onGuess={this.handleGuess}
-          onPlayAgain={this.handlePlayAgain}
-          onSelectLetter={this.handleSelectLetter}
-          onSelectNextLetter={this.handleSelectNextLetter}
-          onSelectPreviousLetter={this.handleSelectPreviousLetter}
-          onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
-          onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
-          onSetSidebarOpen={this.handleSetSidebarOpen}
-          onToggleSidebar={this.handleToggleSidebar}
-        />
+        {showSolved ? (
+          <Solved quotes={solvedQuotes} />
+        ) : (
+          <Cryptogram
+            isMobile={isMobile}
+            quote={currentQuote}
+            characters={this.getCharacters()}
+            cipher={cipher}
+            guesses={guesses}
+            hints={hints}
+            mistakes={mistakes}
+            selectedId={selectedId}
+            isWinner={isWinner}
+            sidebarOpen={sidebarOpen}
+            onDelete={this.handleDelete}
+            onGuess={this.handleGuess}
+            onPlayAgain={this.handlePlayAgain}
+            onSelectLetter={this.handleSelectLetter}
+            onSelectNextLetter={this.handleSelectNextLetter}
+            onSelectPreviousLetter={this.handleSelectPreviousLetter}
+            onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
+            onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
+            onSetSidebarOpen={this.handleSetSidebarOpen}
+            onToggleSidebar={this.handleToggleSidebar}
+          />
+        )}
       </Sidebar>
     );
   }

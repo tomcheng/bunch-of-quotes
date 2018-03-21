@@ -25,16 +25,13 @@ const Body = styled.div`
   flex-grow: 1;
   flex-shrink: 1;
   overflow: auto;
-  display: flex;
-  justify-content: center;
 `;
 
 const MainContent = styled.div`
-  display: flex;
-  flex-direction: column;
   position: relative;
   padding: 20px;
   max-width: 1024px;
+  margin: 0 auto;
 `;
 
 const Options = styled.div`

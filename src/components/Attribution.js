@@ -21,20 +21,20 @@ const Time = styled.span`
   white-space: nowrap;
 `;
 
-const Attribution = ({ containerStyle, name, context, occupation, time}) => (
-      <Container style={containerStyle}>
-        <div>
-          {name}
-          {context && `, ${context}`}
-        </div>
-        {(occupation || time) && (
-          <Occupation>
-            {removeWidows(occupation)}
-            {!!occupation && !!time && ", "}
-            {time && <Time>{formatTime(time)}</Time>}
-          </Occupation>
-        )}
-      </Container>
+const Attribution = ({ containerStyle, name, context, occupation, time }) => (
+  <Container style={containerStyle}>
+    <div>
+      {name}
+      {context && `, ${context}`}
+    </div>
+    {(occupation || time) && (
+      <Occupation>
+        {removeWidows(occupation)}
+        {!!occupation && !!time && ", "}
+        {time && <Time>{formatTime(time)}</Time>}
+      </Occupation>
+    )}
+  </Container>
 );
 
 Attribution.propTypes = {

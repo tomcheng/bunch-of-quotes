@@ -12,11 +12,12 @@ const Container = styled.div`
 
 const Trigger = styled.div`
   padding: 15px;
-  cursor: pointer;
+  cursor: ${props => (props.isMobile ? "auto" : "pointer")};
 `;
 
 class Menu extends Component {
   static propTypes = {
+    isMobile: PropTypes.bool.isRequired,
     onClearGuesses: PropTypes.func.isRequired,
     onRevealAnswer: PropTypes.func.isRequired,
     onRevealLetter: PropTypes.func.isRequired,
@@ -32,6 +33,7 @@ class Menu extends Component {
 
   render() {
     const {
+      isMobile,
       onClearGuesses,
       onRevealAnswer,
       onRevealLetter,
@@ -53,7 +55,7 @@ class Menu extends Component {
           isOpen={dropdownOpen}
           onToggle={this.handleToggleDropdown}
         >
-          <Trigger>
+          <Trigger isMobile={isMobile}>
             <i className="fa fa-ellipsis-v" />
           </Trigger>
         </Dropdown>

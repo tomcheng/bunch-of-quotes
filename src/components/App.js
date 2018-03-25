@@ -312,6 +312,7 @@ class App extends Component {
       <Fragment>
         {!isWinner && (
           <Menu
+            isMobile={isMobile}
             onClearGuesses={this.handleClearGuesses}
             onRevealAnswer={this.handleRevealAnswer}
             onRevealLetter={this.handleRevealLetter}

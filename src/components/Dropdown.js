@@ -23,6 +23,13 @@ const DropdownContent = styled.div`
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1), 0 5px 30px rgba(0, 0, 0, 0.15);
   font-size: 16px;
   line-height: 22px;
+  opacity: ${props => (props.isOpen ? 1 : 0)};
+  transform: ${props =>
+    props.isOpen
+      ? "scale3d(1, 1, 1) translate3d(0, 0, 0)"
+      : "scale3d(0.9, 0.9, 1) translate3d(10%, -10%, 0)"};
+  transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+  pointer-events: ${props => (props.isOpen ? "auto" : "none")};
 `;
 
 const DropdownOption = styled.div`
@@ -63,12 +70,13 @@ class Dropdown extends Component {
   };
 
   renderDropdownContent = () => {
-    const { onToggle, options } = this.props;
+    const { isOpen, onToggle, options } = this.props;
 
     return createPortal(
       <Fragment>
-        <Overlay onClick={onToggle} />
+        {isOpen && <Overlay onClick={onToggle} />}
         <DropdownContent
+          isOpen={isOpen}
           style={{
             top: DISTANCE_FROM_EDGE,
             right: DISTANCE_FROM_EDGE
@@ -92,12 +100,12 @@ class Dropdown extends Component {
   };
 
   render() {
-    const { children, isOpen, onToggle } = this.props;
+    const { children, onToggle } = this.props;
 
     return (
       <Fragment>
         <div onClick={onToggle}>{children}</div>
-        {isOpen && this.renderDropdownContent()}
+        {this.renderDropdownContent()}
       </Fragment>
     );
   }

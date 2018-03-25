@@ -1,6 +1,8 @@
+import compact from "lodash/compact"
 import keyBy from "lodash/keyBy";
 import omit from "lodash/omit";
 import sample from "lodash/sample";
+import uniq from "lodash/uniq";
 import values from "lodash/values";
 import { hash } from "./utils/hash";
 import { quotes as quotesList, authors } from "./quotes";
@@ -21,7 +23,7 @@ const quotes = keyBy(
 
 const getSolvedHashes = () => {
   const solvedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
-  return solvedStr ? JSON.parse(solvedStr) : [];
+  return solvedStr ? uniq(JSON.parse(solvedStr)) : [];
 };
 
 export const markQuoteAsSolved = ({ hash }) => {
@@ -34,4 +36,4 @@ export const getUnsolvedQuote = () =>
   sample(values(omit(quotes, getSolvedHashes())));
 
 export const getSolvedQuotes = () =>
-  getSolvedHashes().reverse().map(hash => quotes[hash]);
+  compact(getSolvedHashes().reverse().map(hash => quotes[hash]));

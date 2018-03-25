@@ -16,9 +16,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: stretch;
   justify-content: space-between;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  font-size: 16px;
-  line-height: 22px;
 `;
 
 const Body = styled.div`
@@ -34,16 +31,6 @@ const MainContent = styled.div`
   margin: 0 auto;
 `;
 
-const Options = styled.div`
-  position: fixed;
-  top: 0;
-  right: 0;
-  padding: 10px;
-  cursor: pointer;
-  color: ${props => (props.sidebarOpen ? "#fff" : "#444")};
-  z-index: 1000000;
-`;
-
 const Cryptogram = ({
   isMobile,
   characters,
@@ -53,7 +40,6 @@ const Cryptogram = ({
   quote,
   mistakes,
   isWinner,
-  sidebarOpen,
   onDelete,
   onGuess,
   onPlayAgain,
@@ -61,8 +47,7 @@ const Cryptogram = ({
   onSelectDoublePreviousLetter,
   onSelectLetter,
   onSelectNextLetter,
-  onSelectPreviousLetter,
-  onToggleSidebar
+  onSelectPreviousLetter
 }) => (
   <Container>
     <Body>
@@ -111,17 +96,6 @@ const Cryptogram = ({
         />
       </AnimateHeight>
     )}
-
-    {!isMobile && (
-      <Options onClick={onToggleSidebar} sidebarOpen={sidebarOpen}>
-        <span style={{ display: sidebarOpen ? "none" : "inline" }}>
-          <i className="fa fa-cog" />
-        </span>
-        <span style={{ display: sidebarOpen ? "inline" : "none" }}>
-          <i className="fa fa-times" />
-        </span>
-      </Options>
-    )}
   </Container>
 );
 
@@ -145,7 +119,6 @@ Cryptogram.propTypes = {
     time: PropTypes.string
   }).isRequired,
   selectedId: PropTypes.number.isRequired,
-  sidebarOpen: PropTypes.bool.isRequired,
   onDelete: PropTypes.func.isRequired,
   onGuess: PropTypes.func.isRequired,
   onPlayAgain: PropTypes.func.isRequired,
@@ -153,8 +126,7 @@ Cryptogram.propTypes = {
   onSelectDoublePreviousLetter: PropTypes.func.isRequired,
   onSelectLetter: PropTypes.func.isRequired,
   onSelectNextLetter: PropTypes.func.isRequired,
-  onSelectPreviousLetter: PropTypes.func.isRequired,
-  onToggleSidebar: PropTypes.func.isRequired
+  onSelectPreviousLetter: PropTypes.func.isRequired
 };
 
 export default Cryptogram;

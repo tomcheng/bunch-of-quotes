@@ -9,7 +9,7 @@ const blink = keyframes`
   }
   50% {
     background-color: transparent;
-    color: #444;
+    color: inherit;
   }
 `;
 
@@ -31,7 +31,6 @@ const Container = styled.div`
   align-items: stretch;
   padding-bottom: 10px;
   margin: 0 1px;
-  color: #444;
   user-select: none;
 `;
 

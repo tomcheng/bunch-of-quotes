@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { quoteType } from "../utils/customPropTypes";
 import findIndex from "lodash/findIndex";
@@ -7,8 +7,7 @@ import keys from "lodash/keys";
 import pick from "lodash/pick";
 import uniq from "lodash/uniq";
 import { alphabet } from "../utils/constants";
-import Sidebar from "react-sidebar";
-import SidebarContent from "./SidebarContent";
+import Menu from "./Menu";
 import Cryptogram from "./Cryptogram";
 import Solved from "./Solved";
 
@@ -18,7 +17,6 @@ const initialState = {
   mistakes: [],
   selectedId: 1,
   isWinner: false,
-  sidebarOpen: false,
   showSolved: false
 };
 
@@ -227,8 +225,7 @@ class App extends Component {
     this.setState(state => ({
       ...state,
       guesses: pick(state.guesses, state.hints),
-      mistakes: [],
-      sidebarOpen: false
+      mistakes: []
     }));
   };
 
@@ -241,7 +238,7 @@ class App extends Component {
       return cipher[guess] && cipher[guess] !== letter;
     });
 
-    this.setState({ mistakes, sidebarOpen: false });
+    this.setState({ mistakes });
   };
 
   handleRevealLetter = () => {
@@ -256,7 +253,6 @@ class App extends Component {
     this.setState(state => ({
       ...state,
       guesses: { ...state.guesses, ...removals, [hintLetter]: answer },
-      sidebarOpen: false,
       hints: state.hints.concat([hintLetter]),
       mistakes: state.mistakes.filter(letter => letter !== hintLetter)
     }));
@@ -279,8 +275,7 @@ class App extends Component {
       {
         guesses: correctAnswers,
         mistakes: [],
-        isWinner: true,
-        sidebarOpen: false
+        isWinner: true
       },
       this.props.onMarkAsSolved
     );
@@ -289,17 +284,8 @@ class App extends Component {
   handleToggleShowSolvedQuotes = () => {
     this.setState(state => ({
       ...state,
-      showSolved: !state.showSolved,
-      sidebarOpen: false
+      showSolved: !state.showSolved
     }));
-  };
-
-  handleSetSidebarOpen = open => {
-    this.setState({ sidebarOpen: open });
-  };
-
-  handleToggleSidebar = () => {
-    this.setState(state => ({ ...state, sidebarOpen: !state.sidebarOpen }));
   };
 
   render() {
@@ -310,58 +296,48 @@ class App extends Component {
       mistakes,
       selectedId,
       isWinner,
-      sidebarOpen,
       showSolved
     } = this.state;
-    const enableSidebar = !isWinner && !showSolved;
+
+    if (showSolved) {
+      return (
+        <Solved
+          quotes={solvedQuotes}
+          onGoBack={this.handleToggleShowSolvedQuotes}
+        />
+      );
+    }
 
     return (
-      <Sidebar
-        sidebar={
-          <SidebarContent
-            isDesktop={!isMobile}
+      <Fragment>
+        {!isWinner && (
+          <Menu
             onClearGuesses={this.handleClearGuesses}
-            onShowMistakes={this.handleShowMistakes}
-            onRevealLetter={this.handleRevealLetter}
             onRevealAnswer={this.handleRevealAnswer}
-            onToggleShowSolvedQuotes={this.handleToggleShowSolvedQuotes}
-          />
-        }
-        onSetOpen={this.handleSetSidebarOpen}
-        open={sidebarOpen}
-        pullRight={!isMobile}
-        touchHandleWidth={enableSidebar ? 20 : 0}
-        shadow={enableSidebar}
-      >
-        {showSolved ? (
-          <Solved
-            quotes={solvedQuotes}
-            onGoBack={this.handleToggleShowSolvedQuotes}
-          />
-        ) : (
-          <Cryptogram
-            isMobile={isMobile}
-            quote={currentQuote}
-            characters={characters}
-            guesses={guesses}
-            hints={hints}
-            mistakes={mistakes}
-            selectedId={selectedId}
-            isWinner={isWinner}
-            sidebarOpen={sidebarOpen}
-            onDelete={this.handleDelete}
-            onGuess={this.handleGuess}
-            onPlayAgain={this.handlePlayAgain}
-            onSelectLetter={this.handleSelectLetter}
-            onSelectNextLetter={this.handleSelectNextLetter}
-            onSelectPreviousLetter={this.handleSelectPreviousLetter}
-            onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
-            onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
-            onSetSidebarOpen={this.handleSetSidebarOpen}
-            onToggleSidebar={this.handleToggleSidebar}
+            onRevealLetter={this.handleRevealLetter}
+            onShowMistakes={this.handleShowMistakes}
+            onShowSolvedQuotes={this.handleToggleShowSolvedQuotes}
           />
         )}
-      </Sidebar>
+        <Cryptogram
+          isMobile={isMobile}
+          quote={currentQuote}
+          characters={characters}
+          guesses={guesses}
+          hints={hints}
+          mistakes={mistakes}
+          selectedId={selectedId}
+          isWinner={isWinner}
+          onDelete={this.handleDelete}
+          onGuess={this.handleGuess}
+          onPlayAgain={this.handlePlayAgain}
+          onSelectLetter={this.handleSelectLetter}
+          onSelectNextLetter={this.handleSelectNextLetter}
+          onSelectPreviousLetter={this.handleSelectPreviousLetter}
+          onSelectDoubleNextLetter={this.handleSelectNextOpenLetter}
+          onSelectDoublePreviousLetter={this.handleSelectPreviousOpenLetter}
+        />
+      </Fragment>
     );
   }
 }

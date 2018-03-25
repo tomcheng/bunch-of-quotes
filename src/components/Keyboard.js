@@ -33,7 +33,6 @@ const Key = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #444;
   font-weight: bold;
   user-select: none;
   cursor: pointer;

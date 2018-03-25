@@ -9,7 +9,6 @@ const Container = styled.div`
   text-align: right;
   font-size: 14px;
   line-height: 20px;
-  color: #444;
 `;
 
 const Occupation = styled.div`

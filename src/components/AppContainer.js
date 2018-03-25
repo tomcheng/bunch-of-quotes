@@ -10,13 +10,16 @@ import {
 
 const MOBILE_SIZE = 1024;
 
-const getCharacters = (cipher, currentQuote) =>
-  applyCipher(currentQuote.text, cipher)
+const getCharacters = (cipher, currentQuote) => {
+  let id = 0;
+
+  return applyCipher(currentQuote.text, cipher)
     .split("")
-    .map((letter, index) => ({
-      id: alphabet.includes(letter) ? index + 1 : null,
+    .map(letter => ({
+      id: alphabet.includes(letter) ? ++id : null,
       letter
     }));
+};
 
 class AppContainer extends Component {
   state = {

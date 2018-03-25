@@ -27,6 +27,7 @@ const KeyRow = styled.div`
 const Key = styled.div`
   box-sizing: border-box;
   background-color: #fff;
+  opacity: ${props => props.isFaded ? 0.8 : 1};
   border-radius: 2px;
   flex: 0 0;
   height: ${KEY_HEIGHT}px;
@@ -50,6 +51,7 @@ const ShortKey = styled(Key)`
 
 class Keyboard extends Component {
   static propTypes = {
+    fadedLetters: PropTypes.arrayOf(PropTypes.string).isRequired,
     onTapDelete: PropTypes.func.isRequired,
     onTapDoubleNext: PropTypes.func.isRequired,
     onTapDoublePrevious: PropTypes.func.isRequired,
@@ -87,6 +89,7 @@ class Keyboard extends Component {
 
   render() {
     const {
+      fadedLetters,
       onTapDoublePrevious,
       onTapPrevious,
       onTapNext,
@@ -132,6 +135,7 @@ class Keyboard extends Component {
             <Key
               key={letter}
               style={{ flexBasis: keyWidth + "px" }}
+              isFaded={fadedLetters.includes(letter)}
               onClick={() => {
                 onTapLetter(letter);
               }}
@@ -145,6 +149,7 @@ class Keyboard extends Component {
             <Key
               key={letter}
               style={{ flexBasis: keyWidth + "px" }}
+              isFaded={fadedLetters.includes(letter)}
               onClick={() => {
                 onTapLetter(letter);
               }}
@@ -158,6 +163,7 @@ class Keyboard extends Component {
             <Key
               key={letter}
               style={{ flexBasis: keyWidth + "px" }}
+              isFaded={fadedLetters.includes(letter)}
               onClick={() => {
                 onTapLetter(letter);
               }}

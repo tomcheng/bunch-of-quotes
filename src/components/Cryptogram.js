@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import values from "lodash/values";
+import compact from "lodash/compact";
 import AnimateHeight from "react-animate-height-auto";
 import FadeIn from "./FadeIn";
 import Footer from "./Footer";
@@ -87,6 +89,7 @@ const Cryptogram = ({
     {isMobile && (
       <AnimateHeight isExpanded={!isWinner} duration={300}>
         <Keyboard
+          fadedLetters={compact(values(guesses))}
           onTapDoublePrevious={onSelectDoublePreviousLetter}
           onTapPrevious={onSelectPreviousLetter}
           onTapNext={onSelectNextLetter}

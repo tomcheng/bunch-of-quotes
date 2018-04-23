@@ -4,8 +4,7 @@ import styled from "styled-components";
 import { simpleMemoize } from "../utils/functionUtils";
 
 const KEY_HEIGHT = 54;
-const SHORT_KEY_HEIGHT = 42;
-const SPACE = 4;
+const SPACE = 3;
 
 const TOP_NUM_KEYS = 10;
 
@@ -43,10 +42,6 @@ const Key = styled.div`
   &:active {
     background-color: #eee;
   }
-`;
-
-const ShortKey = styled(Key)`
-  height: ${SHORT_KEY_HEIGHT}px;
 `;
 
 class Keyboard extends Component {
@@ -105,32 +100,6 @@ class Keyboard extends Component {
     return (
       <Container>
         <KeyRow>
-          <ShortKey
-            onClick={onTapDoublePrevious}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
-          >
-            <i className="fa fa-angle-double-left" />
-          </ShortKey>
-          <ShortKey
-            onClick={onTapPrevious}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
-          >
-            <i className="fa fa-angle-left" />
-          </ShortKey>
-          <ShortKey
-            onClick={onTapNext}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
-          >
-            <i className="fa fa-angle-right" />
-          </ShortKey>
-          <ShortKey
-            onClick={onTapDoubleNext}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
-          >
-            <i className="fa fa-angle-double-right" />
-          </ShortKey>
-        </KeyRow>
-        <KeyRow>
           {"QWERTYUIOP".split("").map(letter => (
             <Key
               key={letter}
@@ -178,7 +147,32 @@ class Keyboard extends Component {
             Delete
           </Key>
         </KeyRow>
-      </Container>
+        <KeyRow>
+          <Key
+            onClick={onTapDoublePrevious}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
+          >
+            <i className="fa fa-angle-double-left" />
+          </Key>
+          <Key
+            onClick={onTapPrevious}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
+          >
+            <i className="fa fa-angle-left" />
+          </Key>
+          <Key
+            onClick={onTapNext}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
+          >
+            <i className="fa fa-angle-right" />
+          </Key>
+          <Key
+            onClick={onTapDoubleNext}
+            style={{ flexBasis: arrowKeyWidth + "px" }}
+          >
+            <i className="fa fa-angle-double-right" />
+          </Key>
+        </KeyRow>      </Container>
     );
   }
 }

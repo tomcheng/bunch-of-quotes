@@ -26,7 +26,7 @@ const KeyRow = styled.div`
 const Key = styled.div`
   box-sizing: border-box;
   background-color: #fff;
-  opacity: ${props => props.isFaded ? 0.8 : 1};
+  opacity: ${(props) => (props.isFaded ? 0.8 : 1)};
   border-radius: 2px;
   flex: 0 0;
   height: ${KEY_HEIGHT}px;
@@ -52,7 +52,7 @@ class Keyboard extends Component {
     onTapDoublePrevious: PropTypes.func.isRequired,
     onTapLetter: PropTypes.func.isRequired,
     onTapNext: PropTypes.func.isRequired,
-    onTapPrevious: PropTypes.func.isRequired
+    onTapPrevious: PropTypes.func.isRequired,
   };
 
   state = { fullWidth: window.innerWidth };
@@ -69,7 +69,7 @@ class Keyboard extends Component {
     this.setState({ fullWidth: window.innerWidth });
   };
 
-  getDimensions = simpleMemoize(fullWidth => {
+  getDimensions = simpleMemoize((fullWidth) => {
     const arrowKeyWidth = (fullWidth - 5 * SPACE) / 4;
     const keyWidth =
       (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
@@ -78,7 +78,7 @@ class Keyboard extends Component {
     return {
       keyWidth,
       deleteKeyWidth,
-      arrowKeyWidth
+      arrowKeyWidth,
     };
   });
 
@@ -90,7 +90,7 @@ class Keyboard extends Component {
       onTapNext,
       onTapDoubleNext,
       onTapLetter,
-      onTapDelete
+      onTapDelete,
     } = this.props;
     const { fullWidth } = this.state;
     const { keyWidth, deleteKeyWidth, arrowKeyWidth } = this.getDimensions(
@@ -100,7 +100,7 @@ class Keyboard extends Component {
     return (
       <Container>
         <KeyRow>
-          {"QWERTYUIOP".split("").map(letter => (
+          {"QWERTYUIOP".split("").map((letter) => (
             <Key
               key={letter}
               style={{ flexBasis: keyWidth + "px" }}
@@ -114,7 +114,7 @@ class Keyboard extends Component {
           ))}
         </KeyRow>
         <KeyRow>
-          {"ASDFGHJKL".split("").map(letter => (
+          {"ASDFGHJKL".split("").map((letter) => (
             <Key
               key={letter}
               style={{ flexBasis: keyWidth + "px" }}
@@ -128,7 +128,7 @@ class Keyboard extends Component {
           ))}
         </KeyRow>
         <KeyRow style={{ justifyContent: "flex-end" }}>
-          {"ZXCVBNM".split("").map(letter => (
+          {"ZXCVBNM".split("").map((letter) => (
             <Key
               key={letter}
               style={{ flexBasis: keyWidth + "px" }}
@@ -160,10 +160,7 @@ class Keyboard extends Component {
           >
             <i className="fa fa-angle-left" />
           </Key>
-          <Key
-            onClick={onTapNext}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
-          >
+          <Key onClick={onTapNext} style={{ flexBasis: arrowKeyWidth + "px" }}>
             <i className="fa fa-angle-right" />
           </Key>
           <Key
@@ -172,7 +169,8 @@ class Keyboard extends Component {
           >
             <i className="fa fa-angle-double-right" />
           </Key>
-        </KeyRow>      </Container>
+        </KeyRow>{" "}
+      </Container>
     );
   }
 }

@@ -17,7 +17,7 @@ const initialState = {
   mistakes: [],
   selectedId: 1,
   isWinner: false,
-  showSolved: false
+  showSolved: false,
 };
 
 class App extends Component {
@@ -25,7 +25,7 @@ class App extends Component {
     characters: PropTypes.arrayOf(
       PropTypes.shape({
         letter: PropTypes.string.isRequired,
-        id: PropTypes.number
+        id: PropTypes.number,
       })
     ).isRequired,
     cipher: PropTypes.objectOf(PropTypes.string).isRequired,
@@ -33,7 +33,7 @@ class App extends Component {
     isMobile: PropTypes.bool.isRequired,
     solvedQuotes: PropTypes.arrayOf(quoteType).isRequired,
     onGetNewQuote: PropTypes.func.isRequired,
-    onMarkAsSolved: PropTypes.func.isRequired
+    onMarkAsSolved: PropTypes.func.isRequired,
   };
 
   state = initialState;
@@ -46,7 +46,7 @@ class App extends Component {
     window.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  handleKeyDown = evt => {
+  handleKeyDown = (evt) => {
     if (alphabet.includes(evt.key.toUpperCase())) {
       this.handleGuess(evt.key.toUpperCase());
     } else if (evt.key === "Backspace") {
@@ -77,19 +77,19 @@ class App extends Component {
     }
   };
 
-  checkWin = guesses => {
+  checkWin = (guesses) => {
     const { cipher, characters } = this.props;
 
     return (
-      characters.filter(c => !!c.id).every(c => !!guesses[c.letter]) &&
-      keys(guesses).every(key => {
+      characters.filter((c) => !!c.id).every((c) => !!guesses[c.letter]) &&
+      keys(guesses).every((key) => {
         const guess = guesses[key];
         return cipher[guess] === key;
       })
     );
   };
 
-  getLetters = () => this.props.characters.filter(c => c.id !== null);
+  getLetters = () => this.props.characters.filter((c) => c.id !== null);
 
   getOpenLettersWithSelected = () =>
     this.getLetters().filter(
@@ -108,15 +108,15 @@ class App extends Component {
     );
   };
 
-  selectLetter = id => {
+  selectLetter = (id) => {
     this.setState({ selectedId: id });
   };
 
-  selectNext = letters => {
+  selectNext = (letters) => {
     const { selectedId } = this.state;
     const selectedIndex = findIndex(
       letters,
-      letter => letter.id === selectedId
+      (letter) => letter.id === selectedId
     );
     this.selectLetter(
       (selectedIndex === letters.length - 1
@@ -151,16 +151,16 @@ class App extends Component {
   };
 
   getSelectedLetter = () =>
-    this.props.characters.find(c => c.id === this.state.selectedId).letter;
+    this.props.characters.find((c) => c.id === this.state.selectedId).letter;
 
-  handleSelectLetter = id => {
+  handleSelectLetter = (id) => {
     this.setState({ selectedId: id });
   };
 
-  handleGuess = guess => {
+  handleGuess = (guess) => {
     const { guesses, mistakes, hints } = this.state;
     const letter = this.getSelectedLetter();
-    const prevLetter = findKey(guesses, l => l === guess);
+    const prevLetter = findKey(guesses, (l) => l === guess);
 
     if (hints.includes(letter)) {
       this.handleSelectNextLetter();
@@ -174,7 +174,7 @@ class App extends Component {
     const removals = prevLetter ? { [prevLetter]: null } : {};
     const newGuesses = { ...guesses, ...removals, [letter]: guess };
     const newMistakes = mistakes.filter(
-      mistake => mistake !== letter && mistake !== prevLetter
+      (mistake) => mistake !== letter && mistake !== prevLetter
     );
 
     if (this.checkWin(newGuesses)) {
@@ -182,7 +182,7 @@ class App extends Component {
         {
           guesses: newGuesses,
           mistakes: newMistakes,
-          isWinner: true
+          isWinner: true,
         },
         this.props.onMarkAsSolved
       );
@@ -205,13 +205,13 @@ class App extends Component {
     }
 
     this.setState(
-      state => ({
+      (state) => ({
         ...state,
         guesses: {
           ...state.guesses,
-          [letter]: null
+          [letter]: null,
         },
-        mistakes: state.mistakes.filter(mistake => mistake !== letter)
+        mistakes: state.mistakes.filter((mistake) => mistake !== letter),
       }),
       this.handleSelectPreviousLetter
     );
@@ -222,10 +222,10 @@ class App extends Component {
   };
 
   handleClearGuesses = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       guesses: pick(state.guesses, state.hints),
-      mistakes: []
+      mistakes: [],
     }));
   };
 
@@ -233,7 +233,7 @@ class App extends Component {
     const { cipher } = this.props;
     const { guesses } = this.state;
 
-    const mistakes = keys(guesses).filter(letter => {
+    const mistakes = keys(guesses).filter((letter) => {
       const guess = guesses[letter];
       return cipher[guess] && cipher[guess] !== letter;
     });
@@ -246,15 +246,15 @@ class App extends Component {
     const { guesses } = this.state;
 
     const hintLetter = this.getSelectedLetter();
-    const answer = findKey(cipher, letter => letter === hintLetter);
-    const existingLetter = findKey(guesses, letter => letter === answer);
+    const answer = findKey(cipher, (letter) => letter === hintLetter);
+    const existingLetter = findKey(guesses, (letter) => letter === answer);
     const removals = existingLetter ? { [existingLetter]: null } : {};
 
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       guesses: { ...state.guesses, ...removals, [hintLetter]: answer },
       hints: state.hints.concat([hintLetter]),
-      mistakes: state.mistakes.filter(letter => letter !== hintLetter)
+      mistakes: state.mistakes.filter((letter) => letter !== hintLetter),
     }));
   };
 
@@ -266,7 +266,7 @@ class App extends Component {
     ).reduce(
       (guesses, letter) => ({
         ...guesses,
-        [letter]: findKey(cipher, l => l === letter)
+        [letter]: findKey(cipher, (l) => l === letter),
       }),
       {}
     );
@@ -275,16 +275,16 @@ class App extends Component {
       {
         guesses: correctAnswers,
         mistakes: [],
-        isWinner: true
+        isWinner: true,
       },
       this.props.onMarkAsSolved
     );
   };
 
   handleToggleShowSolvedQuotes = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
-      showSolved: !state.showSolved
+      showSolved: !state.showSolved,
     }));
   };
 
@@ -296,7 +296,7 @@ class App extends Component {
       mistakes,
       selectedId,
       isWinner,
-      showSolved
+      showSolved,
     } = this.state;
 
     if (showSolved) {

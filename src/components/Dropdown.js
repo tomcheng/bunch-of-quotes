@@ -23,13 +23,13 @@ const DropdownContent = styled.div`
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1), 0 5px 30px rgba(0, 0, 0, 0.15);
   font-size: 16px;
   line-height: 22px;
-  opacity: ${props => (props.isOpen ? 1 : 0)};
-  transform: ${props =>
+  opacity: ${(props) => (props.isOpen ? 1 : 0)};
+  transform: ${(props) =>
     props.isOpen
       ? "scale3d(1, 1, 1) translate3d(0, 0, 0)"
       : "scale3d(0.9, 0.9, 1) translate3d(10%, -10%, 0)"};
   transition: opacity 0.1s ease-out, transform 0.1s ease-out;
-  pointer-events: ${props => (props.isOpen ? "auto" : "none")};
+  pointer-events: ${(props) => (props.isOpen ? "auto" : "none")};
 `;
 
 const DropdownOption = styled.div`
@@ -47,10 +47,10 @@ class Dropdown extends Component {
     options: PropTypes.arrayOf(
       PropTypes.shape({
         label: PropTypes.string.isRequired,
-        onClick: PropTypes.func.isRequired
+        onClick: PropTypes.func.isRequired,
       })
     ).isRequired,
-    onToggle: PropTypes.func.isRequired
+    onToggle: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -61,7 +61,7 @@ class Dropdown extends Component {
 
     this.state = {
       dimensions: { width: 0, height: 0, top: 0, right: 0 },
-      isMeasured: false
+      isMeasured: false,
     };
   }
 
@@ -79,7 +79,7 @@ class Dropdown extends Component {
           isOpen={isOpen}
           style={{
             top: DISTANCE_FROM_EDGE,
-            right: DISTANCE_FROM_EDGE
+            right: DISTANCE_FROM_EDGE,
           }}
         >
           {options.map(({ label, onClick }) => (

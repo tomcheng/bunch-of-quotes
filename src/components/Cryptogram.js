@@ -49,7 +49,7 @@ const Cryptogram = ({
   onSelectDoublePreviousLetter,
   onSelectLetter,
   onSelectNextLetter,
-  onSelectPreviousLetter
+  onSelectPreviousLetter,
 }) => (
   <Container>
     <Body>
@@ -106,7 +106,7 @@ Cryptogram.propTypes = {
   characters: PropTypes.arrayOf(
     PropTypes.shape({
       letter: PropTypes.string.isRequired,
-      id: PropTypes.number
+      id: PropTypes.number,
     })
   ).isRequired,
   guesses: PropTypes.objectOf(PropTypes.string).isRequired,
@@ -119,7 +119,7 @@ Cryptogram.propTypes = {
     text: PropTypes.string.isRequired,
     context: PropTypes.string,
     occupation: PropTypes.string,
-    time: PropTypes.string
+    time: PropTypes.string,
   }).isRequired,
   selectedId: PropTypes.number.isRequired,
   onDelete: PropTypes.func.isRequired,
@@ -129,7 +129,7 @@ Cryptogram.propTypes = {
   onSelectDoublePreviousLetter: PropTypes.func.isRequired,
   onSelectLetter: PropTypes.func.isRequired,
   onSelectNextLetter: PropTypes.func.isRequired,
-  onSelectPreviousLetter: PropTypes.func.isRequired
+  onSelectPreviousLetter: PropTypes.func.isRequired,
 };
 
 export default Cryptogram;

@@ -12,7 +12,7 @@ const Container = styled.div`
 
 const Trigger = styled.div`
   padding: 15px;
-  cursor: ${props => (props.isMobile ? "auto" : "pointer")};
+  cursor: ${(props) => (props.isMobile ? "auto" : "pointer")};
 `;
 
 class Menu extends Component {
@@ -22,13 +22,13 @@ class Menu extends Component {
     onRevealAnswer: PropTypes.func.isRequired,
     onRevealLetter: PropTypes.func.isRequired,
     onShowMistakes: PropTypes.func.isRequired,
-    onShowSolvedQuotes: PropTypes.func.isRequired
+    onShowSolvedQuotes: PropTypes.func.isRequired,
   };
 
   state = { dropdownOpen: false };
 
   handleToggleDropdown = () => {
-    this.setState(state => ({ ...state, dropdownOpen: !state.dropdownOpen }));
+    this.setState((state) => ({ ...state, dropdownOpen: !state.dropdownOpen }));
   };
 
   render() {
@@ -38,7 +38,7 @@ class Menu extends Component {
       onRevealAnswer,
       onRevealLetter,
       onShowSolvedQuotes,
-      onShowMistakes
+      onShowMistakes,
     } = this.props;
     const { dropdownOpen } = this.state;
 
@@ -50,7 +50,7 @@ class Menu extends Component {
             { label: "Clear Guesses", onClick: onClearGuesses },
             { label: "Show Mistakes", onClick: onShowMistakes },
             { label: "Reveal Letter", onClick: onRevealLetter },
-            { label: "Reveal Answer", onClick: onRevealAnswer }
+            { label: "Reveal Answer", onClick: onRevealAnswer },
           ]}
           isOpen={dropdownOpen}
           onToggle={this.handleToggleDropdown}

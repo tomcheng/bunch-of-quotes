@@ -6,7 +6,7 @@ import Letter from "./Letter";
 const split = (arr, predicate) => {
   const newArr = [[]];
 
-  arr.forEach(entry => {
+  arr.forEach((entry) => {
     if (predicate(entry)) {
       newArr.push([]);
     } else {
@@ -34,10 +34,10 @@ const Letters = ({
   hints,
   mistakes,
   isWinner,
-  onSelect
+  onSelect,
 }) => {
-  const words = split(letters, l => l.letter === " ");
-  const selectedLetter = letters.find(l => l.id === selectedId).letter;
+  const words = split(letters, (l) => l.letter === " ");
+  const selectedLetter = letters.find((l) => l.id === selectedId).letter;
 
   return (
     <Container>
@@ -71,7 +71,7 @@ Letters.propTypes = {
   letters: PropTypes.arrayOf(
     PropTypes.shape({
       letter: PropTypes.string.isRequired,
-      id: PropTypes.number
+      id: PropTypes.number,
     })
   ).isRequired,
   mistakes: PropTypes.arrayOf(PropTypes.string).isRequired,

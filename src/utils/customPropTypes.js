@@ -6,5 +6,5 @@ export const quoteType = PropTypes.shape({
   text: PropTypes.string.isRequired,
   context: PropTypes.string,
   occupation: PropTypes.string,
-  time: PropTypes.string
+  time: PropTypes.string,
 });

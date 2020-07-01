@@ -54,7 +54,7 @@ const Solved = ({ quotes, onGoBack }) => (
     <Body>
       <Quotes>
         {quotes.length ? (
-          quotes.map(quote => (
+          quotes.map((quote) => (
             <Quote key={quote.hash}>
               <QuoteText>{quote.text}</QuoteText>
               <Attribution {...quote} />
@@ -74,7 +74,7 @@ const Solved = ({ quotes, onGoBack }) => (
 
 Solved.propTypes = {
   quotes: PropTypes.arrayOf(quoteType).isRequired,
-  onGoBack: PropTypes.func.isRequired
+  onGoBack: PropTypes.func.isRequired,
 };
 
 export default Solved;

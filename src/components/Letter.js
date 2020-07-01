@@ -35,10 +35,10 @@ const Container = styled.div`
 `;
 
 const GuessedLetter = styled.div`
-  background-color: ${props =>
+  background-color: ${(props) =>
     props.letterSelected && !props.isWinner ? "#eee" : "transparent"};
-  color: ${props => (props.isMistake ? "red" : "inherit")};
-  font-weight: ${props =>
+  color: ${(props) => (props.isMistake ? "red" : "inherit")};
+  font-weight: ${(props) =>
     props.isHint && !props.isWinner ? "bold" : "inherit"};
   border: 0;
   display: block;
@@ -47,7 +47,7 @@ const GuessedLetter = styled.div`
   text-align: center;
   line-height: 22px;
   margin-bottom: 1px;
-  ${props =>
+  ${(props) =>
     props.isSelected && !props.isWinner
       ? `animation: 1.1s ${
           props.isMistake ? errorBlink : blink
@@ -57,7 +57,7 @@ const GuessedLetter = styled.div`
 
 const EncryptedLetter = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.8);
-  opacity: ${props => (props.isWinner ? 0.3 : 0.8)};
+  opacity: ${(props) => (props.isWinner ? 0.3 : 0.8)};
   transition: opacity 0.8s ease-out;
   font-family: Courier, mono-space;
   font-size: 14px;
@@ -74,7 +74,7 @@ const Letter = ({
   letterSelected,
   isLetter,
   onSelect,
-  isWinner
+  isWinner,
 }) => {
   if (!isLetter) {
     return <span>{letter}</span>;
@@ -110,7 +110,7 @@ Letter.propTypes = {
   letterSelected: PropTypes.bool.isRequired,
   onSelect: PropTypes.func.isRequired,
   id: PropTypes.number,
-  guess: PropTypes.string
+  guess: PropTypes.string,
 };
 
 export default Letter;

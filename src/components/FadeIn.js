@@ -5,12 +5,12 @@ class FadeIn extends Component {
   static propTypes = {
     children: PropTypes.func.isRequired,
     delay: PropTypes.number,
-    duration: PropTypes.number
+    duration: PropTypes.number,
   };
 
   static defaultProps = {
     delay: 0,
-    duration: 300
+    duration: 300,
   };
 
   state = { show: false };
@@ -34,8 +34,8 @@ class FadeIn extends Component {
     return children({
       fadeInStyle: {
         transition: `opacity ${duration}ms ease-in-out`,
-        opacity: show ? 1 : 0
-      }
+        opacity: show ? 1 : 0,
+      },
     });
   }
 }

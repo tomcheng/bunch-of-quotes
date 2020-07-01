@@ -1,4 +1,4 @@
-import compact from "lodash/compact"
+import compact from "lodash/compact";
 import keyBy from "lodash/keyBy";
 import omit from "lodash/omit";
 import sample from "lodash/sample";
@@ -16,9 +16,9 @@ const quotes = keyBy(
     name,
     occupation: authors[name] ? authors[name][0] : null,
     time: authors[name] ? authors[name][1] : null,
-    hash: hash(text)
+    hash: hash(text),
   })),
-  quote => quote.hash
+  (quote) => quote.hash
 );
 
 const getSolvedHashes = () => {
@@ -36,4 +36,8 @@ export const getUnsolvedQuote = () =>
   sample(values(omit(quotes, getSolvedHashes())));
 
 export const getSolvedQuotes = () =>
-  compact(getSolvedHashes().reverse().map(hash => quotes[hash]));
+  compact(
+    getSolvedHashes()
+      .reverse()
+      .map((hash) => quotes[hash])
+  );

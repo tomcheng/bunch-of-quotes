@@ -5,7 +5,7 @@ import { alphabet } from "../utils/constants";
 import {
   getUnsolvedQuote,
   getSolvedQuotes,
-  markQuoteAsSolved
+  markQuoteAsSolved,
 } from "../quotesRepo";
 
 const MOBILE_SIZE = 1024;
@@ -15,9 +15,9 @@ const getCharacters = (cipher, currentQuote) => {
 
   return applyCipher(currentQuote.text, cipher)
     .split("")
-    .map(letter => ({
+    .map((letter) => ({
       id: alphabet.includes(letter) ? ++id : null,
-      letter
+      letter,
     }));
 };
 
@@ -26,7 +26,7 @@ class AppContainer extends Component {
     cipher: generateCipher(),
     currentQuote: getUnsolvedQuote(),
     isMobile: window.innerWidth < MOBILE_SIZE,
-    solvedQuotes: getSolvedQuotes()
+    solvedQuotes: getSolvedQuotes(),
   };
 
   componentDidMount() {
@@ -44,7 +44,7 @@ class AppContainer extends Component {
   handleGetNewQuote = () => {
     this.setState({
       cipher: generateCipher(),
-      currentQuote: getUnsolvedQuote()
+      currentQuote: getUnsolvedQuote(),
     });
   };
 

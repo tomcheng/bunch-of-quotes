@@ -7,7 +7,7 @@ export const generateCipher = () => {
   return alphabet.reduce(
     (cipher, letter, index) => ({
       ...cipher,
-      [letter]: shuffledLetters[index]
+      [letter]: shuffledLetters[index],
     }),
     {}
   );
@@ -17,6 +17,6 @@ export const applyCipher = simpleMemoize((text, cipher) =>
   text
     .toUpperCase()
     .split("")
-    .map(letter => cipher[letter] || letter)
+    .map((letter) => cipher[letter] || letter)
     .join("")
 );

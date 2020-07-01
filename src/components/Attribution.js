@@ -2,8 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-const removeWidows = str => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
-const formatTime = str => str.replace(/-/g, "\u200A\u2013\u200A");
+const removeWidows = (str) => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
+const formatTime = (str) => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const Container = styled.div`
   text-align: right;
@@ -41,7 +41,7 @@ Attribution.propTypes = {
   containerStyle: PropTypes.object,
   context: PropTypes.string,
   occupation: PropTypes.string,
-  time: PropTypes.string
+  time: PropTypes.string,
 };
 
 export default Attribution;

@@ -68,7 +68,7 @@ function murmurhash3_32_gc(key, seed) {
   return h1 >>> 0;
 }
 
-export const hash = str =>
+export const hash = (str) =>
   parseInt(
     murmurhash3_32_gc(
       str

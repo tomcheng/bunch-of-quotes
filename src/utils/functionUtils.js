@@ -1,4 +1,4 @@
-export const simpleMemoize = func => {
+export const simpleMemoize = (func) => {
   let lastArgs = null;
   let lastResult = null;
   return (...args) => {

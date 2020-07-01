@@ -11,7 +11,7 @@
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
-    "lodash": "4.17.5",
+    "lodash": "4.17.13",
     "prop-types": "15.6.1",
     "react": "16.2.0",
     "react-animate-height-auto": "0.0.2",

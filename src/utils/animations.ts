@@ -1,6 +1,6 @@
-export const cubicOut = (x) => --x * x * x + 1;
+export const cubicOut = (x: number) => --x * x * x + 1;
 
-export const cubicInOut = (x) => {
+export const cubicInOut = (x: number) => {
   // eslint-disable-next-line no-cond-assign
   if ((x *= 2) < 1) {
     return (1 / 2) * x * x * x;
@@ -8,7 +8,25 @@ export const cubicInOut = (x) => {
   return (1 / 2) * ((x -= 2) * x * x + 2);
 };
 
-const Animations = {
+type AnimationsType = {
+  props: {
+    animations: { [name: string]: { raf: number | null } };
+  };
+  registerStart: (name: string) => void;
+  getCurrentTime: () => number;
+  stop: (name: string) => void;
+  animate: (args: {
+    name: string;
+    start: number;
+    end: number;
+    duration: number;
+    easing: (x: number) => number;
+    onUpdate: (x: number) => void;
+    onComplete: () => void;
+  }) => void;
+};
+
+const Animations: AnimationsType = {
   props: { animations: {} },
 
   registerStart(name) {
@@ -19,7 +37,7 @@ const Animations = {
     }
 
     if (!animations[name]) {
-      animations[name] = {};
+      animations[name] = { raf: null };
     }
   },
 
@@ -30,10 +48,8 @@ const Animations = {
   stop(name) {
     const { animations } = this.props;
 
-    if (animations[name]) {
-      if (animations[name].raf) {
-        window.cancelAnimationFrame(animations[name].raf);
-      }
+    if (animations[name] && animations[name].raf !== null) {
+      window.cancelAnimationFrame(<number>animations[name].raf);
       delete animations[name];
     }
   },

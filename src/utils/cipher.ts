@@ -13,10 +13,11 @@ export const generateCipher = () => {
   );
 };
 
-export const applyCipher = simpleMemoize((text, cipher) =>
-  text
-    .toUpperCase()
-    .split("")
-    .map((letter) => cipher[letter] || letter)
-    .join("")
+export const applyCipher = simpleMemoize(
+  (text: string, cipher: { [key: string]: string }) =>
+    text
+      .toUpperCase()
+      .split("")
+      .map((letter) => cipher[letter] || letter)
+      .join("")
 );

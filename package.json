@@ -15,7 +15,7 @@
     "prop-types": "15.6.1",
     "react": "16.2.0",
     "react-animate-height-auto": "0.0.2",
-    "react-dom": "16.2.0",
+    "react-dom": "16.2.1",
     "styled-components": "3.2.3"
   },
   "devDependencies": {

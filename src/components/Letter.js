@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 const blink = keyframes`
   0%, 100% {
@@ -34,6 +34,11 @@ const Container = styled.div`
   user-select: none;
 `;
 
+const animationMixin = css`
+  animation: 1.1s ${(props) => (props.isMistake ? errorBlink : blink)} step-end
+    infinite;
+`;
+
 const GuessedLetter = styled.div`
   background-color: ${(props) =>
     props.letterSelected && !props.isWinner ? "#eee" : "transparent"};
@@ -47,12 +52,7 @@ const GuessedLetter = styled.div`
   text-align: center;
   line-height: 22px;
   margin-bottom: 1px;
-  ${(props) =>
-    props.isSelected && !props.isWinner
-      ? `animation: 1.1s ${
-          props.isMistake ? errorBlink : blink
-        } step-end infinite`
-      : ""};
+  ${(props) => (props.isSelected && !props.isWinner ? animationMixin : "")};
 `;
 
 const EncryptedLetter = styled.div`

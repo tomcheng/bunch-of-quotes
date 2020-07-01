@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled, { css, keyframes } from "styled-components";
 
 const blink = keyframes`
@@ -34,13 +33,22 @@ const Container = styled.div`
   user-select: none;
 `;
 
+type GuessedLetter = {
+  isHint: boolean;
+  isMistake: boolean;
+  isSelected: boolean;
+  isWinner: boolean;
+  letterSelected: boolean;
+};
+
 const animationMixin = css`
-  animation: 1.1s ${(props) => (props.isMistake ? errorBlink : blink)} step-end
+  animation: 1.1s
+    ${(props: GuessedLetter) => (props.isMistake ? errorBlink : blink)} step-end
     infinite;
 `;
 
 const GuessedLetter = styled.div`
-  background-color: ${(props) =>
+  background-color: ${(props: GuessedLetter) =>
     props.letterSelected && !props.isWinner ? "#eee" : "transparent"};
   color: ${(props) => (props.isMistake ? "red" : "inherit")};
   font-weight: ${(props) =>
@@ -55,14 +63,31 @@ const GuessedLetter = styled.div`
   ${(props) => (props.isSelected && !props.isWinner ? animationMixin : "")};
 `;
 
+type EncryptedLetterProps = {
+  isWinner: boolean;
+};
+
 const EncryptedLetter = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.8);
-  opacity: ${(props) => (props.isWinner ? 0.3 : 0.8)};
+  opacity: ${(props: EncryptedLetterProps) => (props.isWinner ? 0.3 : 0.8)};
   transition: opacity 0.8s ease-out;
   font-family: Courier, mono-space;
   font-size: 14px;
   text-align: center;
 `;
+
+type LetterProps = {
+  letter: string;
+  isLetter: boolean;
+  isHint: boolean;
+  isMistake: boolean;
+  isSelected: boolean;
+  isWinner: boolean;
+  letterSelected: boolean;
+  onSelect: (id: number) => void;
+  id?: number;
+  guess?: string;
+};
 
 const Letter = ({
   id,
@@ -75,7 +100,7 @@ const Letter = ({
   isLetter,
   onSelect,
   isWinner,
-}) => {
+}: LetterProps) => {
   if (!isLetter) {
     return <span>{letter}</span>;
   }
@@ -83,7 +108,9 @@ const Letter = ({
   return (
     <Container
       onClick={() => {
-        onSelect(id);
+        if (typeof id === "number") {
+          onSelect(id);
+        }
       }}
     >
       <GuessedLetter
@@ -98,19 +125,6 @@ const Letter = ({
       <EncryptedLetter isWinner={isWinner}>{letter}</EncryptedLetter>
     </Container>
   );
-};
-
-Letter.propTypes = {
-  letter: PropTypes.string.isRequired,
-  isLetter: PropTypes.bool.isRequired,
-  isHint: PropTypes.bool.isRequired,
-  isMistake: PropTypes.bool.isRequired,
-  isSelected: PropTypes.bool.isRequired,
-  isWinner: PropTypes.bool.isRequired,
-  letterSelected: PropTypes.bool.isRequired,
-  onSelect: PropTypes.func.isRequired,
-  id: PropTypes.number,
-  guess: PropTypes.string,
 };
 
 export default Letter;

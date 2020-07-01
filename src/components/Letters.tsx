@@ -1,10 +1,17 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import Letter from "./Letter";
 
-const split = (arr, predicate) => {
-  const newArr = [[]];
+type letterType = {
+  letter: string;
+  id: number;
+};
+
+const split = (
+  arr: letterType[],
+  predicate: (letterObj: letterType) => boolean
+): letterType[][] => {
+  const newArr: letterType[][] = [[]];
 
   arr.forEach((entry) => {
     if (predicate(entry)) {
@@ -27,6 +34,16 @@ const Word = styled.div`
   margin-right: 16px;
 `;
 
+type LettersType = {
+  guesses: { [letter: string]: string };
+  hints: string[];
+  isWinner: boolean;
+  letters: letterType[];
+  mistakes: string[];
+  selectedId: number;
+  onSelect: (id: number) => void;
+};
+
 const Letters = ({
   letters,
   selectedId,
@@ -35,9 +52,9 @@ const Letters = ({
   mistakes,
   isWinner,
   onSelect,
-}) => {
+}: LettersType) => {
   const words = split(letters, (l) => l.letter === " ");
-  const selectedLetter = letters.find((l) => l.id === selectedId).letter;
+  const selectedLetter = letters.find((l) => l.id === selectedId)?.letter ?? "";
 
   return (
     <Container>
@@ -62,21 +79,6 @@ const Letters = ({
       ))}
     </Container>
   );
-};
-
-Letters.propTypes = {
-  guesses: PropTypes.object.isRequired,
-  hints: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isWinner: PropTypes.bool.isRequired,
-  letters: PropTypes.arrayOf(
-    PropTypes.shape({
-      letter: PropTypes.string.isRequired,
-      id: PropTypes.number,
-    })
-  ).isRequired,
-  mistakes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedId: PropTypes.number.isRequired,
-  onSelect: PropTypes.func.isRequired,
 };
 
 export default Letters;

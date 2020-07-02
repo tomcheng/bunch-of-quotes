@@ -18,9 +18,7 @@
     "@types/react-dom": "16.9.8",
     "@types/styled-components": "5.1.0",
     "lodash": "4.17.15",
-    "prop-types": "15.7.2",
     "react": "16.13.1",
-    "react-animate-height-auto": "0.0.2",
     "react-dom": "16.13.1",
     "styled-components": "5.1.1",
     "typescript": "3.9.6"

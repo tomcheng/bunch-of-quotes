@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { simpleMemoize } from "../utils/functionUtils";
@@ -44,135 +44,125 @@ const Key = styled.div`
   }
 `;
 
-class Keyboard extends Component {
-  static propTypes = {
-    fadedLetters: PropTypes.arrayOf(PropTypes.string).isRequired,
-    onTapDelete: PropTypes.func.isRequired,
-    onTapDoubleNext: PropTypes.func.isRequired,
-    onTapDoublePrevious: PropTypes.func.isRequired,
-    onTapLetter: PropTypes.func.isRequired,
-    onTapNext: PropTypes.func.isRequired,
-    onTapPrevious: PropTypes.func.isRequired,
+const getDimensions = simpleMemoize((fullWidth) => {
+  const arrowKeyWidth = (fullWidth - 5 * SPACE) / 4;
+  const keyWidth =
+    (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
+  const deleteKeyWidth = 2 * keyWidth + SPACE;
+
+  return {
+    keyWidth,
+    deleteKeyWidth,
+    arrowKeyWidth,
   };
+});
 
-  state = { fullWidth: window.innerWidth };
+const Keyboard = ({
+  fadedLetters,
+  onTapDoublePrevious,
+  onTapPrevious,
+  onTapNext,
+  onTapDoubleNext,
+  onTapLetter,
+  onTapDelete,
+}) => {
+  const [fullWidth, setFullWidth] = useState(window.innerWidth);
+  const { keyWidth, deleteKeyWidth, arrowKeyWidth } = getDimensions(fullWidth);
 
-  componentDidMount() {
-    window.addEventListener("resize", this.handleResize);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
-  }
-
-  handleResize = () => {
-    this.setState({ fullWidth: window.innerWidth });
-  };
-
-  getDimensions = simpleMemoize((fullWidth) => {
-    const arrowKeyWidth = (fullWidth - 5 * SPACE) / 4;
-    const keyWidth =
-      (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
-    const deleteKeyWidth = 2 * keyWidth + SPACE;
-
-    return {
-      keyWidth,
-      deleteKeyWidth,
-      arrowKeyWidth,
+  useEffect(() => {
+    const handleResize = () => {
+      setFullWidth(window.innerWidth);
     };
-  });
 
-  render() {
-    const {
-      fadedLetters,
-      onTapDoublePrevious,
-      onTapPrevious,
-      onTapNext,
-      onTapDoubleNext,
-      onTapLetter,
-      onTapDelete,
-    } = this.props;
-    const { fullWidth } = this.state;
-    const { keyWidth, deleteKeyWidth, arrowKeyWidth } = this.getDimensions(
-      fullWidth
-    );
+    window.addEventListener("resize", handleResize);
 
-    return (
-      <Container>
-        <KeyRow>
-          {"QWERTYUIOP".split("").map((letter) => (
-            <Key
-              key={letter}
-              style={{ flexBasis: keyWidth + "px" }}
-              isFaded={fadedLetters.includes(letter)}
-              onClick={() => {
-                onTapLetter(letter);
-              }}
-            >
-              {letter}
-            </Key>
-          ))}
-        </KeyRow>
-        <KeyRow>
-          {"ASDFGHJKL".split("").map((letter) => (
-            <Key
-              key={letter}
-              style={{ flexBasis: keyWidth + "px" }}
-              isFaded={fadedLetters.includes(letter)}
-              onClick={() => {
-                onTapLetter(letter);
-              }}
-            >
-              {letter}
-            </Key>
-          ))}
-        </KeyRow>
-        <KeyRow style={{ justifyContent: "flex-end" }}>
-          {"ZXCVBNM".split("").map((letter) => (
-            <Key
-              key={letter}
-              style={{ flexBasis: keyWidth + "px" }}
-              isFaded={fadedLetters.includes(letter)}
-              onClick={() => {
-                onTapLetter(letter);
-              }}
-            >
-              {letter}
-            </Key>
-          ))}
+    return () => {
+      window.removeEventListener("resize", this.handleResize);
+    };
+  }, []);
+
+  return (
+    <Container>
+      <KeyRow>
+        {"QWERTYUIOP".split("").map((letter) => (
           <Key
-            style={{ flexBasis: deleteKeyWidth + "px" }}
-            onClick={onTapDelete}
+            key={letter}
+            style={{ flexBasis: keyWidth + "px" }}
+            isFaded={fadedLetters.includes(letter)}
+            onClick={() => {
+              onTapLetter(letter);
+            }}
           >
-            Delete
+            {letter}
           </Key>
-        </KeyRow>
-        <KeyRow>
+        ))}
+      </KeyRow>
+      <KeyRow>
+        {"ASDFGHJKL".split("").map((letter) => (
           <Key
-            onClick={onTapDoublePrevious}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
+            key={letter}
+            style={{ flexBasis: keyWidth + "px" }}
+            isFaded={fadedLetters.includes(letter)}
+            onClick={() => {
+              onTapLetter(letter);
+            }}
           >
-            <i className="fa fa-angle-double-left" />
+            {letter}
           </Key>
+        ))}
+      </KeyRow>
+      <KeyRow style={{ justifyContent: "flex-end" }}>
+        {"ZXCVBNM".split("").map((letter) => (
           <Key
-            onClick={onTapPrevious}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
+            key={letter}
+            style={{ flexBasis: keyWidth + "px" }}
+            isFaded={fadedLetters.includes(letter)}
+            onClick={() => {
+              onTapLetter(letter);
+            }}
           >
-            <i className="fa fa-angle-left" />
+            {letter}
           </Key>
-          <Key onClick={onTapNext} style={{ flexBasis: arrowKeyWidth + "px" }}>
-            <i className="fa fa-angle-right" />
-          </Key>
-          <Key
-            onClick={onTapDoubleNext}
-            style={{ flexBasis: arrowKeyWidth + "px" }}
-          >
-            <i className="fa fa-angle-double-right" />
-          </Key>
-        </KeyRow>{" "}
-      </Container>
-    );
-  }
-}
+        ))}
+        <Key style={{ flexBasis: deleteKeyWidth + "px" }} onClick={onTapDelete}>
+          Delete
+        </Key>
+      </KeyRow>
+      <KeyRow>
+        <Key
+          onClick={onTapDoublePrevious}
+          style={{ flexBasis: arrowKeyWidth + "px" }}
+        >
+          <i className="fa fa-angle-double-left" />
+        </Key>
+        <Key
+          onClick={onTapPrevious}
+          style={{ flexBasis: arrowKeyWidth + "px" }}
+        >
+          <i className="fa fa-angle-left" />
+        </Key>
+        <Key onClick={onTapNext} style={{ flexBasis: arrowKeyWidth + "px" }}>
+          <i className="fa fa-angle-right" />
+        </Key>
+        <Key
+          onClick={onTapDoubleNext}
+          style={{ flexBasis: arrowKeyWidth + "px" }}
+        >
+          <i className="fa fa-angle-double-right" />
+        </Key>
+      </KeyRow>{" "}
+    </Container>
+  );
+};
+
+Keyboard.propTypes = {
+  fadedLetters: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onTapDelete: PropTypes.func.isRequired,
+  onTapDoubleNext: PropTypes.func.isRequired,
+  onTapDoublePrevious: PropTypes.func.isRequired,
+  onTapLetter: PropTypes.func.isRequired,
+  onTapNext: PropTypes.func.isRequired,
+  onTapPrevious: PropTypes.func.isRequired,
+};
 
 export default Keyboard;

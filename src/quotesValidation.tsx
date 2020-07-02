@@ -1,8 +1,9 @@
 import forOwn from "lodash/forOwn";
 import sortBy from "lodash/sortBy";
 import { hash } from "./utils/hash";
+import { Quote } from "./components/types";
 
-const isValidTime = (time) => {
+const isValidTime = (time: string) => {
   if (time.match(/^(c\. )?\d\d\d\d\??-\d\d\d\d$/)) {
     return true;
   }
@@ -22,7 +23,7 @@ const isValidTime = (time) => {
   return false;
 };
 
-const isValidOccupation = (occ) => {
+const isValidOccupation = (occ: string) => {
   if (occ.match(/^[\w-]*( \w*)*$/)) {
     return true;
   }
@@ -42,15 +43,21 @@ const isValidOccupation = (occ) => {
   return false;
 };
 
-const normalize = (text) =>
+const normalize = (text: string) =>
   text
     .toLowerCase()
     .replace(/[^a-z]/g, "")
     .slice(0, 25);
 
-const isSimilar = (q1, q2) => normalize(q1) === normalize(q2);
+const isSimilar = (q1: string, q2: string) => normalize(q1) === normalize(q2);
 
-export const isValid = ({ authors, quotes: unsortedQuotes }) => {
+export const isValid = ({
+  authors,
+  quotes: unsortedQuotes,
+}: {
+  authors: { [name: string]: string[] };
+  quotes: string[][];
+}) => {
   const quotes = sortBy(unsortedQuotes, (q) => normalize(q[0]));
   let valid = true;
 

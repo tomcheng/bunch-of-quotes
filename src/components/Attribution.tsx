@@ -22,9 +22,9 @@ const Time = styled.span`
 type AttributionProps = {
   name: string;
   containerStyle?: object;
-  context?: string;
-  occupation?: string;
-  time?: string;
+  context: string | null;
+  occupation: string | null;
+  time: string | null;
 };
 
 const Attribution = ({

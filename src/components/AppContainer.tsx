@@ -25,8 +25,17 @@ const getCharacters = (
     }));
 };
 
-class AppContainer extends Component {
-  state = {
+type AppContainerProps = {};
+
+type AppContainerState = {
+  cipher: { [letter: string]: string };
+  currentQuote: Quote;
+  isMobile: boolean;
+  solvedQuotes: Quote[];
+};
+
+class AppContainer extends Component<AppContainerProps, AppContainerState> {
+  state: AppContainerState = {
     cipher: generateCipher(),
     currentQuote: getUnsolvedQuote(),
     isMobile: window.innerWidth < MOBILE_SIZE,

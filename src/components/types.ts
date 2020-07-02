@@ -7,7 +7,7 @@ export type Quote = {
   hash: string;
   name: string;
   text: string;
-  context?: string;
-  occupation?: string;
-  time?: string;
+  context: string | null;
+  occupation: string | null;
+  time: string | null;
 };

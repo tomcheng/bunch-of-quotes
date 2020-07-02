@@ -3241,7 +3241,7 @@ export const quotes = [
 ];
 
 // prettier-ignore
-export const authors = {
+export const authors: { [name: string]: string[] } = {
   "A.J.P. Taylor": ["historian", "1906-1990"],
   "A.K. Ramanujan": ["poet", "1929-1993"],
   "Aaron Hill": ["dramatist and writer", "1685-1750"],

@@ -1,3 +1,4 @@
+import type { Quote } from "./components/types";
 import compact from "lodash/compact";
 import keyBy from "lodash/keyBy";
 import omit from "lodash/omit";
@@ -21,19 +22,19 @@ const quotes = keyBy(
   (quote) => quote.hash
 );
 
-const getSolvedHashes = () => {
+const getSolvedHashes = (): string[] => {
   const solvedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
   return solvedStr ? uniq(JSON.parse(solvedStr)) : [];
 };
 
-export const markQuoteAsSolved = ({ hash }) => {
+export const markQuoteAsSolved = ({ hash }: { hash: string }) => {
   const solvedHashes = getSolvedHashes();
   solvedHashes.push(hash);
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(solvedHashes));
 };
 
-export const getUnsolvedQuote = () =>
-  sample(values(omit(quotes, getSolvedHashes())));
+export const getUnsolvedQuote = (): Quote =>
+  sample(values(omit(quotes, getSolvedHashes()))) as Quote;
 
 export const getSolvedQuotes = () =>
   compact(

@@ -1,17 +1,13 @@
 import React from "react";
+import type { Character } from "./types";
 import styled from "styled-components";
 import Letter from "./Letter";
 
-type letterType = {
-  letter: string;
-  id: number;
-};
-
 const split = (
-  arr: letterType[],
-  predicate: (letterObj: letterType) => boolean
-): letterType[][] => {
-  const newArr: letterType[][] = [[]];
+  arr: Character[],
+  predicate: (letterObj: Character) => boolean
+): Character[][] => {
+  const newArr: Character[][] = [[]];
 
   arr.forEach((entry) => {
     if (predicate(entry)) {
@@ -34,33 +30,34 @@ const Word = styled.div`
   margin-right: 16px;
 `;
 
-type LettersType = {
+type LettersProps = {
+  characters: Character[];
   guesses: { [letter: string]: string };
   hints: string[];
   isWinner: boolean;
-  letters: letterType[];
   mistakes: string[];
   selectedId: number;
   onSelect: (id: number) => void;
 };
 
 const Letters = ({
-  letters,
+  characters,
   selectedId,
   guesses,
   hints,
   mistakes,
   isWinner,
   onSelect,
-}: LettersType) => {
-  const words = split(letters, (l) => l.letter === " ");
-  const selectedLetter = letters.find((l) => l.id === selectedId)?.letter ?? "";
+}: LettersProps) => {
+  const words = split(characters, (l) => l.letter === " ");
+  const selectedLetter =
+    characters.find((l) => l.id === selectedId)?.letter ?? "";
 
   return (
     <Container>
-      {words.map((letters, wordIndex) => (
+      {words.map((characters, wordIndex) => (
         <Word key={wordIndex}>
-          {letters.map(({ id, letter }, index) => (
+          {characters.map(({ id, letter }, index) => (
             <Letter
               key={index}
               id={id}

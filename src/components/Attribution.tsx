@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 
-const removeWidows = (str) => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
-const formatTime = (str) => str.replace(/-/g, "\u200A\u2013\u200A");
+const removeWidows = (str: string) => str.replace(/ (\S{0,5})$/g, "\u00A0$1");
+const formatTime = (str: string) => str.replace(/-/g, "\u200A\u2013\u200A");
 
 const Container = styled.div`
   text-align: right;
@@ -20,7 +19,21 @@ const Time = styled.span`
   white-space: nowrap;
 `;
 
-const Attribution = ({ containerStyle, name, context, occupation, time }) => (
+type AttributionProps = {
+  name: string;
+  containerStyle?: object;
+  context?: string;
+  occupation?: string;
+  time?: string;
+};
+
+const Attribution = ({
+  containerStyle,
+  name,
+  context,
+  occupation,
+  time,
+}: AttributionProps) => (
   <Container style={containerStyle}>
     <div>
       {name}
@@ -28,20 +41,12 @@ const Attribution = ({ containerStyle, name, context, occupation, time }) => (
     </div>
     {(occupation || time) && (
       <Occupation>
-        {removeWidows(occupation)}
+        {occupation && removeWidows(occupation)}
         {!!occupation && !!time && ", "}
         {time && <Time>{formatTime(time)}</Time>}
       </Occupation>
     )}
   </Container>
 );
-
-Attribution.propTypes = {
-  name: PropTypes.string.isRequired,
-  containerStyle: PropTypes.object,
-  context: PropTypes.string,
-  occupation: PropTypes.string,
-  time: PropTypes.string,
-};
 
 export default Attribution;

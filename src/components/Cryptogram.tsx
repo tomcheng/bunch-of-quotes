@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
+import type { Character, Quote } from "./types";
 import styled from "styled-components";
 import values from "lodash/values";
 import compact from "lodash/compact";
-import AnimateHeight from "react-animate-height-auto";
 import FadeIn from "./FadeIn";
 import Footer from "./Footer";
 import Button from "./Button";
@@ -33,6 +32,25 @@ const MainContent = styled.div`
   margin: 0 auto;
 `;
 
+type CryptogramProps = {
+  characters: Character[];
+  guesses: { [letter: string]: string };
+  hints: string[];
+  isMobile: boolean;
+  isWinner: boolean;
+  mistakes: string[];
+  quote: Quote;
+  selectedId: number;
+  onDelete: () => void;
+  onGuess: (id: number) => void;
+  onPlayAgain: () => void;
+  onSelectDoubleNextLetter: () => void;
+  onSelectDoublePreviousLetter: () => void;
+  onSelectLetter: () => void;
+  onSelectNextLetter: () => void;
+  onSelectPreviousLetter: () => void;
+};
+
 const Cryptogram = ({
   isMobile,
   characters,
@@ -50,12 +68,12 @@ const Cryptogram = ({
   onSelectLetter,
   onSelectNextLetter,
   onSelectPreviousLetter,
-}) => (
+}: CryptogramProps) => (
   <Container>
     <Body>
       <MainContent>
         <Letters
-          letters={characters}
+          characters={characters}
           selectedId={selectedId}
           guesses={guesses}
           hints={hints}
@@ -86,50 +104,18 @@ const Cryptogram = ({
       </FadeIn>
     )}
 
-    {isMobile && (
-      <AnimateHeight isExpanded={!isWinner} duration={300}>
-        <Keyboard
-          fadedLetters={compact(values(guesses))}
-          onTapDoublePrevious={onSelectDoublePreviousLetter}
-          onTapPrevious={onSelectPreviousLetter}
-          onTapNext={onSelectNextLetter}
-          onTapDoubleNext={onSelectDoubleNextLetter}
-          onTapLetter={onGuess}
-          onTapDelete={onDelete}
-        />
-      </AnimateHeight>
+    {isMobile && !isWinner && (
+      <Keyboard
+        fadedLetters={compact(values(guesses))}
+        onTapDoublePrevious={onSelectDoublePreviousLetter}
+        onTapPrevious={onSelectPreviousLetter}
+        onTapNext={onSelectNextLetter}
+        onTapDoubleNext={onSelectDoubleNextLetter}
+        onTapLetter={onGuess}
+        onTapDelete={onDelete}
+      />
     )}
   </Container>
 );
-
-Cryptogram.propTypes = {
-  characters: PropTypes.arrayOf(
-    PropTypes.shape({
-      letter: PropTypes.string.isRequired,
-      id: PropTypes.number,
-    })
-  ).isRequired,
-  guesses: PropTypes.objectOf(PropTypes.string).isRequired,
-  hints: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isMobile: PropTypes.bool.isRequired,
-  isWinner: PropTypes.bool.isRequired,
-  mistakes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  quote: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-    context: PropTypes.string,
-    occupation: PropTypes.string,
-    time: PropTypes.string,
-  }).isRequired,
-  selectedId: PropTypes.number.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onGuess: PropTypes.func.isRequired,
-  onPlayAgain: PropTypes.func.isRequired,
-  onSelectDoubleNextLetter: PropTypes.func.isRequired,
-  onSelectDoublePreviousLetter: PropTypes.func.isRequired,
-  onSelectLetter: PropTypes.func.isRequired,
-  onSelectNextLetter: PropTypes.func.isRequired,
-  onSelectPreviousLetter: PropTypes.func.isRequired,
-};
 
 export default Cryptogram;

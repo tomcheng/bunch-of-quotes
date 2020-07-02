@@ -1,10 +1,9 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { quoteType } from "../utils/customPropTypes";
 import Button from "./Button";
 import Footer from "./Footer";
 import Attribution from "./Attribution";
+import type { Quote as QuoteType } from "./types";
 
 const Container = styled.div`
   height: 100%;
@@ -49,7 +48,12 @@ const EmptyText = styled.div`
   opacity: 0.4;
 `;
 
-const Solved = ({ quotes, onGoBack }) => (
+type SolvedProps = {
+  quotes: QuoteType[];
+  onGoBack: () => void;
+};
+
+const Solved = ({ quotes, onGoBack }: SolvedProps) => (
   <Container>
     <Body>
       <Quotes>
@@ -71,10 +75,5 @@ const Solved = ({ quotes, onGoBack }) => (
     </Footer>
   </Container>
 );
-
-Solved.propTypes = {
-  quotes: PropTypes.arrayOf(quoteType).isRequired,
-  onGoBack: PropTypes.func.isRequired,
-};
 
 export default Solved;

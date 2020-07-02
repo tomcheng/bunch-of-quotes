@@ -4,6 +4,7 @@ export type Character = {
 };
 
 export type Quote = {
+  hash: string;
   name: string;
   text: string;
   context?: string;

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
@@ -40,75 +40,55 @@ const DropdownOption = styled.div`
   }
 `;
 
-class Dropdown extends Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    isOpen: PropTypes.bool.isRequired,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string.isRequired,
-        onClick: PropTypes.func.isRequired,
-      })
-    ).isRequired,
-    onToggle: PropTypes.func.isRequired,
-  };
+const Dropdown = ({ children, isOpen, options, onToggle }) => {
+  const dropdownEl = useRef(document.createElement("div"));
 
-  constructor() {
-    super();
+  useEffect(() => {
+    document.getElementsByTagName("body")[0].appendChild(dropdownEl.current);
+  }, []);
 
-    this.dropdownEl = document.createElement("div");
-    document.getElementsByTagName("body")[0].appendChild(this.dropdownEl);
+  return (
+    <>
+      <div onClick={onToggle}>{children}</div>
+      {createPortal(
+        <>
+          {isOpen && <Overlay onClick={onToggle} />}
+          <DropdownContent
+            isOpen={isOpen}
+            style={{
+              top: DISTANCE_FROM_EDGE,
+              right: DISTANCE_FROM_EDGE,
+            }}
+          >
+            {options.map(({ label, onClick }) => (
+              <DropdownOption
+                key={label}
+                onClick={() => {
+                  onToggle();
+                  onClick();
+                }}
+              >
+                {label}
+              </DropdownOption>
+            ))}
+          </DropdownContent>
+        </>,
+        dropdownEl.current
+      )}
+    </>
+  );
+};
 
-    this.state = {
-      dimensions: { width: 0, height: 0, top: 0, right: 0 },
-      isMeasured: false,
-    };
-  }
-
-  handleResize = ({ bounds }) => {
-    this.setState({ dimensions: bounds, isMeasured: true });
-  };
-
-  renderDropdownContent = () => {
-    const { isOpen, onToggle, options } = this.props;
-
-    return createPortal(
-      <Fragment>
-        {isOpen && <Overlay onClick={onToggle} />}
-        <DropdownContent
-          isOpen={isOpen}
-          style={{
-            top: DISTANCE_FROM_EDGE,
-            right: DISTANCE_FROM_EDGE,
-          }}
-        >
-          {options.map(({ label, onClick }) => (
-            <DropdownOption
-              key={label}
-              onClick={() => {
-                onToggle();
-                onClick();
-              }}
-            >
-              {label}
-            </DropdownOption>
-          ))}
-        </DropdownContent>
-      </Fragment>,
-      this.dropdownEl
-    );
-  };
-
-  render() {
-    const { children, onToggle } = this.props;
-
-    return (
-      <Fragment>
-        <div onClick={onToggle}>{children}</div>
-        {this.renderDropdownContent()}
-      </Fragment>
-    );
-  }
-}
+Dropdown.propTypes = {
+  children: PropTypes.node.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      onClick: PropTypes.func.isRequired,
+    })
+  ).isRequired,
+  onToggle: PropTypes.func.isRequired,
+};
 
 export default Dropdown;

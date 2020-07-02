@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import { simpleMemoize } from "../utils/functionUtils";
 
@@ -23,10 +22,14 @@ const KeyRow = styled.div`
   }
 `;
 
+type KeyProps = {
+  isFaded?: boolean;
+};
+
 const Key = styled.div`
   box-sizing: border-box;
   background-color: #fff;
-  opacity: ${(props) => (props.isFaded ? 0.8 : 1)};
+  opacity: ${(props: KeyProps) => (props.isFaded ? 0.8 : 1)};
   border-radius: 2px;
   flex: 0 0;
   height: ${KEY_HEIGHT}px;
@@ -44,7 +47,11 @@ const Key = styled.div`
   }
 `;
 
-const getDimensions = simpleMemoize((fullWidth) => {
+const getDimensions = simpleMemoize((fullWidth: number): {
+  keyWidth: number;
+  deleteKeyWidth: number;
+  arrowKeyWidth: number;
+} => {
   const arrowKeyWidth = (fullWidth - 5 * SPACE) / 4;
   const keyWidth =
     (fullWidth - 2 * SPACE - (TOP_NUM_KEYS - 1) * SPACE) / TOP_NUM_KEYS;
@@ -57,6 +64,16 @@ const getDimensions = simpleMemoize((fullWidth) => {
   };
 });
 
+type KeyboardProps = {
+  fadedLetters: string[];
+  onTapDelete: () => void;
+  onTapDoubleNext: () => void;
+  onTapDoublePrevious: () => void;
+  onTapLetter: (letter: string) => void;
+  onTapNext: () => void;
+  onTapPrevious: () => void;
+};
+
 const Keyboard = ({
   fadedLetters,
   onTapDoublePrevious,
@@ -65,7 +82,7 @@ const Keyboard = ({
   onTapDoubleNext,
   onTapLetter,
   onTapDelete,
-}) => {
+}: KeyboardProps) => {
   const [fullWidth, setFullWidth] = useState(window.innerWidth);
   const { keyWidth, deleteKeyWidth, arrowKeyWidth } = getDimensions(fullWidth);
 
@@ -77,7 +94,7 @@ const Keyboard = ({
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", this.handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -153,16 +170,6 @@ const Keyboard = ({
       </KeyRow>{" "}
     </Container>
   );
-};
-
-Keyboard.propTypes = {
-  fadedLetters: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onTapDelete: PropTypes.func.isRequired,
-  onTapDoubleNext: PropTypes.func.isRequired,
-  onTapDoublePrevious: PropTypes.func.isRequired,
-  onTapLetter: PropTypes.func.isRequired,
-  onTapNext: PropTypes.func.isRequired,
-  onTapPrevious: PropTypes.func.isRequired,
 };
 
 export default Keyboard;

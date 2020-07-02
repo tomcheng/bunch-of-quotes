@@ -42,7 +42,7 @@ type CryptogramProps = {
   quote: Quote;
   selectedId: number;
   onDelete: () => void;
-  onGuess: (id: number) => void;
+  onGuess: (letter: string) => void;
   onPlayAgain: () => void;
   onSelectDoubleNextLetter: () => void;
   onSelectDoublePreviousLetter: () => void;

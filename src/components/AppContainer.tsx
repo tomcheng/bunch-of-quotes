@@ -7,10 +7,14 @@ import {
   getSolvedQuotes,
   markQuoteAsSolved,
 } from "../quotesRepo";
+import type { Quote } from "./types";
 
 const MOBILE_SIZE = 1024;
 
-const getCharacters = (cipher, currentQuote) => {
+const getCharacters = (
+  cipher: { [letter: string]: string },
+  currentQuote: Quote
+) => {
   let id = 0;
 
   return applyCipher(currentQuote.text, cipher)

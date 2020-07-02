@@ -32,7 +32,7 @@ const Word = styled.div`
 
 type LettersProps = {
   characters: Character[];
-  guesses: { [letter: string]: string };
+  guesses: { [letter: string]: string | null };
   hints: string[];
   isWinner: boolean;
   mistakes: string[];

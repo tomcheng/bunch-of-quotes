@@ -78,6 +78,7 @@ const EncryptedLetter = styled.div`
 
 type LetterProps = {
   letter: string;
+  id: number | null;
   isLetter: boolean;
   isHint: boolean;
   isMistake: boolean;
@@ -85,7 +86,6 @@ type LetterProps = {
   isWinner: boolean;
   letterSelected: boolean;
   onSelect: (id: number) => void;
-  id?: number;
   guess?: string;
 };
 

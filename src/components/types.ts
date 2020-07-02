@@ -1,6 +1,6 @@
 export type Character = {
   letter: string;
-  id?: number;
+  id: number | null;
 };
 
 export type Quote = {

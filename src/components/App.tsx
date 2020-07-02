@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { quoteType } from "../utils/customPropTypes";
 import findIndex from "lodash/findIndex";
 import findKey from "lodash/findKey";
 import keys from "lodash/keys";
 import pick from "lodash/pick";
 import uniq from "lodash/uniq";
 import { alphabet } from "../utils/constants";
+import type { Character, Quote } from "./types";
 import Menu from "./Menu";
 import Cryptogram from "./Cryptogram";
 import Solved from "./Solved";
@@ -20,23 +19,27 @@ const initialState = {
   showSolved: false,
 };
 
-class App extends Component {
-  static propTypes = {
-    characters: PropTypes.arrayOf(
-      PropTypes.shape({
-        letter: PropTypes.string.isRequired,
-        id: PropTypes.number,
-      })
-    ).isRequired,
-    cipher: PropTypes.objectOf(PropTypes.string).isRequired,
-    currentQuote: quoteType.isRequired,
-    isMobile: PropTypes.bool.isRequired,
-    solvedQuotes: PropTypes.arrayOf(quoteType).isRequired,
-    onGetNewQuote: PropTypes.func.isRequired,
-    onMarkAsSolved: PropTypes.func.isRequired,
-  };
+type AppProps = {
+  characters: Character[];
+  cipher: { [letter: string]: string };
+  currentQuote: Quote;
+  isMobile: boolean;
+  solvedQuotes: Quote[];
+  onGetNewQuote: () => void;
+  onMarkAsSolved: () => void;
+};
 
-  state = initialState;
+type AppState = {
+  guesses: { [letter: string]: string | null };
+  hints: string[];
+  mistakes: string[];
+  selectedId: number;
+  isWinner: boolean;
+  showSolved: boolean;
+};
+
+class App extends Component<AppProps, AppState> {
+  state: AppState = initialState;
 
   componentDidMount() {
     window.addEventListener("keydown", this.handleKeyDown);
@@ -46,7 +49,7 @@ class App extends Component {
     window.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  handleKeyDown = (evt) => {
+  handleKeyDown = (evt: KeyboardEvent) => {
     if (alphabet.includes(evt.key.toUpperCase())) {
       this.handleGuess(evt.key.toUpperCase());
     } else if (evt.key === "Backspace") {
@@ -77,14 +80,14 @@ class App extends Component {
     }
   };
 
-  checkWin = (guesses) => {
+  checkWin = (guesses: { [letter: string]: string | null }) => {
     const { cipher, characters } = this.props;
 
     return (
       characters.filter((c) => !!c.id).every((c) => !!guesses[c.letter]) &&
       keys(guesses).every((key) => {
         const guess = guesses[key];
-        return cipher[guess] === key;
+        return guess && cipher[guess] === key;
       })
     );
   };
@@ -108,11 +111,11 @@ class App extends Component {
     );
   };
 
-  selectLetter = (id) => {
+  selectLetter = (id: number) => {
     this.setState({ selectedId: id });
   };
 
-  selectNext = (letters) => {
+  selectNext = (letters: Character[]) => {
     const { selectedId } = this.state;
     const selectedIndex = findIndex(
       letters,
@@ -122,7 +125,7 @@ class App extends Component {
       (selectedIndex === letters.length - 1
         ? letters[0]
         : letters[selectedIndex + 1]
-      ).id
+      ).id as number
     );
   };
 
@@ -151,13 +154,14 @@ class App extends Component {
   };
 
   getSelectedLetter = () =>
-    this.props.characters.find((c) => c.id === this.state.selectedId).letter;
+    this.props.characters.find((c) => c.id === this.state.selectedId)
+      ?.letter as string;
 
-  handleSelectLetter = (id) => {
+  handleSelectLetter = (id: number) => {
     this.setState({ selectedId: id });
   };
 
-  handleGuess = (guess) => {
+  handleGuess = (guess: string) => {
     const { guesses, mistakes, hints } = this.state;
     const letter = this.getSelectedLetter();
     const prevLetter = findKey(guesses, (l) => l === guess);
@@ -167,7 +171,7 @@ class App extends Component {
       return;
     }
 
-    if (hints.includes(prevLetter)) {
+    if (prevLetter && hints.includes(prevLetter)) {
       return;
     }
 
@@ -235,7 +239,7 @@ class App extends Component {
 
     const mistakes = keys(guesses).filter((letter) => {
       const guess = guesses[letter];
-      return cipher[guess] && cipher[guess] !== letter;
+      return guess && cipher[guess] && cipher[guess] !== letter;
     });
 
     this.setState({ mistakes });
@@ -246,7 +250,7 @@ class App extends Component {
     const { guesses } = this.state;
 
     const hintLetter = this.getSelectedLetter();
-    const answer = findKey(cipher, (letter) => letter === hintLetter);
+    const answer = findKey(cipher, (letter) => letter === hintLetter) ?? null;
     const existingLetter = findKey(guesses, (letter) => letter === answer);
     const removals = existingLetter ? { [existingLetter]: null } : {};
 

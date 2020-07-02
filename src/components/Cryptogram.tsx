@@ -34,7 +34,7 @@ const MainContent = styled.div`
 
 type CryptogramProps = {
   characters: Character[];
-  guesses: { [letter: string]: string };
+  guesses: { [letter: string]: string | null };
   hints: string[];
   isMobile: boolean;
   isWinner: boolean;
@@ -46,7 +46,7 @@ type CryptogramProps = {
   onPlayAgain: () => void;
   onSelectDoubleNextLetter: () => void;
   onSelectDoublePreviousLetter: () => void;
-  onSelectLetter: () => void;
+  onSelectLetter: (id: number) => void;
   onSelectNextLetter: () => void;
   onSelectPreviousLetter: () => void;
 };

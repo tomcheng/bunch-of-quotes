@@ -102,7 +102,7 @@ const Letter = ({
   isWinner,
 }: LetterProps) => {
   if (!isLetter) {
-    return <span>{letter}</span>;
+    return letter === "'" ? <span>&rsquo;</span> : <span>{letter}</span>;
   }
 
   return (

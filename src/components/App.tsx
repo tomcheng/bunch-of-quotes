@@ -16,7 +16,7 @@ const initialState = {
   mistakes: [],
   selectedId: 1,
   isWinner: false,
-  showSolved: true,
+  showSolved: false,
 };
 
 type AppProps = {
